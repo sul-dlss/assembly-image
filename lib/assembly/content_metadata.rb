@@ -1,0 +1,124 @@
+require 'nokogiri'
+require 'Digest/sha1'
+require 'Digest/md5'
+
+module Assembly
+
+  class ContentMetadata
+
+    # See https://consul.stanford.edu/display/chimera/DOR+file+types+and+attribute+values.
+    FORMATS = {
+      # MIME type.               => The format attribute in the content metadata XML file.
+      'image/jp2'                => 'JPEG2000',
+      'image/jpeg'               => 'JPEG',
+      'image/tiff'               => 'TIFF',
+      'image/tiff-fx'            => 'TIFF',
+      'image/ief'                => 'TIFF',
+      'image/gif'                => 'GIF',
+      'text/plain'               => 'TEXT',
+      'text/html'                => 'HTML',
+      'text/csv'                 => 'CSV',
+      'audio/x-aiff'             => 'AIFF',
+      'audio/x-mpeg'             => 'MP3',
+      'audio/x-wave'             => 'WAV',
+      'video/mpeg'               => 'MP2',
+      'video/quicktime'          => 'QUICKTIME',
+      'video/x-msvideo'          => 'AVI',
+      'application/pdf'          => 'PDF',
+      'application/zip'          => 'ZIP',
+      'application/xml'          => 'XML',
+      'application/tei+xml'      => 'TEI',
+      'application/msword'       => 'WORD',
+      'application/wordperfect'  => 'WPD',
+      'application/mspowerpoint' => 'PPT',
+      'application/msexcel'      => 'XLS',
+      'application/x-tar'        => 'TAR',
+      'application/octet-stream' => 'BINARY',
+    }
+    
+      # Generates image content XML metadata for a repository object.
+      # This method only produces content metadata for images
+      # and does not depend on a specific folder structure.
+      #
+      # Required parameters:
+      #   * druid     = the repository object's druid id as a string
+      #   * file_sets = an array of arrays of files
+      #
+      # Optional parameters:
+      #   * publish       = hash specifying content types to be published
+      #   * preserve      = ...                                 preserved
+      #   * shelve        = ...                                 shelved
+      #
+      # For example:
+      #    Assembly::Image.create_content_metadata(
+      #      'nx288wh8889',
+      #      [ ['foo.tif', 'foo.jp2'], ['bar.tif', 'bar.jp2'] ],
+      #      :preserve      => { 'TIFF'=>'yes', 'JPEG2000' => 'no'},
+      #    )
+      def self.create_content_metadata(druid, file_sets, params={})
+
+        content_type_description = "image"
+
+        publish       = params[:publish]       || {'TIFF' => 'no',  'JPEG2000' => 'yes', 'JPEG' => 'yes'}
+        preserve      = params[:preserve]      || {'TIFF' => 'yes', 'JPEG2000' => 'yes', 'JPEG' => 'yes'}
+        shelve        = params[:shelve]        || {'TIFF' => 'no',  'JPEG2000' => 'yes', 'JPEG' => 'yes'}
+
+        file_sets.flatten.each {|file| return false if !File.exists?(file)}
+
+        sequence = 0
+
+        builder = Nokogiri::XML::Builder.new do |xml|
+          xml.contentMetadata(:objectId => "#{druid}",:type => content_type_description) {
+            file_sets.each do |file_set|
+              sequence += 1
+              resource_id = "#{druid}_#{sequence}"
+              # start a new resource element
+              xml.resource(:id => resource_id,:sequence => sequence,:type => content_type_description) {
+                xml.label "Image #{sequence}"
+                file_set.each do |filename|
+                  id       = filename
+                  exif     = MiniExiftool.new(filename)
+                  mimetype = exif.mimetype
+                  size     = exif.filesize.to_i
+                  width    = exif.imagewidth
+                  height   = exif.imageheight
+                  md5      = Digest::MD5.new
+                  sha1     = Digest::SHA1.new
+                  File.open(filename, 'rb') do |io|
+                    buffer = ''
+                    while io.read(4096,buffer)
+                      md5.update(buffer)
+                      sha1.update(buffer)
+                    end
+                  end
+                  format  = FORMATS[mimetype.downcase]
+                  cropped = "uncropped"
+                  # add a new file element to the XML for this file
+                  xml_file_params = {
+                    :publish  => publish[format],
+                    :format   => format,
+                    :id       => id,
+                    :mimetype => mimetype,
+                    :preserve => preserve[format],
+                    :shelve   => shelve[format],
+                    :size     => size
+                  }
+                  xml.file(xml_file_params) {
+                    xml.imageData(:height => height, :width => width)
+                    xml.attr cropped, :name => 'representation'
+                    xml.checksum sha1, :type => 'sha1'
+                    xml.checksum md5, :type => 'md5'
+                  }
+                end # file_set.each
+              }
+            end # file_sets.each
+          }
+        end
+
+        return builder.to_xml
+
+      end
+
+  end
+  
+end
