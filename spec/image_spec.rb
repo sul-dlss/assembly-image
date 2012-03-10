@@ -9,7 +9,9 @@ describe Assembly::Image do
     File.exists?(TEST_TIF_INPUT_FILE).should be true
     File.exists?(TEST_JP2_OUTPUT_FILE).should be false
     @ai = Assembly::Image.new(TEST_TIF_INPUT_FILE)
-    @ai.create_jp2(:output => TEST_JP2_OUTPUT_FILE).should be true
+    result=@ai.create_jp2(:output => TEST_JP2_OUTPUT_FILE)
+    result.class.should be Assembly::Image
+    result.path.should == TEST_JP2_OUTPUT_FILE        
     is_jp2?(TEST_JP2_OUTPUT_FILE).should be true
   end
 
@@ -35,7 +37,9 @@ describe Assembly::Image do
     generate_test_image(TEST_TIF_INPUT_FILE)
     File.exists?(TEST_TIF_INPUT_FILE).should be true
     @ai = Assembly::Image.new(TEST_TIF_INPUT_FILE)
-    @ai.create_jp2(:output => TEST_JP2_OUTPUT_FILE, :preserve_tmp_source=>true).should be true
+    result=@ai.create_jp2(:output => TEST_JP2_OUTPUT_FILE, :preserve_tmp_source=>true)
+    result.class.should be Assembly::Image
+    result.path.should == TEST_JP2_OUTPUT_FILE    
     is_jp2?(TEST_JP2_OUTPUT_FILE).should be true
     File.exists?(@ai.tmp_path).should be true
   end
@@ -45,7 +49,9 @@ describe Assembly::Image do
     File.exists?(TEST_TIF_INPUT_FILE).should be true
     File.exists?(TEST_JP2_INPUT_FILE).should be false
     @ai = Assembly::Image.new(TEST_TIF_INPUT_FILE)
-    @ai.create_jp2.should be true
+    result=@ai.create_jp2
+    result.class.should be Assembly::Image
+    result.path.should == TEST_JP2_INPUT_FILE
     is_jp2?(TEST_JP2_INPUT_FILE).should be true
     File.exists?(@ai.tmp_path).should be false    
   end
@@ -56,7 +62,9 @@ describe Assembly::Image do
     File.exists?(TEST_TIF_INPUT_FILE).should be true
     File.exists?(TEST_JP2_OUTPUT_FILE).should be true
     @ai = Assembly::Image.new(TEST_TIF_INPUT_FILE)
-    @ai.create_jp2(:output => TEST_JP2_OUTPUT_FILE,:overwrite => true).should be true
+    result=@ai.create_jp2(:output => TEST_JP2_OUTPUT_FILE,:overwrite => true)
+    result.class.should be Assembly::Image
+    result.path.should == TEST_JP2_OUTPUT_FILE        
     is_jp2?(TEST_JP2_OUTPUT_FILE).should be true
   end
 

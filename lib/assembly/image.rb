@@ -20,14 +20,20 @@ module Assembly
     end
       
     # Returns exif information
+    # Example:
+    #   source_img=Assembly::Image.new('/input/path_to_file.tif')
+    #   puts source_img.exif.mimetype # gives 'image/tiff'    
     def exif
       @exif ||= MiniExiftool.new @path  
     end
     
     # Create a JP2 file
     #
+    # Reponse:
+    #   * an Assembly::Image object containing the generated JP2 file
+    #
     # Optional parameters:
-    #   * output          = path to the output JP2 file (default: mirrors the TIF file name)
+    #   * output          = path to the output JP2 file (default: mirrors the source file name with a .jp2 extension)
     #   * overwrite = an existing JP2 file won't be overwritten unless this is true
     #   * output_profile  =  output color space profile: either sRGB (the default) or AdobeRGB1998    
     #   * tmp_folder  =  the temporary folder to use when creating the jp2, defaults to '/tmp'
@@ -36,6 +42,7 @@ module Assembly
     # Example:
     #   source_img=Assembly::Image.new('/input/path_to_file.tif')
     #   derivative_img=source_img.create_jp2 
+    #   puts derivative_img.exif.mimetype # gives 'image/jp2'
     def create_jp2(params = {})
 
       raise 'input file is not an image' unless exif.mimetype.include?('image')
@@ -82,8 +89,9 @@ module Assembly
 
       File.delete(@tmp_path) unless preserve_tmp_source
 
-      return true
-
+      # create output response object, with is an Assembly::Image type object
+      return Assembly::Image.new(output)
+      
     end
 
   end
