@@ -45,8 +45,9 @@ module Assembly
     #   puts derivative_img.exif.mimetype # gives 'image/jp2'
     def create_jp2(params = {})
 
-      raise 'input file is not an image' unless exif.mimetype.include?('image')
-
+      raise 'input file is not an image' unless Assembly::ALLOWED_MIMETYPES.include?(exif.mimetype)
+      # TODO check for specific allowed image by mimetype
+    
       output    = params[:output] || @path.gsub(File.extname(@path),'.jp2')
       overwrite = params[:overwrite] || false
 

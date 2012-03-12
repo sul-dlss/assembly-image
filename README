@@ -1,8 +1,10 @@
+# TODO add readme
+
 Version:
 
 Prerequisites:
 
-    Perl 
+	Perl 
 
     Kakadu Software Binaries - for JP2 generation
 
@@ -12,11 +14,11 @@ Prerequisites:
        Note: The binaries will not work with RHEL 5.x; an RPM for RHEL 5 with
        compatible binaries comming soon.
 
-    Imagemagick 6.5 or higher
-            
+    Imagemagick 6.5.4 or higher
+            	   		
        RHEL 6: 
 
-           # yum install ImageMagick
+           yum install ImageMagick
 
            The version of ImageMagick included with RHEL 6 has all of the
            dependency libraries included.
@@ -27,9 +29,12 @@ Prerequisites:
            not have all the proper binaries included/built
 
            Required libraries are:
-           yum install lcms lcms-devel libtiff libtiff-devel libjpeg \
+           yum install lcms lcms-devel libjpeg \
                        libjpeg-devel libpng libpng-devel
 
+		   Required libraries from source:
+		   		libtiff (version 3.9.4 or higher)
+				
            Build Imagemagick from source:
            http://www.imagemagick.org/download/ImageMagick.tar.gz
 
