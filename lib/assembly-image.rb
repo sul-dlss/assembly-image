@@ -6,10 +6,6 @@
 # Author::    SULAIR DLSS
 # see README for prerequisites
 
-require 'assembly-image/version'
-require 'assembly-image/image'
-require 'assembly-image/content_metadata'
-
 module Assembly
   PATH_TO_GEM = File.expand_path(File.dirname(__FILE__) + '/..')
   ALLOWED_MIMETYPES=["image/jpeg","image/tiff"] # if input image is not one of these mime types, an error will be raised
