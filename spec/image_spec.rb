@@ -4,7 +4,7 @@ describe Assembly::Image do
     lambda{Assembly::Image.new('')}.should raise_error
   end
 
-  it "should create jp2 when given a tif" do
+  it "should create jp2 when given an RGB tif" do
     generate_test_image(TEST_TIF_INPUT_FILE)
     File.exists?(TEST_TIF_INPUT_FILE).should be true
     File.exists?(TEST_JP2_OUTPUT_FILE).should be false
@@ -16,8 +16,30 @@ describe Assembly::Image do
     result.exif.colorspace.should == "sRGB"
   end
 
+  it "should create jp2 when given a greyscale tif" do
+    generate_test_image(TEST_TIF_INPUT_FILE,:color=>'gray',:profile=>'AdobeRGB1998')
+    File.exists?(TEST_TIF_INPUT_FILE).should be true
+    File.exists?(TEST_JP2_OUTPUT_FILE).should be false
+    @ai = Assembly::Image.new(TEST_TIF_INPUT_FILE)
+    result=@ai.create_jp2(:output => TEST_JP2_OUTPUT_FILE)
+    result.class.should be Assembly::Image
+    result.path.should == TEST_JP2_OUTPUT_FILE        
+    is_jp2?(TEST_JP2_OUTPUT_FILE).should be true
+    result.exif.colorspace.should == "sRGB"
+  end
+
+  it "should create grayscale jp2 when given a bitonal tif" do
+    generate_test_image(TEST_TIF_INPUT_FILE,:color=>'white')
+    File.exists?(TEST_TIF_INPUT_FILE).should be true
+    File.exists?(TEST_JP2_OUTPUT_FILE).should be false
+    @ai = Assembly::Image.new(TEST_TIF_INPUT_FILE)
+    result=@ai.create_jp2(:output => TEST_JP2_OUTPUT_FILE)
+    is_jp2?(TEST_JP2_OUTPUT_FILE).should be true
+    result.exif.colorspace.should == "Grayscale"    
+  end
+
   it "should not create a jp2 when the source image has no profile" do
-    generate_test_image(TEST_TIF_INPUT_FILE,"") # generate a test input with no profile
+    generate_test_image(TEST_TIF_INPUT_FILE,:profile=>'') # generate a test input with no profile
     File.exists?(TEST_TIF_INPUT_FILE).should be true
     File.exists?(TEST_JP2_OUTPUT_FILE).should be false
     @ai = Assembly::Image.new(TEST_TIF_INPUT_FILE)

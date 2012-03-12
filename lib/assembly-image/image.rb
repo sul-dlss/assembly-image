@@ -90,8 +90,12 @@ module Assembly
       pixdem = exif.imagewidth > exif.imageheight ? exif.imagewidth : exif.imageheight
       layers = (( Math.log(pixdem) / Math.log(2) ) - ( Math.log(96) / Math.log(2) )).ceil + 1
 
-      # Start jp2 creation section
+      samples_per_pixel=exif['samplesperpixel'] || ""
+      
+      # jp2 creation command
       kdu_bin     = "kdu_compress "
+      options     = ""
+      options +=  " -jp2_space sRGB " if samples_per_pixel.to_s == "3"
       options     = " -precise -no_weights -quiet Creversible=no Cmodes=BYPASS Corder=RPCL " + 
                     "Cblk=\\{64,64\\} Cprecincts=\\{256,256\\},\\{256,256\\},\\{128,128\\} " + 
                     "ORGgen_plt=yes -rate 1.5 Clevels=5 "

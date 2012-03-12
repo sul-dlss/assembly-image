@@ -10,8 +10,10 @@ TEST_JP2_OUTPUT_FILE = File.join(TEST_OUTPUT_DIR,'test.jp2')
 TEST_DRUID           = "nx288wh8889"
 
 # generate a sample image file with a specified profile
-def generate_test_image(file,profile="sRGBIEC6196621")
-  create_command="convert -size 100x100 xc:red "
+def generate_test_image(file,params={})
+  color=params[:color] || 'red'
+  profile=params[:profile] || 'sRGBIEC6196621'
+  create_command="convert -size 100x100 xc:#{color} "
   create_command += "-profile " + File.join(Assembly::PATH_TO_GEM,'profiles',profile+'.icc') + " " unless profile == ''
   create_command += file
   system(create_command)
