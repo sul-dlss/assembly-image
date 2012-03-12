@@ -1,5 +1,5 @@
-$:.push File.expand_path("../lib", __FILE__)
-require "assembly-image"
+$LOAD_PATH.push File.expand_path("../lib", __FILE__)
+require 'assembly-image/version'
 
 Gem::Specification.new do |s|
   s.name        = 'assembly-image'
