@@ -24,13 +24,27 @@ describe Assembly::Image do
     lambda{@ai.create_jp2(:output => TEST_JP2_OUTPUT_FILE)}.should raise_error
   end
 
+  it "should not run if the input file is a jp2" do
+    generate_test_image(TEST_JP2_OUTPUT_FILE)
+    File.exists?(TEST_JP2_OUTPUT_FILE).should be true
+    @ai = Assembly::Image.new(TEST_JP2_OUTPUT_FILE)
+    lambda{@ai.create_jp2}.should raise_error
+  end
+
+  it "should not run if you specify a bogus output profile" do
+    generate_test_image(TEST_TIF_INPUT_FILE)
+    File.exists?(TEST_TIF_INPUT_FILE).should be true
+    @ai = Assembly::Image.new(TEST_TIF_INPUT_FILE)
+    lambda{@ai.create_jp2(:output_profile=>'bogusness')}.should raise_error
+  end
+
   it "should not run if you specify a bogus tmp folder" do
     generate_test_image(TEST_TIF_INPUT_FILE)
     bogus_folder='/crapsticks'
     File.exists?(TEST_TIF_INPUT_FILE).should be true
     File.exists?(bogus_folder).should be false
     @ai = Assembly::Image.new(TEST_TIF_INPUT_FILE)
-    lambda{@ai.create_jp2(:output => TEST_JP2_OUTPUT_FILE, :tmp_folder=>bogus_folder)}.should raise_error
+    lambda{@ai.create_jp2(:tmp_folder=>bogus_folder)}.should raise_error
   end
 
   it "should create a jp2 and preserve the temporary file if specified" do
@@ -49,6 +63,18 @@ describe Assembly::Image do
     File.exists?(TEST_TIF_INPUT_FILE).should be true
     File.exists?(TEST_JP2_INPUT_FILE).should be false
     @ai = Assembly::Image.new(TEST_TIF_INPUT_FILE)
+    result=@ai.create_jp2
+    result.class.should be Assembly::Image
+    result.path.should == TEST_JP2_INPUT_FILE
+    is_jp2?(TEST_JP2_INPUT_FILE).should be true
+    File.exists?(@ai.tmp_path).should be false    
+  end
+
+  it "should create jp2 of the same filename and in the same location as the input if no output file is specified, and should cleanup tmp file" do
+    generate_test_image(TEST_JPEG_INPUT_FILE)
+    File.exists?(TEST_JPEG_INPUT_FILE).should be true
+    File.exists?(TEST_JP2_INPUT_FILE).should be false
+    @ai = Assembly::Image.new(TEST_JPEG_INPUT_FILE)
     result=@ai.create_jp2
     result.class.should be Assembly::Image
     result.path.should == TEST_JP2_INPUT_FILE

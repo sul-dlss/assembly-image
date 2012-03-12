@@ -46,14 +46,13 @@ module Assembly
     def create_jp2(params = {})
 
       raise 'input file is not an image' unless Assembly::ALLOWED_MIMETYPES.include?(exif.mimetype)
-      # TODO check for specific allowed image by mimetype
     
       output    = params[:output] || @path.gsub(File.extname(@path),'.jp2')
       overwrite = params[:overwrite] || false
 
       raise "output #{output} exists, cannot overwrite" if !overwrite && File.exists?(output)
 
-      tmp_folder= params[:tmp_folder] || '/tmp'
+      tmp_folder = params[:tmp_folder] || '/tmp'
       raise "tmp_folder #{tmp_folder} does not exists" unless File.exists?(tmp_folder)
       
       output_profile      = params[:output_profile] || 'sRGB'
