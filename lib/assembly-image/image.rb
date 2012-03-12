@@ -20,7 +20,8 @@ module Assembly
       raise 'input file does not exist' unless File.exists?(@path)
     end
       
-    # Returns exif information
+    # Returns exif information for the current image
+    #
     # Example:
     #   source_img=Assembly::Image.new('/input/path_to_file.tif')
     #   puts source_img.exif.mimetype # gives 'image/tiff'    
@@ -28,7 +29,7 @@ module Assembly
       @exif ||= MiniExiftool.new @path  
     end
     
-    # Create a JP2 file
+    # Create a JP2 file for the current image (which must be jpeg or tiff)
     #
     # Reponse:
     #   * an Assembly::Image object containing the generated JP2 file

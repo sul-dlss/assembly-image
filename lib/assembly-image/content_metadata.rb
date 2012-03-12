@@ -38,7 +38,7 @@ module Assembly
     
       # Generates image content XML metadata for a repository object.
       # This method only produces content metadata for images
-      # and does not depend on a specific folder structure.
+      # and does not depend on a specific folder structure.  Note that it is class level method.
       #
       # Required parameters:
       #   * druid     = the repository object's druid id as a string
