@@ -10,6 +10,7 @@ image operations necessary for accessioning of content.
 - 0.0.2 small bug fix
 - 0.0.3 more bug fixes
 - 0.0.4 update jp2 creation method to restrict allowed input types and improve color profile handling
+- 0.0.5 updated documentation to yard format
 
 ==Notes
 
