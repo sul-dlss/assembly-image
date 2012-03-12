@@ -15,6 +15,14 @@ describe Assembly::Image do
     is_jp2?(TEST_JP2_OUTPUT_FILE).should be true
   end
 
+  it "should not create a jp2 when the source image has no profile" do
+    generate_test_image(TEST_TIF_INPUT_FILE,"") # generate a test input with no profile
+    File.exists?(TEST_TIF_INPUT_FILE).should be true
+    File.exists?(TEST_JP2_OUTPUT_FILE).should be false
+    @ai = Assembly::Image.new(TEST_TIF_INPUT_FILE)
+    lambda{@ai.create_jp2(:output => TEST_JP2_OUTPUT_FILE)}.should raise_error
+  end
+
   it "should not run if the output file exists and you don't allow overwriting" do
     generate_test_image(TEST_TIF_INPUT_FILE)
     generate_test_image(TEST_JP2_OUTPUT_FILE)
@@ -31,11 +39,14 @@ describe Assembly::Image do
     lambda{@ai.create_jp2}.should raise_error
   end
 
-  it "should not run if you specify a bogus output profile" do
+  it "should run if you specify a bogus output profile, because this is not currently an option" do
     generate_test_image(TEST_TIF_INPUT_FILE)
     File.exists?(TEST_TIF_INPUT_FILE).should be true
     @ai = Assembly::Image.new(TEST_TIF_INPUT_FILE)
-    lambda{@ai.create_jp2(:output_profile=>'bogusness')}.should raise_error
+    result=@ai.create_jp2(:output_profile=>'bogusness')
+    result.class.should be Assembly::Image
+    result.path.should == TEST_JP2_INPUT_FILE    
+    is_jp2?(TEST_JP2_INPUT_FILE).should be true   
   end
 
   it "should not run if you specify a bogus tmp folder" do
@@ -92,15 +103,6 @@ describe Assembly::Image do
     result.class.should be Assembly::Image
     result.path.should == TEST_JP2_OUTPUT_FILE        
     is_jp2?(TEST_JP2_OUTPUT_FILE).should be true
-  end
-
-  it "should not create jp2 if the output profile is not valid" do
-    generate_test_image(TEST_TIF_INPUT_FILE)
-    File.exists?(TEST_TIF_INPUT_FILE).should be true
-    File.exists?(TEST_JP2_OUTPUT_FILE).should be false
-    @ai = Assembly::Image.new(TEST_TIF_INPUT_FILE)
-    lambda{@ai.create_jp2(:output => TEST_JP2_OUTPUT_FILE,:output_profile => 'junk')}.should raise_error
-    File.exists?(TEST_JP2_OUTPUT_FILE).should be false
   end
 
   after(:each) do

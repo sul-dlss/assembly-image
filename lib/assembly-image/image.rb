@@ -2,7 +2,8 @@ require 'uuidtools'
 require 'mini_exiftool'
 
 module Assembly
-
+  
+  # The Image class contains methods to operate on an image.
   class Image
 
     attr_accessor :path, :tmp_path
@@ -33,10 +34,9 @@ module Assembly
     #   * an Assembly::Image object containing the generated JP2 file
     #
     # Optional parameters:
-    #   * output          = path to the output JP2 file (default: mirrors the source file name with a .jp2 extension)
-    #   * overwrite = an existing JP2 file won't be overwritten unless this is true
-    #   * output_profile  =  output color space profile: either sRGB (the default) or AdobeRGB1998    
-    #   * tmp_folder  =  the temporary folder to use when creating the jp2, defaults to '/tmp'
+    #   * output              = path to the output JP2 file (default: mirrors the source file name with a .jp2 extension)
+    #   * overwrite           = an existing JP2 file won't be overwritten unless this is true
+    #   * tmp_folder          =  the temporary folder to use when creating the jp2, defaults to '/tmp'
     #   * preserve_tmp_source = preserve the temporary file generated during the creation process (in 'tmp_path' attribute) if set to true, defaults to false
     #
     # Example:
@@ -55,7 +55,7 @@ module Assembly
       tmp_folder = params[:tmp_folder] || '/tmp'
       raise "tmp_folder #{tmp_folder} does not exists" unless File.exists?(tmp_folder)
       
-      output_profile      = params[:output_profile] || 'sRGB'
+      output_profile      = 'sRGB' # params[:output_profile] || 'sRGB'  # eventually we may allow the user to specify the output_profile...when we do, you can just use this code and update the test
       preserve_tmp_source = params[:preserve_tmp_source] || false
       path_to_profiles    = File.join(Assembly::PATH_TO_GEM,'profiles')
       output_profile_file = File.join(path_to_profiles,"#{output_profile}.icc")
@@ -63,17 +63,28 @@ module Assembly
       raise "output profile #{output_profile} invalid" if !File.exists?(output_profile_file)
 
       path_to_profiles   = File.join(Assembly::PATH_TO_GEM,'profiles')
-      # remove all non alpha-numeric characters, so we can get to a filename
-      input_profile      = exif['profiledescription'].nil? ? "" :
-                           exif['profiledescription'].gsub(/[^[:alnum:]]/, '')
+    
+      # check to see if input file has a known profile, if not, we cannot proceed
+      if exif['profiledescription'].nil? 
+        raise "input profile cannot be determined"
+      else 
+        input_profile = exif['profiledescription'].gsub(/[^[:alnum:]]/, '')   # remove all non alpha-numeric characters, so we can get to a filename
+      end
+      
       input_profile_file = File.join(path_to_profiles,"#{input_profile}.icc")
+      # if input profile was extracted and matches an existing known profile, then convert from known input to specified output profile, otherwise extract input profile from source file
+      unless File.exists?(input_profile_file) 
+        input_profile_extraction_command = "convert #{@path} #{input_profile_file}"
+        system(input_profile_extraction_command)
+        raise "input profile is not a known profile and could not be extracted from input file" unless File.exists?(input_profile_file)
+      end
+
+      profile_conversion_switch = "-profile #{input_profile_file} -profile #{output_profile_file}"
 
       # make temp tiff
       @tmp_path      = "#{tmp_folder}/#{UUIDTools::UUID.random_create.to_s}.tif"
       
-      profile_conversion = File.exists?(input_profile_file) ?
-                           "-profile #{input_profile_file} -profile #{output_profile_file}" : ""
-      tiff_command       = "convert -quiet -compress none #{profile_conversion} #{@path} #{@tmp_path}"
+      tiff_command       = "convert -quiet -compress none #{profile_conversion_switch} #{@path} #{@tmp_path}"
       system(tiff_command)
 
       pixdem = exif.imagewidth > exif.imageheight ? exif.imagewidth : exif.imageheight
@@ -89,7 +100,7 @@ module Assembly
 
       File.delete(@tmp_path) unless preserve_tmp_source
 
-      # create output response object, with is an Assembly::Image type object
+      # create output response object, which is an Assembly::Image type object
       return Assembly::Image.new(output)
       
     end
