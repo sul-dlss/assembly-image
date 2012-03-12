@@ -13,6 +13,7 @@ describe Assembly::Image do
     result.class.should be Assembly::Image
     result.path.should == TEST_JP2_OUTPUT_FILE        
     is_jp2?(TEST_JP2_OUTPUT_FILE).should be true
+    result.exif.colorspace.should == "sRGB"
   end
 
   it "should not create a jp2 when the source image has no profile" do
@@ -46,7 +47,8 @@ describe Assembly::Image do
     result=@ai.create_jp2(:output_profile=>'bogusness')
     result.class.should be Assembly::Image
     result.path.should == TEST_JP2_INPUT_FILE    
-    is_jp2?(TEST_JP2_INPUT_FILE).should be true   
+    is_jp2?(TEST_JP2_INPUT_FILE).should be true  
+    result.exif.colorspace.should == "sRGB"     
   end
 
   it "should not run if you specify a bogus tmp folder" do
@@ -66,6 +68,7 @@ describe Assembly::Image do
     result.class.should be Assembly::Image
     result.path.should == TEST_JP2_OUTPUT_FILE    
     is_jp2?(TEST_JP2_OUTPUT_FILE).should be true
+    result.exif.colorspace.should == "sRGB"    
     File.exists?(@ai.tmp_path).should be true
   end
 
@@ -78,10 +81,11 @@ describe Assembly::Image do
     result.class.should be Assembly::Image
     result.path.should == TEST_JP2_INPUT_FILE
     is_jp2?(TEST_JP2_INPUT_FILE).should be true
+    result.exif.colorspace.should == "sRGB"
     File.exists?(@ai.tmp_path).should be false    
   end
 
-  it "should create jp2 of the same filename and in the same location as the input if no output file is specified, and should cleanup tmp file" do
+  it "should create jp2 from input JPEG of the same filename and in the same location as the input if no output file is specified, and should cleanup tmp file" do
     generate_test_image(TEST_JPEG_INPUT_FILE)
     File.exists?(TEST_JPEG_INPUT_FILE).should be true
     File.exists?(TEST_JP2_INPUT_FILE).should be false
@@ -90,6 +94,7 @@ describe Assembly::Image do
     result.class.should be Assembly::Image
     result.path.should == TEST_JP2_INPUT_FILE
     is_jp2?(TEST_JP2_INPUT_FILE).should be true
+    result.exif.colorspace.should == "sRGB"    
     File.exists?(@ai.tmp_path).should be false    
   end
 
@@ -101,8 +106,9 @@ describe Assembly::Image do
     @ai = Assembly::Image.new(TEST_TIF_INPUT_FILE)
     result=@ai.create_jp2(:output => TEST_JP2_OUTPUT_FILE,:overwrite => true)
     result.class.should be Assembly::Image
-    result.path.should == TEST_JP2_OUTPUT_FILE        
+    result.path.should == TEST_JP2_OUTPUT_FILE 
     is_jp2?(TEST_JP2_OUTPUT_FILE).should be true
+    result.exif.colorspace.should == "sRGB"           
   end
 
   after(:each) do

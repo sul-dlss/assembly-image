@@ -55,7 +55,7 @@ module Assembly
       tmp_folder = params[:tmp_folder] || '/tmp'
       raise "tmp_folder #{tmp_folder} does not exists" unless File.exists?(tmp_folder)
       
-      output_profile      = 'sRGB' # params[:output_profile] || 'sRGB'  # eventually we may allow the user to specify the output_profile...when we do, you can just use this code and update the test
+      output_profile      = 'sRGBIEC6196621' # params[:output_profile] || 'sRGBIEC6196621'  # eventually we may allow the user to specify the output_profile...when we do, you can just use this code and update the test
       preserve_tmp_source = params[:preserve_tmp_source] || false
       path_to_profiles    = File.join(Assembly::PATH_TO_GEM,'profiles')
       output_profile_file = File.join(path_to_profiles,"#{output_profile}.icc")
@@ -97,7 +97,7 @@ module Assembly
                     "ORGgen_plt=yes -rate 1.5 Clevels=5 "
       jp2_command = "#{kdu_bin} #{options} Clayers=#{layers.to_s} -i #{@tmp_path} -o #{output}"
       system(jp2_command)
-
+      
       File.delete(@tmp_path) unless preserve_tmp_source
 
       # create output response object, which is an Assembly::Image type object
