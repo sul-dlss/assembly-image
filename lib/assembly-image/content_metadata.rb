@@ -6,9 +6,9 @@ module Assembly
 
   class ContentMetadata
 
+    # Defines actual file MIME type and the corresponding "format" attribute in the content metadata XML file.
     # See https://consul.stanford.edu/display/chimera/DOR+file+types+and+attribute+values.
     FORMATS = {
-      # MIME type.               => The format attribute in the content metadata XML file.
       'image/jp2'                => 'JPEG2000',
       'image/jpeg'               => 'JPEG',
       'image/tiff'               => 'TIFF',
@@ -40,16 +40,13 @@ module Assembly
       # This method only produces content metadata for images
       # and does not depend on a specific folder structure.  Note that it is class level method.
       #
-      # Required parameters:
-      #   * druid     = the repository object's druid id as a string
-      #   * file_sets = an array of arrays of files
+      # @param [String] druid the repository object's druid id as a string
+      # @param [Array]  file_sets an array of arrays of files
+      # @param [Hash] publish (optional) hash specifying content types to be published (true or false for each type), e.g. :publish=>\{'TIFF'=>'no','JPEG'=>'yes'}
+      # @param [Hash] preserve (optional) hash specifying content types to be preserved (true or false for each type)
+      # @param [Hash] shelve (optional) hash specifying content types to be shelved (true or false for each type)
       #
-      # Optional parameters:
-      #   * publish       = hash specifying content types to be published
-      #   * preserve      = ...                                 preserved
-      #   * shelve        = ...                                 shelved
-      #
-      # For example:
+      # Example:
       #    Assembly::Image.create_content_metadata(
       #      'nx288wh8889',
       #      [ ['foo.tif', 'foo.jp2'], ['bar.tif', 'bar.jp2'] ],

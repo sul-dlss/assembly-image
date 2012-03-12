@@ -6,12 +6,14 @@ module Assembly
   # The Image class contains methods to operate on an image.
   class Image
 
-    attr_accessor :path, :tmp_path
+    # the full path to the input image
+    attr_accessor :path
+    # stores the path to the tmp file generated during the JP2 creation process
+    attr_accessor :tmp_path
 
-    # Inititalize image from given path
+    # Inititalize image from given path.
     #
-    # Required parameters:
-    #   * path = full path to source image
+    # @param [String] path full path to the image to be worked with 
     #
     # Example:
     #   Assembly::Image.new('/input/path_to_file.tif')
@@ -20,7 +22,9 @@ module Assembly
       raise 'input file does not exist' unless File.exists?(@path)
     end
       
-    # Returns exif information for the current image
+    # Returns exif information for the current image.
+    #
+    # @return [MiniExiftool] exif information stored as a hash and an object
     #
     # Example:
     #   source_img=Assembly::Image.new('/input/path_to_file.tif')
@@ -29,21 +33,21 @@ module Assembly
       @exif ||= MiniExiftool.new @path  
     end
     
-    # Create a JP2 file for the current image (which must be jpeg or tiff)
+    # Create a JP2 file for the current image.
     #
-    # Reponse:
-    #   * an Assembly::Image object containing the generated JP2 file
+    # @return [Assembly::Image] object containing the generated JP2 file
     #
-    # Optional parameters:
-    #   * output              = path to the output JP2 file (default: mirrors the source file name with a .jp2 extension)
-    #   * overwrite           = an existing JP2 file won't be overwritten unless this is true
-    #   * tmp_folder          =  the temporary folder to use when creating the jp2, defaults to '/tmp'
-    #   * preserve_tmp_source = preserve the temporary file generated during the creation process (in 'tmp_path' attribute) if set to true, defaults to false
+    # @param [Hash] params Optional parameters specified as a hash, using symbols for options:
+    #   * :output => path to the output JP2 file (default: mirrors the source file name and path, but with a .jp2 extension)
+    #   * :overwrite => if set to false, an existing JP2 file with the same name won't be overwritten (default: false)
+    #   * :tmp_folder =>  the temporary folder to use when creating the jp2 (default: '/tmp')
+    #   * :preserve_tmp_source => if set to true, preserve the temporary file generated during the creation process and store path in 'tmp_path' attribute (default: false)
     #
     # Example:
     #   source_img=Assembly::Image.new('/input/path_to_file.tif')
-    #   derivative_img=source_img.create_jp2 
-    #   puts derivative_img.exif.mimetype # gives 'image/jp2'
+    #   derivative_img=source_img.create_jp2(:overwrite=>true)
+    #   puts derivative_img.exif.mimetype # 'image/jp2'
+    #   puts derivative_image.path # '/input/path_to_file.jp2'
     def create_jp2(params = {})
 
       raise 'input file is not an image' unless Assembly::ALLOWED_MIMETYPES.include?(exif.mimetype)

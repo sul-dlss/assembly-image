@@ -11,7 +11,14 @@ image operations necessary for accessioning of content.
 - 0.0.3 more bug fixes
 - 0.0.4 update jp2 creation method to restrict allowed input types and improve color profile handling
 
-==Execution
+==Notes
+
+The gem assumes that the user context in which it is executed has write access to the location where the gem is installed.
+This is because color profiles can be extracted from images during the JP2 creation process, and these profiles need to
+be stored as local files, and it is beneficial to cache them for later usage by images with the same color profile.  
+The gem uses a "profiles" folder within the gem itself for this purpose, and assumes it is writable.
+
+==Usage
 
 The gem currently has two methods:
 - JP2 generation
@@ -19,76 +26,80 @@ The gem currently has two methods:
 
 To use the JP2 creation method, you first instantiate the image object with an input image and then operate on it.
 
-require 'assembly-image'
-input=Assembly::Image.new('/full/path/to/file.tif')
-puts input.exif  # this will show you exif header information for the TIF
-output=input.create_jp2(:output=>'/full/path/to/output.jp2') # this will generate a new JP2 in the output location specified
-puts output.exif # this will show you exif header information for the JP2
+	require 'assembly-image'
+	input=Assembly::Image.new('/full/path/to/file.tif')
+	puts input.exif  # this will show you exif header information for the TIF
+	output=input.create_jp2(:output=>'/full/path/to/output.jp2') # this will generate a new JP2 in the output location specified
+	puts output.exif # this will show you exif header information for the JP2
 
 ==Running tests
-$ bundle exec rspec spec
 
-==Generate rdoc documentation
-$ rdoc
+	bundle exec rspec spec
 
-All documentation is generated into the "doc" folder.
+==Generate documentation
+To generate documentation into the "doc" folder:
+
+	yard
+
+To keep a local server running with up to date code documentation that you can view in your browser:
+
+	yard server --reload
 
 ==Prerequisites
 
-	1. Perl 
+1. Perl 
 
-	2. Kakadu Software Binaries - for JP2 generation
+2. Kakadu Software Binaries - for JP2 generation
 
-       Download and install demonstration binaries from Kakadu:
-       http://www.kakadusoftware.com/index.php?option=com_content&task=view&id=26&Itemid=22
+   Download and install demonstration binaries from Kakadu:
+   http://www.kakadusoftware.com/index.php?option=com_content&task=view&id=26&Itemid=22
 
-       Note: The binaries will not work with RHEL 5.x; an RPM for RHEL 5 with
-       compatible binaries comming soon.
+   Note: The binaries will not work with RHEL 5.x; an RPM for RHEL 5 with
+   compatible binaries comming soon.
 
-	3. Imagemagick 6.5.4 or higher
+3. Imagemagick 6.5.4 or higher
             	   		
-       RHEL 6: 
+   RHEL 6
+   
+   The version of ImageMagick included with RHEL 6 has all of the dependency libraries included: 
 
-           yum install ImageMagick
-
-           The version of ImageMagick included with RHEL 6 has all of the
-           dependency libraries included.
+       yum install ImageMagick
            
-       RHEL 5: (RPM to install with included binaries comming soon)
+   RHEL 5: (RPM to install with included binaries comming soon)
 
-           The version of ImageMagic included with RHEL 5 is too old and does
-           not have all the proper binaries included/built
+   The version of ImageMagic included with RHEL 5 is too old and does not have all the proper binaries included/built
 
-           Required libraries are:
-           yum install lcms lcms-devel libjpeg \
-                       libjpeg-devel libpng libpng-devel
+   Required libraries are:
 
-		   Required libraries from source:
-		   		libtiff (version 3.9.4 or higher)
+       yum install lcms lcms-devel libjpeg \
+                   libjpeg-devel libpng libpng-devel
+
+   Required libraries from source:
+   * libtiff (version 3.9.4 or higher)
 				
-           Build Imagemagick from source:
-           http://www.imagemagick.org/download/ImageMagick.tar.gz
+   Build Imagemagick from source:
+   http://www.imagemagick.org/download/ImageMagick.tar.gz
 
-       Mac users:
+   Mac users:
 
-           brew install imagemagick
+       brew install imagemagick
         
-	 4. Exiftool
+4. Exiftool
             
-       RHEL: (RPM to install comming soon)
-       Download latest version from:  http://www.sno.phy.queensu.ca/~phil/exiftool
+   RHEL: (RPM to install comming soon)
+   Download latest version from:  http://www.sno.phy.queensu.ca/~phil/exiftool
 
-           tar -xf Image-ExifTool-#.##.tar.gz
-           cd Image-ExifTool-#.##
-           perl Makefile.PL
-           make test
-           sudo make install
+       tar -xf Image-ExifTool-#.##.tar.gz
+       cd Image-ExifTool-#.##
+       perl Makefile.PL
+       make test
+       sudo make install
 
-       Mac users:
-           brew install exiftool
+   Mac users:
+       brew install exiftool
 
- 	 5. Install md5 and sha1 command line tools.  On a Mac with Homebrew:
-
-	 	Mac users: 
-			brew install md5sha1sum
-			sudo brew link md5sha1sum
+5. Install md5 and sha1 command line tools.
+   
+   Mac users: 
+		brew install md5sha1sum
+		sudo brew link md5sha1sum

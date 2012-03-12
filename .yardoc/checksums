@@ -1,0 +1,4 @@
+lib/assembly-image/content_metadata.rb 5b1f05ee60e2ef9d6bc57af1a625055c82db5e92
+lib/assembly-image/version.rb e0ec9c4dc2d24fbc43566975a619f386920bcecc
+lib/assembly-image.rb 7f2ce25d750d7e592425aa0125220b45ca0eab45
+lib/assembly-image/image.rb ff05178cac1cb8a3b245d76e2215e165625aa131
