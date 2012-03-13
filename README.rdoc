@@ -7,17 +7,25 @@ image operations necessary for accessioning of content.
 ==Releases
 
 - 0.0.1 initial release
-- 0.0.2 small bug fix
+- 0.0.2 small bug fixes
 - 0.0.3 more bug fixes
 - 0.0.4 update jp2 creation method to restrict allowed input types and improve color profile handling
 - 0.0.5 updated documentation to yard format
+- 0.0.6 updated dependency declarations
+- 0.1.0 move color profile extraction to tmp folder instead of gem profiles folder
 
 ==Notes
 
-The gem assumes that the user context in which it is executed has write access to the location where the gem is installed.
+1. The gem assumes that the user context in which it is executed has write access to the 'tmp' folder.
 This is because color profiles can be extracted from images during the JP2 creation process, and these profiles need to
 be stored as local files, and it is beneficial to cache them for later usage by images with the same color profile.  
-The gem uses a "profiles" folder within the gem itself for this purpose, and assumes it is writable.
+If you know there are color profiles which are commonally used, it is better to capture them in the gem itself in the profile
+folder so they can be re-used and do not need to be extracted.
+
+2. If any errors occur during JP2 generation for any reason, a runtime exception will be thrown with a description of the error.
+
+3. If an image is passed in with a color profile that cannot be determined by examing the exif header data, an exception will be thrown.
+This can commonally occur in basic test TIFs that are black/white and have no profile, so beware during testing.
 
 ==Usage
 

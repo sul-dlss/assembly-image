@@ -60,7 +60,7 @@ module Assembly
       tmp_folder = params[:tmp_folder] || '/tmp'
       raise "tmp_folder #{tmp_folder} does not exists" unless File.exists?(tmp_folder)
       
-      output_profile      = 'sRGBIEC6196621' # params[:output_profile] || 'sRGBIEC6196621'  # eventually we may allow the user to specify the output_profile...when we do, you can just use this code and update the test
+      output_profile      = 'sRGBIEC6196621' # params[:output_profile] || 'sRGBIEC6196621'  # eventually we may allow the user to specify the output_profile...when we do, you can just uncomment this code and update the tests that check for this
       preserve_tmp_source = params[:preserve_tmp_source] || false
       path_to_profiles    = File.join(Assembly::PATH_TO_GEM,'profiles')
       output_profile_file = File.join(path_to_profiles,"#{output_profile}.icc")
@@ -76,12 +76,17 @@ module Assembly
         input_profile = exif['profiledescription'].gsub(/[^[:alnum:]]/, '')   # remove all non alpha-numeric characters, so we can get to a filename
       end
       
-      input_profile_file = File.join(path_to_profiles,"#{input_profile}.icc")
-      # if input profile was extracted and matches an existing known profile, then convert from known input to specified output profile, otherwise extract input profile from source file
-      unless File.exists?(input_profile_file) 
-        input_profile_extraction_command = "convert #{@path} #{input_profile_file}"
+      # construct a path to the input profile, which might exist either in the gem itself or in the tmp folder
+      input_profile_file_gem = File.join(path_to_profiles,"#{input_profile}.icc")
+      input_profile_file_tmp = File.join(tmp_folder,"#{input_profile}.icc")
+      input_profile_file = File.exists?(input_profile_file_gem) ? input_profile_file_gem : input_profile_file_tmp
+       
+      # if input profile was extracted and does not matches an existing known profile either in the gem or in the tmp folder,
+      # we'll issue an imagicmagick command to extract the profile to the tmp folder
+      unless File.exists?(input_profile_file)
+        input_profile_extraction_command = "convert #{@path} #{input_profile_file}" # extract profile from input image
         system(input_profile_extraction_command)
-        raise "input profile is not a known profile and could not be extracted from input file" unless File.exists?(input_profile_file)
+        raise "input profile is not a known profile and could not be extracted from input file" unless File.exists?(input_profile_file) # if extraction failed or we cannot write the file, throw exception
       end
 
       profile_conversion_switch = "-profile #{input_profile_file} -profile #{output_profile_file}"
