@@ -7,3 +7,7 @@ module Assembly
   ALLOWED_MIMETYPES=["image/jpeg","image/tiff"] 
   
 end
+
+require 'assembly-image/image'
+require 'assembly-image/version'
+require 'assembly-image/content_metadata'
