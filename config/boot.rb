@@ -1,5 +1,4 @@
 require 'rubygems'
-require 'logger'
 
 environment  = ENV['ENVIRONMENT'] ||= 'development'
 project_root = File.expand_path(File.dirname(__FILE__) + '/..')
