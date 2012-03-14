@@ -1,6 +1,6 @@
 require 'nokogiri'
-require 'Digest/sha1'
-require 'Digest/md5'
+require 'digest/sha1'
+require 'digest/md5'
 
 module Assembly
 
