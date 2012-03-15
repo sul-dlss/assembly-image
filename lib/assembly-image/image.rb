@@ -19,9 +19,12 @@ module Assembly
     #   Assembly::Image.new('/input/path_to_file.tif')
     def initialize(path)
       @path = path
-      raise 'input file does not exist' unless File.exists?(@path)
     end
       
+    def check_for_file
+      raise "input file #{path} does not exist" unless File.exists?(@path)  
+    end
+    
     # Returns exif information for the current image.
     #
     # @return [MiniExiftool] exif information stored as a hash and an object
@@ -30,6 +33,7 @@ module Assembly
     #   source_img=Assembly::Image.new('/input/path_to_file.tif')
     #   puts source_img.exif.mimetype # gives 'image/tiff'    
     def exif
+      check_for_file
       @exif ||= MiniExiftool.new @path  
     end
     
@@ -50,7 +54,9 @@ module Assembly
     #   puts derivative_image.path # '/input/path_to_file.jp2'
     def create_jp2(params = {})
 
-      raise 'input file is not an image' unless Assembly::ALLOWED_MIMETYPES.include?(exif.mimetype)
+      check_for_file
+
+      raise "input file is not an image, it is mimetype #{exif.mimetype}" unless Assembly::ALLOWED_MIMETYPES.include?(exif.mimetype)
     
       output    = params[:output] || @path.gsub(File.extname(@path),'.jp2')
       overwrite = params[:overwrite] || false
@@ -85,7 +91,8 @@ module Assembly
       # we'll issue an imagicmagick command to extract the profile to the tmp folder
       unless File.exists?(input_profile_file)
         input_profile_extraction_command = "convert #{@path} #{input_profile_file}" # extract profile from input image
-        system(input_profile_extraction_command)
+        result=`#{input_profile_extraction_command}`
+        raise "input profile extraction command failed: #{input_profile_extraction_command} with result #{result}" unless $?.success?
         raise "input profile is not a known profile and could not be extracted from input file" unless File.exists?(input_profile_file) # if extraction failed or we cannot write the file, throw exception
       end
 
@@ -95,7 +102,8 @@ module Assembly
       @tmp_path      = "#{tmp_folder}/#{UUIDTools::UUID.random_create.to_s}.tif"
       
       tiff_command       = "convert -quiet -compress none #{profile_conversion_switch} #{@path} #{@tmp_path}"
-      system(tiff_command)
+      result=`#{tiff_command}`
+      raise "tiff convert command failed: #{tiff_command} with result #{result}" unless $?.success?
 
       pixdem = exif.imagewidth > exif.imageheight ? exif.imagewidth : exif.imageheight
       layers = (( Math.log(pixdem) / Math.log(2) ) - ( Math.log(96) / Math.log(2) )).ceil + 1
@@ -110,7 +118,8 @@ module Assembly
                     "Cblk=\\{64,64\\} Cprecincts=\\{256,256\\},\\{256,256\\},\\{128,128\\} " + 
                     "ORGgen_plt=yes -rate 1.5 Clevels=5 "
       jp2_command = "#{kdu_bin} #{options} Clayers=#{layers.to_s} -i #{@tmp_path} -o #{output}"
-      system(jp2_command)
+      result=`#{jp2_command}`
+      raise "JP2 creation command failed: #{jp2_command} with result #{result}" unless $?.success?
       
       File.delete(@tmp_path) unless preserve_tmp_source
 

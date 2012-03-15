@@ -14,6 +14,7 @@ image operations necessary for accessioning of content.
 - 0.0.6 updated dependency declarations
 - 0.1.0 move color profile extraction to tmp folder instead of gem profiles folder
 - 0.1.1 fix problem with digest require statement
+- 0.1.2 move check for file existence to when an action occurs instead of object initialization; more error checking and messages on command execution
 
 ==Notes
 

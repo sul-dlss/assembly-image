@@ -1,7 +1,8 @@
 describe Assembly::Image do
 
   it "should not run if no input file is passed in" do
-    lambda{Assembly::Image.new('')}.should raise_error
+    @ai=Assembly::Image.new('')
+    lambda{@ai.create_jp2}.should raise_error
   end
 
   it "should create jp2 when given an RGB tif" do
