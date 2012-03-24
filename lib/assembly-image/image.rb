@@ -36,6 +36,18 @@ module Assembly
       check_for_file
       @exif ||= MiniExiftool.new @path  
     end
+
+    # Returns file size information for the current image in bytes.
+    #
+    # @return [integer] file size in bytes
+    #
+    # Example:
+    #   source_img=Assembly::Image.new('/input/path_to_file.tif')
+    #   puts source_img.filesize # gives 1345    
+    def filesize
+      check_for_file
+      @filesize ||= File.size @path
+    end
     
     # Create a JP2 file for the current image.
     #
