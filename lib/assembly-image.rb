@@ -8,6 +8,5 @@ module Assembly
   
 end
 
-require 'assembly-image/image'
-require 'assembly-image/version'
-require 'assembly-image/content_metadata'
+# auto-include all files in the lib sub-directory directory
+Dir[File.dirname(__FILE__) + '/assembly-image/*.rb'].each {|file| require file }
