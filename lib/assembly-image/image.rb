@@ -48,6 +48,27 @@ module Assembly
       check_for_file
       @filesize ||= File.size @path
     end
+
+    # Examines the input TIFF image for validity.  Used to determine if TIFF image is correct and if JP2 generation is likely to succeed.
+    #
+    # @return [boolean] true if TIFF is valid, false if not.
+    #
+    # Example:
+    #   source_img=Assembly::Image.new('/input/path_to_file.tif')
+    #   puts source_img.valid_tif? # gives true
+    def valid_tif?
+      
+      check_for_file
+      
+      # defaults to invalid, unless we pass all checks
+      result=false
+      
+      result=(exif['profiledescription'] != nil) # check for existence of profile description
+      result=(exif['mimetype'] == 'image/tiff') # check for tiff mimetype
+            
+      return result
+      
+    end
     
     # Create a JP2 file for the current image.
     #
@@ -68,7 +89,7 @@ module Assembly
 
       check_for_file
 
-      raise "input file is not an image, it is mimetype #{exif.mimetype}" unless Assembly::ALLOWED_MIMETYPES.include?(exif.mimetype)
+      raise "input file is not a valid image, it is mimetype #{exif.mimetype}" unless Assembly::ALLOWED_MIMETYPES.include?(exif.mimetype)
     
       output    = params[:output] || @path.gsub(File.extname(@path),'.jp2')
       overwrite = params[:overwrite] || false
