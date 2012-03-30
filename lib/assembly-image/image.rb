@@ -49,23 +49,26 @@ module Assembly
       @filesize ||= File.size @path
     end
 
-    # Examines the input TIFF image for validity.  Used to determine if TIFF image is correct and if JP2 generation is likely to succeed.
+    # Examines the input image for validity.  Used to determine if image is correct and if JP2 generation is likely to succeed.
+    #  This method is automatically called before you create a jp2 but it can be called separately earlier as a sanity check.
     #
-    # @return [boolean] true if TIFF is valid, false if not.
+    # @return [boolean] true if image is valid, false if not.
     #
     # Example:
     #   source_img=Assembly::Image.new('/input/path_to_file.tif')
-    #   puts source_img.valid_tif? # gives true
-    def valid_tif?
+    #   puts source_img.valid? # gives true
+    def valid?
       
       check_for_file
       
       # defaults to invalid, unless we pass all checks
       result=false
       
-      result=(exif['profiledescription'] != nil) # check for existence of profile description
-      result=(exif['mimetype'] == 'image/tiff') # check for tiff mimetype
-            
+      unless exif.nil?
+        result=(exif['profiledescription'] != nil) # check for existence of profile description
+        result=(Assembly::ALLOWED_MIMETYPES.include?(exif.mimetype)) # check for allowed image mimetypes
+      end
+      
       return result
       
     end
@@ -89,7 +92,7 @@ module Assembly
 
       check_for_file
 
-      raise "input file is not a valid image, it is mimetype #{exif.mimetype}" unless Assembly::ALLOWED_MIMETYPES.include?(exif.mimetype)
+      raise "input file is not a valid image, is the wrong mimetype or is missing a profile" if !self.valid?
     
       output    = params[:output] || @path.gsub(File.extname(@path),'.jp2')
       overwrite = params[:overwrite] || false
@@ -108,12 +111,7 @@ module Assembly
 
       path_to_profiles   = File.join(Assembly::PATH_TO_GEM,'profiles')
     
-      # check to see if input file has a known profile, if not, we cannot proceed
-      if exif['profiledescription'].nil? 
-        raise "input profile cannot be determined"
-      else 
-        input_profile = exif['profiledescription'].gsub(/[^[:alnum:]]/, '')   # remove all non alpha-numeric characters, so we can get to a filename
-      end
+      input_profile = exif['profiledescription'].gsub(/[^[:alnum:]]/, '')   # remove all non alpha-numeric characters, so we can get to a filename
       
       # construct a path to the input profile, which might exist either in the gem itself or in the tmp folder
       input_profile_file_gem = File.join(path_to_profiles,"#{input_profile}.icc")
