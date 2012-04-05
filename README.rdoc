@@ -18,6 +18,7 @@ image operations necessary for accessioning of content.
 - 0.1.3 added a filesize attribute to the file object to allow easy access to filesize in bytes
 - 0.1.4 added a new images class that allows you batch create jp2s from an input TIFF directory
 - 0.2.0 added a new method to the image class to handle TIFF "sanity-check" -- can be used to ensure TIFFs are valid before JP2 generation
+- 1.0.0 bump the version number up to an official production level release
 
 ==Notes
 
