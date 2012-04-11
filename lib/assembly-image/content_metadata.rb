@@ -5,36 +5,6 @@ require 'digest/md5'
 module Assembly
 
   class ContentMetadata
-
-    # Defines actual file MIME type and the corresponding "format" attribute in the content metadata XML file.
-    # See https://consul.stanford.edu/display/chimera/DOR+file+types+and+attribute+values.
-    FORMATS = {
-      'image/jp2'                => 'JPEG2000',
-      'image/jpeg'               => 'JPEG',
-      'image/tiff'               => 'TIFF',
-      'image/tiff-fx'            => 'TIFF',
-      'image/ief'                => 'TIFF',
-      'image/gif'                => 'GIF',
-      'text/plain'               => 'TEXT',
-      'text/html'                => 'HTML',
-      'text/csv'                 => 'CSV',
-      'audio/x-aiff'             => 'AIFF',
-      'audio/x-mpeg'             => 'MP3',
-      'audio/x-wave'             => 'WAV',
-      'video/mpeg'               => 'MP2',
-      'video/quicktime'          => 'QUICKTIME',
-      'video/x-msvideo'          => 'AVI',
-      'application/pdf'          => 'PDF',
-      'application/zip'          => 'ZIP',
-      'application/xml'          => 'XML',
-      'application/tei+xml'      => 'TEI',
-      'application/msword'       => 'WORD',
-      'application/wordperfect'  => 'WPD',
-      'application/mspowerpoint' => 'PPT',
-      'application/msexcel'      => 'XLS',
-      'application/x-tar'        => 'TAR',
-      'application/octet-stream' => 'BINARY',
-    }
     
       # Generates image content XML metadata for a repository object.
       # This method only produces content metadata for images
@@ -88,7 +58,7 @@ module Assembly
                       sha1.update(buffer)
                     end
                   end
-                  format  = FORMATS[mimetype.downcase]
+                  format  = Assembly::FORMATS[mimetype.downcase]
                   cropped = "uncropped"
                   # add a new file element to the XML for this file
                   xml_file_params = {

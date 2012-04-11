@@ -1,8 +1,8 @@
 bootfile = File.expand_path(File.dirname(__FILE__) + '/../config/boot')
 require bootfile
 
-TEST_INPUT_DIR       = File.join(Assembly::PATH_TO_GEM,'spec','test_data','input')
-TEST_OUTPUT_DIR      = File.join(Assembly::PATH_TO_GEM,'spec','test_data','output')
+TEST_INPUT_DIR       = File.join(Assembly::PATH_TO_IMAGE_GEM,'spec','test_data','input')
+TEST_OUTPUT_DIR      = File.join(Assembly::PATH_TO_IMAGE_GEM,'spec','test_data','output')
 TEST_TIF_INPUT_FILE  = File.join(TEST_INPUT_DIR,'test.tif')
 TEST_JPEG_INPUT_FILE  = File.join(TEST_INPUT_DIR,'test.jpg')
 TEST_JP2_INPUT_FILE  = File.join(TEST_INPUT_DIR,'test.jp2')
@@ -14,7 +14,7 @@ def generate_test_image(file,params={})
   color=params[:color] || 'red'
   profile=params[:profile] || 'sRGBIEC6196621'
   create_command="convert -size 100x100 xc:#{color} "
-  create_command += "-profile " + File.join(Assembly::PATH_TO_GEM,'profiles',profile+'.icc') + " " unless profile == ''
+  create_command += "-profile " + File.join(Assembly::PATH_TO_IMAGE_GEM,'profiles',profile+'.icc') + " " unless profile == ''
   create_command += file
   system(create_command)
 end

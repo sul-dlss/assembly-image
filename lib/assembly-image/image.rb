@@ -1,53 +1,17 @@
 require 'uuidtools'
 require 'mini_exiftool'
+require 'assembly-objectfile'
 
 module Assembly
   
   # The Image class contains methods to operate on an image.
   class Image
 
-    # the full path to the input image
-    attr_accessor :path
+    # include common behaviors from assembly-objectfile gem
+    include Assembly::ObjectFileable
+
     # stores the path to the tmp file generated during the JP2 creation process
     attr_accessor :tmp_path
-
-    # Inititalize image from given path.
-    #
-    # @param [String] path full path to the image to be worked with 
-    #
-    # Example:
-    #   Assembly::Image.new('/input/path_to_file.tif')
-    def initialize(path)
-      @path = path
-    end
-      
-    def check_for_file
-      raise "input file #{path} does not exist" unless File.exists?(@path)  
-    end
-    
-    # Returns exif information for the current image.
-    #
-    # @return [MiniExiftool] exif information stored as a hash and an object
-    #
-    # Example:
-    #   source_img=Assembly::Image.new('/input/path_to_file.tif')
-    #   puts source_img.exif.mimetype # gives 'image/tiff'    
-    def exif
-      check_for_file
-      @exif ||= MiniExiftool.new @path  
-    end
-
-    # Returns file size information for the current image in bytes.
-    #
-    # @return [integer] file size in bytes
-    #
-    # Example:
-    #   source_img=Assembly::Image.new('/input/path_to_file.tif')
-    #   puts source_img.filesize # gives 1345    
-    def filesize
-      check_for_file
-      @filesize ||= File.size @path
-    end
 
     # Examines the input image for validity.  Used to determine if image is correct and if JP2 generation is likely to succeed.
     #  This method is automatically called before you create a jp2 but it can be called separately earlier as a sanity check.
@@ -66,7 +30,7 @@ module Assembly
       
       unless exif.nil?
         result=(exif['profiledescription'] != nil) # check for existence of profile description
-        result=(Assembly::ALLOWED_MIMETYPES.include?(exif.mimetype)) # check for allowed image mimetypes
+        result=(Assembly::VALID_IMAGE_MIMETYPES.include?(exif.mimetype)) # check for allowed image mimetypes
       end
       
       return result
@@ -104,12 +68,12 @@ module Assembly
       
       output_profile      = 'sRGBIEC6196621' # params[:output_profile] || 'sRGBIEC6196621'  # eventually we may allow the user to specify the output_profile...when we do, you can just uncomment this code and update the tests that check for this
       preserve_tmp_source = params[:preserve_tmp_source] || false
-      path_to_profiles    = File.join(Assembly::PATH_TO_GEM,'profiles')
+      path_to_profiles    = File.join(Assembly::PATH_TO_IMAGE_GEM,'profiles')
       output_profile_file = File.join(path_to_profiles,"#{output_profile}.icc")
 
       raise "output profile #{output_profile} invalid" if !File.exists?(output_profile_file)
 
-      path_to_profiles   = File.join(Assembly::PATH_TO_GEM,'profiles')
+      path_to_profiles   = File.join(Assembly::PATH_TO_IMAGE_GEM,'profiles')
     
       input_profile = exif['profiledescription'].gsub(/[^[:alnum:]]/, '')   # remove all non alpha-numeric characters, so we can get to a filename
       

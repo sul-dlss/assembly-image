@@ -8,7 +8,7 @@ Gem::Specification.new do |s|
   s.email       = ["pmangiafico@stanford.edu"]
   s.homepage    = ""
   s.summary     = %q{Ruby immplementation of image services needed to prepare objects to be accessioned in SULAIR digital library}
-  s.description = %q{Contains classes to create derivative image files}
+  s.description = %q{Contains classes to create derivative image files and perform other image operations}
 
   s.rubyforge_project = 'assembly-image'
 
@@ -17,9 +17,9 @@ Gem::Specification.new do |s|
   s.executables   = `git ls-files -- bin/*`.split("\n").map{ |f| File.basename(f) }
   s.require_paths = ['lib']
 
-  s.add_dependency 'mini_exiftool'
   s.add_dependency 'uuidtools'
   s.add_dependency 'nokogiri'
+  s.add_dependency 'assembly-objectfile'
 
   s.add_development_dependency "rspec", "~> 2.6"
   s.add_development_dependency "lyberteam-devel"
