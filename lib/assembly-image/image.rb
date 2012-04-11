@@ -19,22 +19,10 @@ module Assembly
     # @return [boolean] true if image is valid, false if not.
     #
     # Example:
-    #   source_img=Assembly::Image.new('/input/path_to_file.tif')
+    #   source_img=Assembly::ObjectFile.new('/input/path_to_file.tif')
     #   puts source_img.valid? # gives true
     def valid?
-      
-      check_for_file
-      
-      # defaults to invalid, unless we pass all checks
-      result=false
-      
-      unless exif.nil?
-        result=(exif['profiledescription'] != nil) # check for existence of profile description
-        result=(Assembly::VALID_IMAGE_MIMETYPES.include?(exif.mimetype)) # check for allowed image mimetypes
-      end
-      
-      return result
-      
+      valid_image? # behavior is defined in assembly-objectfile gem
     end
     
     # Create a JP2 file for the current image.
