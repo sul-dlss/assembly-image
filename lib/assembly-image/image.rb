@@ -38,7 +38,7 @@ module Assembly
     # Example:
     #   source_img=Assembly::Image.new('/input/path_to_file.tif')
     #   derivative_img=source_img.create_jp2(:overwrite=>true)
-    #   puts derivative_img.exif.mimetype # 'image/jp2'
+    #   puts derivative_img.mimetype # 'image/jp2'
     #   puts derivative_image.path # '/input/path_to_file.jp2'
     def create_jp2(params = {})
 
