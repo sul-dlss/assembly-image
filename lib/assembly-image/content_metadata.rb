@@ -1,6 +1,4 @@
 require 'nokogiri'
-require 'digest/sha1'
-require 'digest/md5'
 
 module Assembly
 
@@ -41,38 +39,28 @@ module Assembly
               resource_id = "#{druid}_#{sequence}"
               # start a new resource element
               xml.resource(:id => resource_id,:sequence => sequence,:type => content_type_description) {
-                xml.label "Image #{sequence}"
+                xml.label "Item #{sequence}"
                 file_set.each do |filename|
+                  obj=Assembly::ObjectFile.new(filename)
                   id       = filename
-                  exif     = MiniExiftool.new(filename)
-                  mimetype = exif.mimetype
-                  size     = exif.filesize.to_i
-                  width    = exif.imagewidth
-                  height   = exif.imageheight
-                  md5      = Digest::MD5.new
-                  sha1     = Digest::SHA1.new
-                  File.open(filename, 'rb') do |io|
-                    buffer = ''
-                    while io.read(4096,buffer)
-                      md5.update(buffer)
-                      sha1.update(buffer)
-                    end
-                  end
-                  cropped = "uncropped"
+                  mimetype = obj.mimetype
+                  size     = obj.filesize
+                  width    = obj.exif.imagewidth
+                  height   = obj.exif.imageheight                
+                  file_attributes=Assembly::FILE_ATTRIBUTES[mimetype] || Assembly::FILE_ATTRIBUTES['default']
                   # add a new file element to the XML for this file
                   xml_file_params = {
-                    :publish  => publish,
                     :id       => id,
                     :mimetype => mimetype,
-                    :preserve => preserve,
-                    :shelve   => shelve,
+                    :preserve => file_attributes[:preserve],
+                    :publish  => file_attributes[:publish],
+                    :shelve   => file_attributes[:shelve],
                     :size     => size
                   }
                   xml.file(xml_file_params) {
                     xml.imageData(:height => height, :width => width)
-                    xml.attr cropped, :name => 'representation'
-                    xml.checksum sha1, :type => 'sha1'
-                    xml.checksum md5, :type => 'md5'
+                    xml.checksum obj.sha1, :type => 'sha1'
+                    xml.checksum obj.md5, :type => 'md5'
                   }
                 end # file_set.each
               }

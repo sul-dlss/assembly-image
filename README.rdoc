@@ -116,8 +116,3 @@ To keep a local server running with up to date code documentation that you can v
    Mac users:
        brew install exiftool
 
-5. Install md5 and sha1 command line tools.
-   
-   Mac users: 
-		brew install md5sha1sum
-		sudo brew link md5sha1sum
