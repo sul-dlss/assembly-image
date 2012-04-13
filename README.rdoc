@@ -21,6 +21,7 @@ image operations necessary for accessioning of content.
 - 1.0.0 bump the version number up to an official production level release
 - 1.1.0 remove common object file behaviors to a separate gem and use that gem as a dependency
 - 1.1.1 minor changes to spec tests
+- 1.1.2 remove the addition of 'format' node to file types in content metadata generation
 
 ==Notes
 

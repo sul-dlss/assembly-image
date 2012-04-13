@@ -26,9 +26,9 @@ module Assembly
 
         content_type_description = "image"
 
-        publish       = params[:publish]       || {'TIFF' => 'no',  'JPEG2000' => 'yes', 'JPEG' => 'yes'}
-        preserve      = params[:preserve]      || {'TIFF' => 'yes', 'JPEG2000' => 'yes', 'JPEG' => 'yes'}
-        shelve        = params[:shelve]        || {'TIFF' => 'no',  'JPEG2000' => 'yes', 'JPEG' => 'yes'}
+        publish       = params[:publish]     || "yes"
+        preserve      = params[:preserve]    || "yes" 
+        shelve        = params[:shelve]      || "yes"
 
         file_sets.flatten.each {|file| return false if !File.exists?(file)}
 
@@ -58,16 +58,14 @@ module Assembly
                       sha1.update(buffer)
                     end
                   end
-                  format  = Assembly::FORMATS[mimetype.downcase]
                   cropped = "uncropped"
                   # add a new file element to the XML for this file
                   xml_file_params = {
-                    :publish  => publish[format],
-                    :format   => format,
+                    :publish  => publish,
                     :id       => id,
                     :mimetype => mimetype,
-                    :preserve => preserve[format],
-                    :shelve   => shelve[format],
+                    :preserve => preserve,
+                    :shelve   => shelve,
                     :size     => size
                   }
                   xml.file(xml_file_params) {
