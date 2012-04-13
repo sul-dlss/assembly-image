@@ -22,6 +22,7 @@ image operations necessary for accessioning of content.
 - 1.1.0 remove common object file behaviors to a separate gem and use that gem as a dependency
 - 1.1.1 minor changes to spec tests
 - 1.1.2 remove the addition of 'format' node to file types in content metadata generation
+- 1.1.3 changes to content metadata generation method: change md5 and sha1 computations so that they come from the assembly-objectfile gem, and set preserve/publish/shelve attributes using mimetype defaults
 
 ==Notes
 
