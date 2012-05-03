@@ -26,6 +26,7 @@ module Assembly
     end
     
     # Create a JP2 file for the current image.
+    # Important note: this will not work for multipage TIFFs.
     #
     # @return [Assembly::Image] object containing the generated JP2 file
     #
@@ -73,7 +74,7 @@ module Assembly
       # if input profile was extracted and does not matches an existing known profile either in the gem or in the tmp folder,
       # we'll issue an imagicmagick command to extract the profile to the tmp folder
       unless File.exists?(input_profile_file)
-        input_profile_extraction_command = "convert #{@path} #{input_profile_file}" # extract profile from input image
+        input_profile_extraction_command = "convert #{@path}[0] #{input_profile_file}" # extract profile from input image
         result=`#{input_profile_extraction_command}`
         raise "input profile extraction command failed: #{input_profile_extraction_command} with result #{result}" unless $?.success?
         raise "input profile is not a known profile and could not be extracted from input file" unless File.exists?(input_profile_file) # if extraction failed or we cannot write the file, throw exception
