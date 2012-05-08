@@ -53,7 +53,7 @@ describe Assembly::Image do
     File.exists?(TEST_TIF_INPUT_FILE).should be true
     File.exists?(TEST_JP2_OUTPUT_FILE).should be true
     @ai = Assembly::Image.new(TEST_TIF_INPUT_FILE)
-    lambda{@ai.create_jp2(:output => TEST_JP2_OUTPUT_FILE)}.should raise_error
+    lambda{@ai.create_jp2(:output => TEST_JP2_OUTPUT_FILE)}.should raise_error(SecurityError)
   end
 
   it "should not run if the input file is a jp2" do
