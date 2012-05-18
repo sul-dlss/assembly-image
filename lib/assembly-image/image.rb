@@ -1,5 +1,4 @@
 require 'uuidtools'
-require 'mini_exiftool'
 require 'assembly-objectfile'
 
 module Assembly
