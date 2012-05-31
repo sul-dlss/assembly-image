@@ -15,6 +15,9 @@ describe Assembly::Image do
     result.path.should == TEST_JP2_OUTPUT_FILE        
     is_jp2?(TEST_JP2_OUTPUT_FILE).should be true
     result.exif.colorspace.should == "sRGB"
+    @jp2=Assembly::Image.new(TEST_JP2_OUTPUT_FILE)
+    @jp2.height.should == 100
+    @jp2.width.should == 100
   end
 
   it "should create jp2 when given a greyscale tif" do
@@ -56,6 +59,13 @@ describe Assembly::Image do
     lambda{@ai.create_jp2(:output => TEST_JP2_OUTPUT_FILE)}.should raise_error(SecurityError)
   end
 
+  it "should get the correct image height and width" do
+    generate_test_image(TEST_TIF_INPUT_FILE)
+    @ai = Assembly::Image.new(TEST_TIF_INPUT_FILE)
+    @ai.height.should == 100
+    @ai.width.should == 100    
+  end
+  
   it "should not run if the input file is a jp2" do
     generate_test_image(TEST_JP2_OUTPUT_FILE)
     File.exists?(TEST_JP2_OUTPUT_FILE).should be true

@@ -24,6 +24,26 @@ module Assembly
       valid_image? # behavior is defined in assembly-objectfile gem
     end
     
+    # Get the image height from exif data
+    #
+    # @return [integer] image height in pixels
+    # Example:
+    #   source_img=Assembly::Image.new('/input/path_to_file.tif')
+    #   puts source_img.height? # gives 100
+    def height
+      exif.imageheight
+    end
+
+    # Get the image width from exif data
+    #
+    # @return [integer] image height in pixels
+    # Example:
+    #   source_img=Assembly::Image.new('/input/path_to_file.tif')
+    #   puts source_img.width? # gives 100    
+    def width
+      exif.imagewidth
+    end
+    
     # Create a JP2 file for the current image.
     # Important note: this will not work for multipage TIFFs.
     #
@@ -88,7 +108,7 @@ module Assembly
       result=`#{tiff_command}`
       raise "tiff convert command failed: #{tiff_command} with result #{result}" unless $?.success?
 
-      pixdem = exif.imagewidth > exif.imageheight ? exif.imagewidth : exif.imageheight
+      pixdem = width > height ? width : height
       layers = (( Math.log(pixdem) / Math.log(2) ) - ( Math.log(96) / Math.log(2) )).ceil + 1
 
       samples_per_pixel=exif['samplesperpixel'] || ""
