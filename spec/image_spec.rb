@@ -29,6 +29,7 @@ describe Assembly::Image do
     result.class.should be Assembly::Image
     result.path.should == TEST_JP2_OUTPUT_FILE        
     is_jp2?(TEST_JP2_OUTPUT_FILE).should be true
+    result.jp2able?.should be false
     result.exif.colorspace.should == "sRGB"
   end
 
@@ -47,6 +48,8 @@ describe Assembly::Image do
     File.exists?(TEST_TIF_INPUT_FILE).should be true
     File.exists?(TEST_JP2_OUTPUT_FILE).should be false
     @ai = Assembly::Image.new(TEST_TIF_INPUT_FILE)
+    @ai.valid_image?.should be false
+    @ai.jp2able?.should be false
     lambda{@ai.create_jp2(:output => TEST_JP2_OUTPUT_FILE)}.should raise_error
   end
 
@@ -70,6 +73,8 @@ describe Assembly::Image do
     generate_test_image(TEST_JP2_OUTPUT_FILE)
     File.exists?(TEST_JP2_OUTPUT_FILE).should be true
     @ai = Assembly::Image.new(TEST_JP2_OUTPUT_FILE)
+    @ai.valid_image?.should be false
+    @ai.jp2able?.should be false    
     lambda{@ai.create_jp2}.should raise_error
   end
 

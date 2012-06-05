@@ -65,7 +65,7 @@ module Assembly
       check_for_file
 
       raise "input file is not a valid image, is the wrong mimetype or is missing a profile" if !self.valid?
-    
+      
       output    = params[:output] || @path.gsub(File.extname(@path),'.jp2')
       overwrite = params[:overwrite] || false
 
