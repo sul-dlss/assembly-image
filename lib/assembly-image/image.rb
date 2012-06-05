@@ -64,12 +64,14 @@ module Assembly
 
       check_for_file
 
-      raise "input file is not a valid image, is the wrong mimetype or is missing a profile" if !self.valid?
+      raise "input file is not a valid image, is the wrong mimetype or is missing a profile" if !self.jp2able?
       
       output    = params[:output] || @path.gsub(File.extname(@path),'.jp2')
       overwrite = params[:overwrite] || false
 
       raise SecurityError,"output #{output} exists, cannot overwrite" if !overwrite && File.exists?(output)
+
+      raise SecurityError,"cannot recreate jp2 over itself" if overwrite && mimetype=='image/jp2' && output == path
 
       tmp_folder = params[:tmp_folder] || '/tmp'
       raise "tmp_folder #{tmp_folder} does not exists" unless File.exists?(tmp_folder)
