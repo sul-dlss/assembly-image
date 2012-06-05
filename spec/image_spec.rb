@@ -73,7 +73,7 @@ describe Assembly::Image do
     generate_test_image(TEST_JP2_OUTPUT_FILE)
     File.exists?(TEST_JP2_OUTPUT_FILE).should be true
     @ai = Assembly::Image.new(TEST_JP2_OUTPUT_FILE)
-    @ai.valid_image?.should be false
+    @ai.valid_image?.should be true
     @ai.jp2able?.should be false    
     lambda{@ai.create_jp2}.should raise_error
   end
