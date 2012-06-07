@@ -5,5 +5,5 @@ module Assembly
   
 end
 
-# auto-include all files in the lib sub-directory directory (except version, which was already included earlier)
-Dir[File.dirname(__FILE__) + '/assembly-image/*.rb'].each {|file| require file unless file.include?('version.rb')}
+# auto-include all files in the lib sub-directory directory
+Dir[File.dirname(__FILE__) + '/assembly-image/*.rb'].each {|file| require file unless file=='verison.rb'}

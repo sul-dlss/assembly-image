@@ -1,3 +1,5 @@
 module Assembly
-  VERSION = "1.2.5"
+  class Image
+    VERSION = "1.2.6"
+  end
 end

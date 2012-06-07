@@ -28,6 +28,7 @@ image operations necessary for accessioning of content.
 - 1.2.2 add height and width methods for an image that gets it from exif
 - 1.2.4 prepare for release listing on DLSS release board
 - 1.2.5 small change to use the jp2able method instead of the valid? method when creating jp2s
+- 1.2.6 update how version number is set to make it easier to show
 
 ==Notes
 

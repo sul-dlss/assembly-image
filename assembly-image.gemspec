@@ -3,7 +3,7 @@ require 'assembly-image/version'
 
 Gem::Specification.new do |s|
   s.name        = 'assembly-image'
-  s.version     = Assembly::VERSION
+  s.version     = Assembly::Image::VERSION
   s.authors     = ["Peter Mangiafico", "Renzo Sanchez-Silva","Monty Hindman","Tony Calavano"]
   s.email       = ["pmangiafico@stanford.edu"]
   s.homepage    = ""
