@@ -9,8 +9,8 @@ module Assembly
     #
     # Note you will need full read/write access to the source path so that new EXIF data can be saved.
     #
-    # @param [String] path full path to the directory containing TIFFs
-    # @param [String] profile name to be added, current options are 'Adobe RBG 1998','Dot Gain 20%','sRGB IEC61966-2.1'
+    # @param [String] source path full path to the directory containing TIFFs
+    # @param [String] profile_name profile name to be added, current options are 'Adobe RBG 1998','Dot Gain 20%','sRGB IEC61966-2.1'
     #
     # @param [Hash] params Optional parameters specified as a hash, using symbols for options:
     #   * :force => if set to true, force overwrite a color profile description even if it already exists (default: false)
@@ -52,7 +52,7 @@ module Assembly
     # If not passed in, the destination will be a "jp2" subfolder within the source folder.
     # Note you will need read access to the source path, and write access to the destination path.
     #
-    # @param [String] path full path to the directory containing TIFFs to be converted to JP2
+    # @param [String] source path full path to the directory containing TIFFs to be converted to JP2
     #
     # @param [Hash] params Optional parameters specified as a hash, using symbols for options:
     #   * :output=>'/full/path_to_jp2' # specifies full path to folder where jp2s will be created (default: jp2 subdirectory from source path)

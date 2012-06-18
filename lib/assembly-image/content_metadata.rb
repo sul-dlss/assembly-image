@@ -2,6 +2,7 @@ require 'nokogiri'
 
 module Assembly
 
+  # This class generates content metadata for image files
   class ContentMetadata
     
       # Generates image content XML metadata for a repository object.
@@ -10,9 +11,7 @@ module Assembly
       #
       # @param [String] druid the repository object's druid id as a string
       # @param [Array]  file_sets an array of arrays of files
-      # @param [Hash] publish (optional) hash specifying content types to be published (true or false for each type), e.g. :publish=>\{'TIFF'=>'no','JPEG'=>'yes'}
-      # @param [Hash] preserve (optional) hash specifying content types to be preserved (true or false for each type)
-      # @param [Hash] shelve (optional) hash specifying content types to be shelved (true or false for each type)
+      # @param [Hash] params (optional) hash specifying publish, preserve and shelved by mimetype (true or false for each type), e.g. :publish=>\{'TIFF'=>'no','JPEG'=>'yes'}
       #
       # Example:
       #    Assembly::Image.create_content_metadata(

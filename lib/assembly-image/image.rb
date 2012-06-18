@@ -29,7 +29,7 @@ module Assembly
     # @return [integer] image height in pixels
     # Example:
     #   source_img=Assembly::Image.new('/input/path_to_file.tif')
-    #   puts source_img.height? # gives 100
+    #   puts source_img.height # gives 100
     def height
       exif.imageheight
     end
@@ -39,7 +39,7 @@ module Assembly
     # @return [integer] image height in pixels
     # Example:
     #   source_img=Assembly::Image.new('/input/path_to_file.tif')
-    #   puts source_img.width? # gives 100    
+    #   puts source_img.width # gives 100    
     def width
       exif.imagewidth
     end
