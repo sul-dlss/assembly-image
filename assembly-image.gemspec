@@ -18,7 +18,6 @@ Gem::Specification.new do |s|
   s.require_paths = ['lib']
 
   s.add_dependency 'uuidtools'
-  s.add_dependency 'nokogiri'
   s.add_dependency 'assembly-objectfile', "~> 1.1.7"
 
   s.add_development_dependency "rspec", "~> 2.6"

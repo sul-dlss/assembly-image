@@ -57,7 +57,7 @@ module Assembly
     # @param [Hash] params Optional parameters specified as a hash, using symbols for options:
     #   * :output=>'/full/path_to_jp2' # specifies full path to folder where jp2s will be created (default: jp2 subdirectory from source path)
     #   * :overwrite => if set to false, an existing JP2 file with the same name won't be overwritten (default: false)
-    #   * :recusrive => if set to true, directories will be searched recursively for TIFFs from the source specified, false searches the top level only (default: false)
+    #   * :recursive => if set to true, directories will be searched recursively for TIFFs from the source specified, false searches the top level only (default: false)
     #
     # Example:
     #  Assembly::Images.batch_generate_jp2('/full_path_to_tifs')
