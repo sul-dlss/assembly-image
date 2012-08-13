@@ -32,6 +32,7 @@ image operations necessary for accessioning of content.
 - 1.3.0 added a new method to the Assembly::Images class to allow for batch adding of color profiles to all tiffs in a directory; allow batch methods to run recursively
 - 1.3.1 remove content metadata generation method and add to assembly-objectfile gem instead
 - 1.3.2 update gemspec
+- 1.3.3 update gemspec to force use of latest assembly-objectfile gem to allow gem to work in Ruby 1.9 projects
 
 ==Notes
 
