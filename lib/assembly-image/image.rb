@@ -95,7 +95,7 @@ module Assembly
       # if input profile was extracted and does not matches an existing known profile either in the gem or in the tmp folder,
       # we'll issue an imagicmagick command to extract the profile to the tmp folder
       unless File.exists?(input_profile_file)
-        input_profile_extraction_command = "convert #{@path}[0] #{input_profile_file}" # extract profile from input image
+        input_profile_extraction_command = "convert '#{@path}'[0] #{input_profile_file}" # extract profile from input image
         result=`#{input_profile_extraction_command}`
         raise "input profile extraction command failed: #{input_profile_extraction_command} with result #{result}" unless $?.success?
         raise "input profile is not a known profile and could not be extracted from input file" unless File.exists?(input_profile_file) # if extraction failed or we cannot write the file, throw exception
@@ -106,7 +106,7 @@ module Assembly
       # make temp tiff
       @tmp_path      = "#{tmp_folder}/#{UUIDTools::UUID.random_create.to_s}.tif"
       
-      tiff_command       = "convert -quiet -compress none #{profile_conversion_switch} #{@path} #{@tmp_path}"
+      tiff_command       = "convert -quiet -compress none #{profile_conversion_switch} '#{@path}' '#{@tmp_path}'"
       result=`#{tiff_command}`
       raise "tiff convert command failed: #{tiff_command} with result #{result}" unless $?.success?
 
@@ -122,7 +122,7 @@ module Assembly
       options     = " -precise -no_weights -quiet Creversible=no Cmodes=BYPASS Corder=RPCL " + 
                     "Cblk=\\{64,64\\} Cprecincts=\\{256,256\\},\\{256,256\\},\\{128,128\\} " + 
                     "ORGgen_plt=yes -rate 1.5 Clevels=5 "
-      jp2_command = "#{kdu_bin} #{options} Clayers=#{layers.to_s} -i #{@tmp_path} -o #{output}"
+      jp2_command = "#{kdu_bin} #{options} Clayers=#{layers.to_s} -i '#{@tmp_path}' -o '#{output}'"
       result=`#{jp2_command}`
       raise "JP2 creation command failed: #{jp2_command} with result #{result}" unless $?.success?
       

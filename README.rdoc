@@ -33,6 +33,7 @@ image operations necessary for accessioning of content.
 - 1.3.1 remove content metadata generation method and add to assembly-objectfile gem instead
 - 1.3.3 update gemspec to force use of latest assembly-objectfile gem to allow gem to work in Ruby 1.9 projects
 - 1.3.4 update to latest version of lyberteam gems
+- 1.3.5 fix a problem that could occur if there were spaces in input filenames
 
 ==Notes
 
