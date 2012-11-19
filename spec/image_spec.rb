@@ -4,6 +4,13 @@ describe Assembly::Image do
     @ai=Assembly::Image.new('')
     lambda{@ai.create_jp2}.should raise_error
   end
+  
+  it "should indicate the default jp2 filename" do
+    generate_test_image(TEST_TIF_INPUT_FILE)
+    File.exists?(TEST_TIF_INPUT_FILE).should be true
+    @ai = Assembly::Image.new(TEST_TIF_INPUT_FILE)
+    @ai.jp2_filename.should == TEST_TIF_INPUT_FILE.gsub('.tif','.jp2')
+  end
 
   it "should create jp2 when given an RGB tif" do
     generate_test_image(TEST_TIF_INPUT_FILE)

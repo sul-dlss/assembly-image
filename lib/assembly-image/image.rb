@@ -44,6 +44,16 @@ module Assembly
       exif.imagewidth
     end
     
+    # Returns the full default jp2 path and filename that will be created from the given image
+    #
+    # @return [string] full default jp2 path and filename that will be created from the given image
+    # Example:
+    #   source_img=Assembly::Image.new('/input/path_to_file.tif')
+    #   puts source_img.jp2_filename # gives /input/path_to_file.jp2
+    def jp2_filename
+      @path.gsub(File.extname(@path),'.jp2')
+    end
+    
     # Create a JP2 file for the current image.
     # Important note: this will not work for multipage TIFFs.
     #
@@ -66,12 +76,12 @@ module Assembly
 
       raise "input file is not a valid image, is the wrong mimetype or is missing a profile" if !self.jp2able?
       
-      output    = params[:output] || @path.gsub(File.extname(@path),'.jp2')
+      output    = params[:output] || jp2_filename
       overwrite = params[:overwrite] || false
 
       raise SecurityError,"output #{output} exists, cannot overwrite" if !overwrite && File.exists?(output)
 
-      raise SecurityError,"cannot recreate jp2 over itself" if overwrite && mimetype=='image/jp2' && output == path
+      raise SecurityError,"cannot recreate jp2 over itself" if overwrite && mimetype=='image/jp2' && output == @path
 
       tmp_folder = params[:tmp_folder] || '/tmp'
       raise "tmp_folder #{tmp_folder} does not exists" unless File.exists?(tmp_folder)
