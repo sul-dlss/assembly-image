@@ -83,7 +83,7 @@ To keep a local server running with up to date code documentation that you can v
    http://www.kakadusoftware.com/index.php?option=com_content&task=view&id=26&Itemid=22
 
    Note: The binaries will not work with RHEL 5.x; an RPM for RHEL 5 with
-   compatible binaries comming soon.
+   compatible binaries coming soon.
 
 3. Imagemagick 6.5.4 or higher
             	   		
@@ -110,8 +110,10 @@ To keep a local server running with up to date code documentation that you can v
 
    Mac users:
 
-       brew install imagemagick
-        
+		brew install jasper
+		brew install libtiff
+		brew install imagemagick --use-tiff --use-jpeg2000
+
 4. Exiftool
             
    RHEL: (RPM to install comming soon)
@@ -124,5 +126,6 @@ To keep a local server running with up to date code documentation that you can v
        sudo make install
 
    Mac users:
+
        brew install exiftool
 
