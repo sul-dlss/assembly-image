@@ -36,6 +36,7 @@ image operations necessary for accessioning of content.
 - 1.3.5 fix a problem that could occur if there were spaces in input filenames
 - 1.3.6 add new attribute to give you default jp2 filename that will be used
 - 1.3.7 add new attribute to give you default dpg jp2 filename 
+- 1.3.8 allow for batch processing of image extensions other than tif
 
 ==Notes
 
