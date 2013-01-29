@@ -32,23 +32,13 @@ module Assembly
       # iterate over input directory looking for tifs
       pattern = recursive ? "**/*.#{extension}" : "*.#{extension}*" 
       Dir.glob(File.join(source,pattern)).each do |file|
-        exif=MiniExiftool.new file
-        begin
-          if exif.profiledescription == nil || force
-            input_profile = profile_name.gsub(/[^[:alnum:]]/, '')   # remove all non alpha-numeric characters, so we can get to a filename
-            path_to_profiles    = File.join(Assembly::PATH_TO_IMAGE_GEM,'profiles')
-            input_profile_file = File.join(path_to_profiles,"#{input_profile}.icc")
-            command="exiftool '-icc_profile<=#{input_profile_file}' #{file}"
-            result=`#{command}`
-            raise "profile addition command failed: #{command} with result #{result}" unless $?.success?
-          end
-        rescue Exception => e
-          puts "** Error for #{File.basename(file)}: #{e.message}"
-        end
+        img=Assembly::Image.new(file)
+        puts "Processing #{file}"
+        img.add_exif_profile_description(profile_name,force)
       end
-      return 'Complete'
+      return "Complete"
     end
-    
+        
     # Pass in a source path and get JP2s generate for each tiff that is in the source path
     #
     # If not passed in, the destination will be a "jp2" subfolder within the source folder.

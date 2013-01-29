@@ -23,6 +23,16 @@ module Assembly
     def valid?
       valid_image? # behavior is defined in assembly-objectfile gem
     end
+
+    # Get the image color profile
+    #
+    # @return [string] image color profile
+    # Example:
+    #   source_img=Assembly::Image.new('/input/path_to_file.tif')
+    #   puts source_img.profile # gives 'Adobe RGB 1998'
+    def profile
+      exif['profiledescription']
+    end
     
     # Get the image height from exif data
     #
@@ -42,6 +52,34 @@ module Assembly
     #   puts source_img.width # gives 100    
     def width
       exif.imagewidth
+    end
+
+    # Add an exif color profile descriptions to the image.
+    # This is useful if your source TIFFs do not have color profile descriptions in the EXIF data, but you know what it should be.
+    # This will allow the images to pass the validaty check and have JP2s created successfully.
+    #
+    # Note you will need full read/write access to the source path so that new EXIF data can be saved.
+    #
+    # @param [String] profile_name profile name to be added, current options are 'Adobe RBG 1998','Dot Gain 20%','sRGB IEC61966-2.1'
+    #
+    # @param [String] force if set to true, force overwrite a color profile description even if it already exists (default: false)
+    #
+    # Example:
+    #  source_img=Assembly::Image.new('/input/path_to_file.tif')
+    #  source_img.add_exif_profile_description('Adobe RGB 1998')
+    def add_exif_profile_description(profile_name,force=false)
+      begin
+        if profile.nil? || force
+          input_profile = profile_name.gsub(/[^[:alnum:]]/, '')   # remove all non alpha-numeric characters, so we can get to a filename
+          path_to_profiles    = File.join(Assembly::PATH_TO_IMAGE_GEM,'profiles')
+          input_profile_file = File.join(path_to_profiles,"#{input_profile}.icc")
+          command="exiftool '-icc_profile<=#{input_profile_file}' #{path}"
+          result=`#{command}`
+          raise "profile addition command failed: #{command} with result #{result}" unless $?.success?
+        end
+      rescue Exception => e
+        puts "** Error for #{filename}: #{e.message}"
+      end
     end
     
     # Returns the full default jp2 path and filename that will be created from the given image
@@ -105,7 +143,7 @@ module Assembly
 
       path_to_profiles   = File.join(Assembly::PATH_TO_IMAGE_GEM,'profiles')
     
-      input_profile = exif['profiledescription'].gsub(/[^[:alnum:]]/, '')   # remove all non alpha-numeric characters, so we can get to a filename
+      input_profile = profile.gsub(/[^[:alnum:]]/, '')   # remove all non alpha-numeric characters, so we can get to a filename
       
       # construct a path to the input profile, which might exist either in the gem itself or in the tmp folder
       input_profile_file_gem = File.join(path_to_profiles,"#{input_profile}.icc")
