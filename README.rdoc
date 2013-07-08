@@ -38,7 +38,7 @@ image operations necessary for accessioning of content.
 - 1.3.7 add new attribute to give you default dpg jp2 filename 
 - 1.3.8 allow for batch processing of image extensions other than tif
 - 1.3.9 create new methods for getting a color profile from exif and for force adding color profile to a single image
-- 1.4.0 set the imagemagick tmp folder location environment variable when creating jp2
+- 1.4.0 and 1.4.1 set the imagemagick tmp folder location environment variable when creating jp2
 
 ==Notes
 
