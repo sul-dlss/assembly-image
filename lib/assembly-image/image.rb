@@ -153,7 +153,7 @@ module Assembly
       # if input profile was extracted and does not matches an existing known profile either in the gem or in the tmp folder,
       # we'll issue an imagicmagick command to extract the profile to the tmp folder
       unless File.exists?(input_profile_file)
-        input_profile_extraction_command = "convert '#{@path}'[0] #{input_profile_file}" # extract profile from input image
+        input_profile_extraction_command = "MAGICK_TEMPORARY_PATH=#{tmp_folder} convert '#{@path}'[0] #{input_profile_file}" # extract profile from input image
         result=`#{input_profile_extraction_command}`
         raise "input profile extraction command failed: #{input_profile_extraction_command} with result #{result}" unless $?.success?
         raise "input profile is not a known profile and could not be extracted from input file" unless File.exists?(input_profile_file) # if extraction failed or we cannot write the file, throw exception
@@ -164,7 +164,7 @@ module Assembly
       # make temp tiff
       @tmp_path      = "#{tmp_folder}/#{UUIDTools::UUID.random_create.to_s}.tif"
       
-      tiff_command       = "convert -quiet -compress none #{profile_conversion_switch} '#{@path}' '#{@tmp_path}'"
+      tiff_command       = "MAGICK_TEMPORARY_PATH=#{tmp_folder} convert -quiet -compress none #{profile_conversion_switch} '#{@path}' '#{@tmp_path}'"
       result=`#{tiff_command}`
       raise "tiff convert command failed: #{tiff_command} with result #{result}" unless $?.success?
 

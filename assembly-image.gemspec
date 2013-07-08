@@ -19,6 +19,9 @@ Gem::Specification.new do |s|
 
   s.add_dependency 'uuidtools'
   s.add_dependency 'assembly-objectfile', ">= 1.4.1"
+  s.add_dependency 'mini_exiftool', "~> 1.6"
+  s.add_dependency 'activesupport', ((RUBY_VERSION < '1.9.3') ? "~> 3.0.0" : "") # 4.0 requires ruby 1.9.3
+  s.add_dependency 'nokogiri', ((RUBY_VERSION < '1.9') ? "~> 1.5.10" : "~> 1") # 1.6.x requires ruby 1.9
 
   s.add_development_dependency "rspec", "~> 2.6"
   s.add_development_dependency "lyberteam-devel", '>= 1.0.1'
