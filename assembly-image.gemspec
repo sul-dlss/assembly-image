@@ -18,7 +18,7 @@ Gem::Specification.new do |s|
   s.require_paths = ['lib']
 
   s.add_dependency 'uuidtools'
-  s.add_dependency 'assembly-objectfile', ">= 1.4.1"
+  s.add_dependency 'assembly-objectfile', ">= 1.5.6"
   s.add_dependency 'mini_exiftool', "~> 1.6"
   s.add_dependency 'activesupport', ((RUBY_VERSION < '1.9.3') ? "~> 3" : "") # 4.0 requires ruby 1.9.3
   s.add_dependency 'nokogiri', ((RUBY_VERSION < '1.9') ? "~> 1.5.10" : "~> 1") # 1.6.x requires ruby 1.9

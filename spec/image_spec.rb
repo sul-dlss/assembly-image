@@ -35,10 +35,12 @@ describe Assembly::Image do
     File.exists?(TEST_TIF_INPUT_FILE).should be true
     File.exists?(TEST_JP2_OUTPUT_FILE).should be false
     @ai = Assembly::Image.new(TEST_TIF_INPUT_FILE)
+    @ai.has_color_profile?.should be true
     result=@ai.create_jp2(:output => TEST_JP2_OUTPUT_FILE)
     result.class.should be Assembly::Image
     result.path.should == TEST_JP2_OUTPUT_FILE        
     is_jp2?(TEST_JP2_OUTPUT_FILE).should be true
+    @ai.has_color_profile?.should be true
     result.jp2able?.should be false
     result.exif.colorspace.should == "sRGB"
   end
@@ -48,19 +50,22 @@ describe Assembly::Image do
     File.exists?(TEST_TIF_INPUT_FILE).should be true
     File.exists?(TEST_JP2_OUTPUT_FILE).should be false
     @ai = Assembly::Image.new(TEST_TIF_INPUT_FILE)
+    @ai.has_color_profile?.should be true
     result=@ai.create_jp2(:output => TEST_JP2_OUTPUT_FILE)
     is_jp2?(TEST_JP2_OUTPUT_FILE).should be true
     result.exif.colorspace.should == "Grayscale"    
   end
 
-  it "should not create a jp2 when the source image has no profile" do
+  it "should create a jp2 when the source image has no profile" do
     generate_test_image(TEST_TIF_INPUT_FILE,:profile=>'') # generate a test input with no profile
     File.exists?(TEST_TIF_INPUT_FILE).should be true
     File.exists?(TEST_JP2_OUTPUT_FILE).should be false
     @ai = Assembly::Image.new(TEST_TIF_INPUT_FILE)
-    @ai.valid_image?.should be false
-    @ai.jp2able?.should be false
-    lambda{@ai.create_jp2(:output => TEST_JP2_OUTPUT_FILE)}.should raise_error
+    @ai.has_color_profile?.should be false
+    @ai.valid_image?.should be true
+    @ai.jp2able?.should be true
+    @ai.create_jp2(:output => TEST_JP2_OUTPUT_FILE)
+    is_jp2?(TEST_JP2_OUTPUT_FILE).should be true
   end
 
   it "should not run if the output file exists and you don't allow overwriting" do
@@ -84,7 +89,7 @@ describe Assembly::Image do
     File.exists?(TEST_JP2_OUTPUT_FILE).should be true
     @ai = Assembly::Image.new(TEST_JP2_OUTPUT_FILE)
     @ai.valid_image?.should be true
-    @ai.jp2able?.should be false    
+    @ai.jp2able?.should be false
     lambda{@ai.create_jp2}.should raise_error
   end
 

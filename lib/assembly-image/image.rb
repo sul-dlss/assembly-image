@@ -23,7 +23,7 @@ module Assembly
     def valid?
       valid_image? # behavior is defined in assembly-objectfile gem
     end
-
+    
     # Get the image color profile
     #
     # @return [string] image color profile
@@ -31,7 +31,7 @@ module Assembly
     #   source_img=Assembly::Image.new('/input/path_to_file.tif')
     #   puts source_img.profile # gives 'Adobe RGB 1998'
     def profile
-      exif['profiledescription']
+      exif.nil? ? nil : exif['profiledescription']
     end
     
     # Get the image height from exif data
@@ -122,7 +122,7 @@ module Assembly
 
       check_for_file
 
-      raise "input file is not a valid image, is the wrong mimetype or is missing a profile" if !self.jp2able?
+      raise "input file is not a valid image, or is the wrong mimetype" if !self.jp2able?
       
       output    = params[:output] || jp2_filename
       overwrite = params[:overwrite] || false
@@ -143,25 +143,33 @@ module Assembly
 
       path_to_profiles   = File.join(Assembly::PATH_TO_IMAGE_GEM,'profiles')
     
-      input_profile = profile.gsub(/[^[:alnum:]]/, '')   # remove all non alpha-numeric characters, so we can get to a filename
+      if !profile.nil? # if the input color profile exists, contract paths to the profile and setup the command
       
-      # construct a path to the input profile, which might exist either in the gem itself or in the tmp folder
-      input_profile_file_gem = File.join(path_to_profiles,"#{input_profile}.icc")
-      input_profile_file_tmp = File.join(tmp_folder,"#{input_profile}.icc")
-      input_profile_file = File.exists?(input_profile_file_gem) ? input_profile_file_gem : input_profile_file_tmp
+        input_profile = profile.gsub(/[^[:alnum:]]/, '')   # remove all non alpha-numeric characters, so we can get to a filename
+      
+        # construct a path to the input profile, which might exist either in the gem itself or in the tmp folder
+        input_profile_file_gem = File.join(path_to_profiles,"#{input_profile}.icc")
+        input_profile_file_tmp = File.join(tmp_folder,"#{input_profile}.icc")
+        input_profile_file = File.exists?(input_profile_file_gem) ? input_profile_file_gem : input_profile_file_tmp
        
-      # if input profile was extracted and does not matches an existing known profile either in the gem or in the tmp folder,
-      # we'll issue an imagicmagick command to extract the profile to the tmp folder
-      unless File.exists?(input_profile_file)
-        input_profile_extraction_command = "MAGICK_TEMPORARY_PATH=#{tmp_folder} convert '#{@path}'[0] #{input_profile_file}" # extract profile from input image
-        result=`#{input_profile_extraction_command}`
-        raise "input profile extraction command failed: #{input_profile_extraction_command} with result #{result}" unless $?.success?
-        raise "input profile is not a known profile and could not be extracted from input file" unless File.exists?(input_profile_file) # if extraction failed or we cannot write the file, throw exception
+        # if input profile was extracted and does not matches an existing known profile either in the gem or in the tmp folder,
+        # we'll issue an imagicmagick command to extract the profile to the tmp folder
+        unless File.exists?(input_profile_file)
+          input_profile_extraction_command = "MAGICK_TEMPORARY_PATH=#{tmp_folder} convert '#{@path}'[0] #{input_profile_file}" # extract profile from input image
+          result=`#{input_profile_extraction_command}`
+          raise "input profile extraction command failed: #{input_profile_extraction_command} with result #{result}" unless $?.success?
+          raise "input profile is not a known profile and could not be extracted from input file" unless File.exists?(input_profile_file) # if extraction failed or we cannot write the file, throw exception
+        end
+
+        profile_conversion_switch = "-profile #{input_profile_file} -profile #{output_profile_file}"
+      
+      else
+        
+        profile_conversion_switch = "" # no conversion needed if input color profile does not exist
+
       end
-
-      profile_conversion_switch = "-profile #{input_profile_file} -profile #{output_profile_file}"
-
-      # make temp tiff
+      
+      # make temp tiff filename
       @tmp_path      = "#{tmp_folder}/#{UUIDTools::UUID.random_create.to_s}.tif"
       
       tiff_command       = "MAGICK_TEMPORARY_PATH=#{tmp_folder} convert -quiet -compress none #{profile_conversion_switch} '#{@path}' '#{@tmp_path}'"
@@ -176,8 +184,8 @@ module Assembly
       # jp2 creation command
       kdu_bin     = "kdu_compress "
       options     = ""
-      options +=  " -jp2_space sRGB " if samples_per_pixel.to_s == "3"
-      options     = " -precise -no_weights -quiet Creversible=no Cmodes=BYPASS Corder=RPCL " + 
+      options    += " -jp2_space sRGB " if samples_per_pixel.to_s == "3"
+      options    += " -precise -no_weights -quiet Creversible=no Cmodes=BYPASS Corder=RPCL " + 
                     "Cblk=\\{64,64\\} Cprecincts=\\{256,256\\},\\{256,256\\},\\{128,128\\} " + 
                     "ORGgen_plt=yes -rate 1.5 Clevels=5 "
       jp2_command = "#{kdu_bin} #{options} Clayers=#{layers.to_s} -i '#{@tmp_path}' -o '#{output}'"
