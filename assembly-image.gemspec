@@ -18,7 +18,7 @@ Gem::Specification.new do |s|
   s.require_paths = ['lib']
 
   s.add_dependency 'uuidtools'
-  s.add_dependency 'assembly-objectfile', ">= 1.5.6"
+  s.add_dependency 'assembly-objectfile', ">= 1.6.0"
   s.add_dependency 'mini_exiftool', "~> 1.6"
   s.add_dependency 'activesupport'
   s.add_dependency 'nokogiri'
