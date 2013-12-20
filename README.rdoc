@@ -41,6 +41,7 @@ image operations necessary for accessioning of content.
 - 1.4.0 and 1.4.1 set the imagemagick tmp folder location environment variable when creating jp2
 - 1.5.0 allow images with a color profile to have jp2 derivatives generated
 - 1.5.1 relax nokogiri version requirement
+- 1.6.1 bump version number of assembly-objectfile required to fix UTF-8 errors during JP2-create
 
 ==Notes
 
