@@ -42,6 +42,7 @@ image operations necessary for accessioning of content.
 - 1.5.0 allow images with a color profile to have jp2 derivatives generated
 - 1.5.1 relax nokogiri version requirement
 - 1.6.1 bump version number of assembly-objectfile required to fix UTF-8 errors during JP2-create
+- 1.6.2 small change to jp2 generation to try and fix bug with tiffs that have multiple input profile layers 
 
 ==Notes
 

@@ -3,6 +3,6 @@ module Assembly
   # Main Image class
   class Image
     # Project version number    
-    VERSION = "1.6.1"
+    VERSION = "1.6.2"
   end
 end

@@ -172,7 +172,7 @@ module Assembly
       # make temp tiff filename
       @tmp_path      = "#{tmp_folder}/#{UUIDTools::UUID.random_create.to_s}.tif"
       
-      tiff_command       = "MAGICK_TEMPORARY_PATH=#{tmp_folder} convert -quiet -compress none #{profile_conversion_switch} '#{@path}' '#{@tmp_path}'"
+      tiff_command       = "MAGICK_TEMPORARY_PATH=#{tmp_folder} convert -quiet -compress none #{profile_conversion_switch} '#{@path}[0]' '#{@tmp_path}'"
       result=`#{tiff_command}`
       raise "tiff convert command failed: #{tiff_command} with result #{result}" unless $?.success?
 
