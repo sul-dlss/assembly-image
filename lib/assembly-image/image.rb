@@ -74,7 +74,7 @@ module Assembly
           path_to_profiles    = File.join(Assembly::PATH_TO_IMAGE_GEM,'profiles')
           input_profile_file = File.join(path_to_profiles,"#{input_profile}.icc")
           command="exiftool '-icc_profile<=#{input_profile_file}' #{path}"
-          result=`#{command}`
+          result=`#{command} 2>&1`
           raise "profile addition command failed: #{command} with result #{result}" unless $?.success?
         end
       rescue Exception => e
@@ -156,7 +156,7 @@ module Assembly
         # we'll issue an imagicmagick command to extract the profile to the tmp folder
         unless File.exists?(input_profile_file)
           input_profile_extraction_command = "MAGICK_TEMPORARY_PATH=#{tmp_folder} convert '#{@path}'[0] #{input_profile_file}" # extract profile from input image
-          result=`#{input_profile_extraction_command}`
+          result=`#{input_profile_extraction_command} 2>&1`
           raise "input profile extraction command failed: #{input_profile_extraction_command} with result #{result}" unless $?.success?
           raise "input profile is not a known profile and could not be extracted from input file" unless File.exists?(input_profile_file) # if extraction failed or we cannot write the file, throw exception
         end
@@ -173,7 +173,7 @@ module Assembly
       @tmp_path      = "#{tmp_folder}/#{UUIDTools::UUID.random_create.to_s}.tif"
       
       tiff_command       = "MAGICK_TEMPORARY_PATH=#{tmp_folder} convert -quiet -compress none #{profile_conversion_switch} '#{@path}[0]' '#{@tmp_path}'"
-      result=`#{tiff_command}`
+      result=`#{tiff_command} 2>&1`
       raise "tiff convert command failed: #{tiff_command} with result #{result}" unless $?.success?
 
       pixdem = width > height ? width : height
@@ -189,7 +189,7 @@ module Assembly
                     "Cblk=\\{64,64\\} Cprecincts=\\{256,256\\},\\{256,256\\},\\{128,128\\} " + 
                     "ORGgen_plt=yes -rate 1.5 Clevels=5 "
       jp2_command = "#{kdu_bin} #{options} Clayers=#{layers.to_s} -i '#{@tmp_path}' -o '#{output}'"
-      result=`#{jp2_command}`
+      result=`#{jp2_command} 2>&1`
       raise "JP2 creation command failed: #{jp2_command} with result #{result}" unless $?.success?
       
       File.delete(@tmp_path) unless preserve_tmp_source
