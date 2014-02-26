@@ -141,6 +141,9 @@ module Assembly
 
       raise "output profile #{output_profile} invalid" if !File.exists?(output_profile_file)
 
+      samples_per_pixel=exif['samplesperpixel'].to_s || ""
+      bits_per_sample=exif['bitspersample'] || ""
+      
       path_to_profiles   = File.join(Assembly::PATH_TO_IMAGE_GEM,'profiles')
     
       if !profile.nil? # if the input color profile exists, contract paths to the profile and setup the command
@@ -172,19 +175,28 @@ module Assembly
       # make temp tiff filename
       @tmp_path      = "#{tmp_folder}/#{UUIDTools::UUID.random_create.to_s}.tif"
       
-      tiff_command       = "MAGICK_TEMPORARY_PATH=#{tmp_folder} convert -quiet -compress none #{profile_conversion_switch} '#{@path}[0]' '#{@tmp_path}'"
+      options    =  ""
+      case samples_per_pixel
+        when "3"
+          options += "-type TrueColor"
+        when "1"
+          if bits_per_sample.to_i == 1
+            options += "-type Bilevel" 
+          elsif bits_per_sample.to_i > 1
+            options += "-type Grayscale" 
+          end
+      end
+      tiff_command       = "MAGICK_TEMPORARY_PATH=#{tmp_folder} convert -quiet -compress none #{profile_conversion_switch} #{options} '#{@path}[0]' '#{@tmp_path}'"
       result=`#{tiff_command} 2>&1`
       raise "tiff convert command failed: #{tiff_command} with result #{result}" unless $?.success?
-
+      
       pixdem = width > height ? width : height
       layers = (( Math.log(pixdem) / Math.log(2) ) - ( Math.log(96) / Math.log(2) )).ceil + 1
-
-      samples_per_pixel=exif['samplesperpixel'] || ""
       
       # jp2 creation command
       kdu_bin     = "kdu_compress "
       options     = ""
-      options    += " -jp2_space sRGB " if samples_per_pixel.to_s == "3"
+      options    += " -jp2_space sRGB " if samples_per_pixel == "3"
       options    += " -precise -no_weights -quiet Creversible=no Cmodes=BYPASS Corder=RPCL " + 
                     "Cblk=\\{64,64\\} Cprecincts=\\{256,256\\},\\{256,256\\},\\{128,128\\} " + 
                     "ORGgen_plt=yes -rate 1.5 Clevels=5 "

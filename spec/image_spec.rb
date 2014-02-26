@@ -48,7 +48,7 @@ describe Assembly::Image do
   end
 
   it "should create grayscale jp2 when given a bitonal tif" do
-    generate_test_image(TEST_TIF_INPUT_FILE,:color=>'white')
+    generate_test_image(TEST_TIF_INPUT_FILE,:color=>'white',:image_type=>"Bilevel")
     expect(File).to exist TEST_TIF_INPUT_FILE
     expect(File).to_not exist TEST_JP2_OUTPUT_FILE
     @ai = Assembly::Image.new(TEST_TIF_INPUT_FILE)
@@ -58,6 +58,39 @@ describe Assembly::Image do
     result.exif.colorspace.should == "Grayscale"    
   end
 
+  it "should create color jp2 when given a color tif but bitonal image data (1 channels and 1 bits per pixel)" do
+    generate_test_image(TEST_TIF_INPUT_FILE,:color=>'white',:image_type=>"TrueColor",:profile=>'')
+    expect(File).to exist TEST_TIF_INPUT_FILE
+    expect(File).to_not exist TEST_JP2_OUTPUT_FILE
+    @ai = Assembly::Image.new(TEST_TIF_INPUT_FILE)
+    @ai.has_color_profile?.should be false
+    result=@ai.create_jp2(:output => TEST_JP2_OUTPUT_FILE)
+    is_jp2?(TEST_JP2_OUTPUT_FILE).should be true
+    result.exif.colorspace.should == "sRGB"    
+  end
+
+  it "should create grayscale jp2 when given a graycale tif but with bitonal image data (1 channel and 1 bits per pixel)" do
+    generate_test_image(TEST_TIF_INPUT_FILE,:color=>'white',:image_type=>"Grayscale",:profile=>'')
+    expect(File).to exist TEST_TIF_INPUT_FILE
+    expect(File).to_not exist TEST_JP2_OUTPUT_FILE
+    @ai = Assembly::Image.new(TEST_TIF_INPUT_FILE)
+    @ai.has_color_profile?.should be false
+    result=@ai.create_jp2(:output => TEST_JP2_OUTPUT_FILE)
+    is_jp2?(TEST_JP2_OUTPUT_FILE).should be true
+    result.exif.colorspace.should == "Grayscale"    
+  end
+
+  it "should create color jp2 when given a color tif but with greyscale image data (1 channel and 8 bits per pixel)" do
+    generate_test_image(TEST_TIF_INPUT_FILE,:color=>'gray',:image_type=>"TrueColor",:profile=>'')
+    expect(File).to exist TEST_TIF_INPUT_FILE
+    expect(File).to_not exist TEST_JP2_OUTPUT_FILE
+    @ai = Assembly::Image.new(TEST_TIF_INPUT_FILE)
+    @ai.has_color_profile?.should be false
+    result=@ai.create_jp2(:output => TEST_JP2_OUTPUT_FILE)
+    is_jp2?(TEST_JP2_OUTPUT_FILE).should be true
+    result.exif.colorspace.should == "sRGB"    
+  end
+  
   it "should create a jp2 when the source image has no profile" do
     generate_test_image(TEST_TIF_INPUT_FILE,:profile=>'') # generate a test input with no profile
     expect(File).to exist TEST_TIF_INPUT_FILE
