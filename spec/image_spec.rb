@@ -32,21 +32,6 @@ describe Assembly::Image do
     @jp2.width.should == 100
   end
 
-  it "should create jp2 when given a greyscale tif" do
-    generate_test_image(TEST_TIF_INPUT_FILE,:color=>'gray',:profile=>'AdobeRGB1998')
-    expect(File).to exist TEST_TIF_INPUT_FILE
-    expect(File).to_not exist TEST_JP2_OUTPUT_FILE
-    @ai = Assembly::Image.new(TEST_TIF_INPUT_FILE)
-    @ai.has_color_profile?.should be true
-    result=@ai.create_jp2(:output => TEST_JP2_OUTPUT_FILE)
-    result.class.should be Assembly::Image
-    result.path.should == TEST_JP2_OUTPUT_FILE        
-    is_jp2?(TEST_JP2_OUTPUT_FILE).should be true
-    @ai.has_color_profile?.should be true
-    result.jp2able?.should be false
-    result.exif.colorspace.should == "sRGB"
-  end
-
   it "should create grayscale jp2 when given a bitonal tif" do
     generate_test_image(TEST_TIF_INPUT_FILE,:color=>'white',:image_type=>"Bilevel")
     expect(File).to exist TEST_TIF_INPUT_FILE
