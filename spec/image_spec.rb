@@ -12,11 +12,21 @@ describe Assembly::Image do
     @ai.jp2_filename.should == TEST_TIF_INPUT_FILE.gsub('.tif','.jp2')
   end
 
+  it "should indicate the default jp2 filename" do
+    @ai = Assembly::Image.new("/path/to/a/file_with_no_extension")
+    @ai.jp2_filename.should == "/path/to/a/file_with_no_extension.jp2"
+  end
+  
   it "should indicate the default DPG jp2 filename" do
     @ai = Assembly::Image.new(TEST_DPG_TIF_INPUT_FILE)
     @ai.dpg_jp2_filename.should == TEST_DPG_TIF_INPUT_FILE.gsub('.tif','.jp2').gsub('_00_','_05_')
   end
 
+  it "should indicate the default jp2 filename" do
+    @ai = Assembly::Image.new("/path/to/a/file_with_no_00_extension")
+    @ai.dpg_jp2_filename.should == "/path/to/a/file_with_no_05_extension.jp2"
+  end
+  
   it "should create jp2 when given an RGB tif" do
     generate_test_image(TEST_TIF_INPUT_FILE)
     expect(File).to exist TEST_TIF_INPUT_FILE

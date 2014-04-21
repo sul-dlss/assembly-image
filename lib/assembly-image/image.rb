@@ -89,7 +89,7 @@ module Assembly
     #   source_img=Assembly::Image.new('/input/path_to_file.tif')
     #   puts source_img.jp2_filename # gives /input/path_to_file.jp2
     def jp2_filename
-      @path.gsub(File.extname(@path),'.jp2')
+      File.extname(@path).empty? ? "#{@path}.jp2" : @path.gsub(File.extname(@path),'.jp2')
     end
 
     # Returns the full DPG equivalent jp2 path and filename that would match with the given image
@@ -99,7 +99,7 @@ module Assembly
     #   source_img=Assembly::Image.new('/input/path_to_file.tif')
     #   puts source_img.jp2_filename # gives /input/path_to_file.jp2
     def dpg_jp2_filename
-      @path.gsub(File.extname(@path),'.jp2').gsub('_00_','_05_')
+      jp2_filename.gsub('_00_','_05_')
     end
         
     # Create a JP2 file for the current image.
