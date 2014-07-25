@@ -19,7 +19,11 @@ def generate_test_image(file,params={})
   create_command += " -profile " + File.join(Assembly::PATH_TO_IMAGE_GEM,'profiles',profile+'.icc') + " " unless profile == ''
   create_command += " -type #{image_type} " if image_type
   create_command += file
-  system(create_command)
+  create_command += " 2>&1"
+  output = `#{create_command}`
+  unless $?.success?
+    raise "Failed to create test image #{file} (#{params}): \n#{output}"
+  end
 end
 
 def remove_files(dir)
