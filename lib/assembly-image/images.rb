@@ -1,7 +1,16 @@
+require 'logger'
 module Assembly
   
   # The Images class contains methods to operate on multiple images in batch.
   class Images
+    
+    def self.logger
+      @logger ||= Logger.new(STDERR)
+    end
+    
+    def self.logger= logger
+      @logger = logger
+    end
 
     # Pass in a source path and have exif color profile descriptions added to all images contained.
     # This is useful if your source TIFFs do not have color profile descriptions in the EXIF data, but you know what it should be.
@@ -27,13 +36,13 @@ module Assembly
       
       raise "Input path does not exist" unless File.directory?(source)
       
-      puts "Source: #{source}"
+      logger.debug "Source: #{source}"
 
       # iterate over input directory looking for tifs
       pattern = recursive ? "**/*.#{extension}" : "*.#{extension}*" 
       Dir.glob(File.join(source,pattern)).each do |file|
         img=Assembly::Image.new(file)
-        puts "Processing #{file}"
+        logger.debug "Processing #{file}"
         img.add_exif_profile_description(profile_name,force)
       end
       return "Complete"
@@ -65,8 +74,8 @@ module Assembly
         Dir.mkdir(output) unless File.directory?(output) # attemp to make output directory
         raise "Output path does not exist or could not be created" unless File.directory?(output) 
 
-        puts "Source: #{source}"
-        puts "Destination: #{output}"
+        logger.debug "Source: #{source}"
+        logger.debug "Destination: #{output}"
   
         pattern = recursive ? "**/*.#{extension}" : "*.#{extension}*" 
 
@@ -76,9 +85,9 @@ module Assembly
           output_img=File.join(output,File.basename(file,File.extname(file))+'.jp2') # output image gets same file name as source, but with a jp2 extension and in the correct output directory
           begin
             derivative_img=source_img.create_jp2(:overwrite=>overwrite,:output=>output_img)
-            puts "Generated jp2 for #{File.basename(file)}"
+            logger.debug "Generated jp2 for #{File.basename(file)}"
           rescue Exception => e
-            puts "** Error for #{File.basename(file)}: #{e.message}"
+            logger.debug "** Error for #{File.basename(file)}: #{e.message}"
           end
         end
         return 'Complete'
