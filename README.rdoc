@@ -137,4 +137,3 @@ To keep a local server running with up to date code documentation that you can v
    Mac users:
 
        brew install exiftool
-
