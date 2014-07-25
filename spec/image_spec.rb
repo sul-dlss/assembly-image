@@ -4,27 +4,27 @@ describe Assembly::Image do
 
   it "should not run if no input file is passed in" do
     @ai=Assembly::Image.new('')
-    lambda{@ai.create_jp2}.should raise_error
+    expect{@ai.create_jp2}.to raise_error
   end
   
   it "should indicate the default jp2 filename" do
     @ai = Assembly::Image.new(TEST_TIF_INPUT_FILE)
-    @ai.jp2_filename.should == TEST_TIF_INPUT_FILE.gsub('.tif','.jp2')
+    expect(@ai.jp2_filename).to eq TEST_TIF_INPUT_FILE.gsub('.tif','.jp2')
   end
 
   it "should indicate the default jp2 filename" do
     @ai = Assembly::Image.new("/path/to/a/file_with_no_extension")
-    @ai.jp2_filename.should == "/path/to/a/file_with_no_extension.jp2"
+    expect(@ai.jp2_filename).to eq "/path/to/a/file_with_no_extension.jp2"
   end
   
   it "should indicate the default DPG jp2 filename" do
     @ai = Assembly::Image.new(TEST_DPG_TIF_INPUT_FILE)
-    @ai.dpg_jp2_filename.should == TEST_DPG_TIF_INPUT_FILE.gsub('.tif','.jp2').gsub('_00_','_05_')
+    expect(@ai.dpg_jp2_filename).to eq TEST_DPG_TIF_INPUT_FILE.gsub('.tif','.jp2').gsub('_00_','_05_')
   end
 
   it "should indicate the default jp2 filename" do
     @ai = Assembly::Image.new("/path/to/a/file_with_no_00_extension")
-    @ai.dpg_jp2_filename.should == "/path/to/a/file_with_no_05_extension.jp2"
+    expect(@ai.dpg_jp2_filename).to eq "/path/to/a/file_with_no_05_extension.jp2"
   end
   
   it "should create jp2 when given an RGB tif" do
@@ -33,13 +33,13 @@ describe Assembly::Image do
     expect(File).to_not exist TEST_JP2_OUTPUT_FILE
     @ai = Assembly::Image.new(TEST_TIF_INPUT_FILE)
     result=@ai.create_jp2(:output => TEST_JP2_OUTPUT_FILE)
-    result.class.should be Assembly::Image
-    result.path.should == TEST_JP2_OUTPUT_FILE        
-    is_jp2?(TEST_JP2_OUTPUT_FILE).should be true
-    result.exif.colorspace.should == "sRGB"
+    expect(result).to be_a_kind_of Assembly::Image
+    expect(result.path).to eq TEST_JP2_OUTPUT_FILE        
+    expect(TEST_JP2_OUTPUT_FILE).to be_a_jp2
+    expect(result.exif.colorspace).to eq "sRGB"
     @jp2=Assembly::Image.new(TEST_JP2_OUTPUT_FILE)
-    @jp2.height.should == 100
-    @jp2.width.should == 100
+    expect(@jp2.height).to eq 100
+    expect(@jp2.width).to eq 100
   end
 
   it "should create grayscale jp2 when given a bitonal tif" do
@@ -47,10 +47,10 @@ describe Assembly::Image do
     expect(File).to exist TEST_TIF_INPUT_FILE
     expect(File).to_not exist TEST_JP2_OUTPUT_FILE
     @ai = Assembly::Image.new(TEST_TIF_INPUT_FILE)
-    @ai.has_color_profile?.should be true
+    expect(@ai).to have_color_profile
     result=@ai.create_jp2(:output => TEST_JP2_OUTPUT_FILE)
-    is_jp2?(TEST_JP2_OUTPUT_FILE).should be true
-    result.exif.colorspace.should == "Grayscale"    
+    expect(TEST_JP2_OUTPUT_FILE).to be_a_jp2
+    expect(result.exif.colorspace).to eq "Grayscale"    
   end
 
   it "should create color jp2 when given a color tif but bitonal image data (1 channels and 1 bits per pixel)" do
@@ -58,10 +58,10 @@ describe Assembly::Image do
     expect(File).to exist TEST_TIF_INPUT_FILE
     expect(File).to_not exist TEST_JP2_OUTPUT_FILE
     @ai = Assembly::Image.new(TEST_TIF_INPUT_FILE)
-    @ai.has_color_profile?.should be false
+    expect(@ai).to_not have_color_profile
     result=@ai.create_jp2(:output => TEST_JP2_OUTPUT_FILE)
-    is_jp2?(TEST_JP2_OUTPUT_FILE).should be true
-    result.exif.colorspace.should == "sRGB"    
+    expect(TEST_JP2_OUTPUT_FILE).to be_a_jp2
+    expect(result.exif.colorspace).to eq "sRGB"    
   end
 
   it "should create grayscale jp2 when given a graycale tif but with bitonal image data (1 channel and 1 bits per pixel)" do
@@ -69,10 +69,10 @@ describe Assembly::Image do
     expect(File).to exist TEST_TIF_INPUT_FILE
     expect(File).to_not exist TEST_JP2_OUTPUT_FILE
     @ai = Assembly::Image.new(TEST_TIF_INPUT_FILE)
-    @ai.has_color_profile?.should be false
+    expect(@ai).to_not have_color_profile
     result=@ai.create_jp2(:output => TEST_JP2_OUTPUT_FILE)
-    is_jp2?(TEST_JP2_OUTPUT_FILE).should be true
-    result.exif.colorspace.should == "Grayscale"    
+    expect(TEST_JP2_OUTPUT_FILE).to be_a_jp2
+    expect(result.exif.colorspace).to eq "Grayscale"    
   end
 
   it "should create color jp2 when given a color tif but with greyscale image data (1 channel and 8 bits per pixel)" do
@@ -80,10 +80,10 @@ describe Assembly::Image do
     expect(File).to exist TEST_TIF_INPUT_FILE
     expect(File).to_not exist TEST_JP2_OUTPUT_FILE
     @ai = Assembly::Image.new(TEST_TIF_INPUT_FILE)
-    @ai.has_color_profile?.should be false
+    expect(@ai).to_not have_color_profile
     result=@ai.create_jp2(:output => TEST_JP2_OUTPUT_FILE)
-    is_jp2?(TEST_JP2_OUTPUT_FILE).should be true
-    result.exif.colorspace.should == "sRGB"    
+    expect(TEST_JP2_OUTPUT_FILE).to be_a_jp2
+    expect(result.exif.colorspace).to eq "sRGB"    
   end
   
   it "should create a jp2 when the source image has no profile" do
@@ -91,11 +91,11 @@ describe Assembly::Image do
     expect(File).to exist TEST_TIF_INPUT_FILE
     expect(File).to_not exist TEST_JP2_OUTPUT_FILE
     @ai = Assembly::Image.new(TEST_TIF_INPUT_FILE)
-    @ai.has_color_profile?.should be false
-    @ai.valid_image?.should be true
-    @ai.jp2able?.should be true
+    expect(@ai).to_not have_color_profile
+    expect(@ai).to be_a_valid_image
+    expect(@ai).to be_jp2able
     @ai.create_jp2(:output => TEST_JP2_OUTPUT_FILE)
-    is_jp2?(TEST_JP2_OUTPUT_FILE).should be true
+    expect(TEST_JP2_OUTPUT_FILE).to be_a_jp2
   end
 
   it "should not run if the output file exists and you don't allow overwriting" do
@@ -104,23 +104,23 @@ describe Assembly::Image do
     expect(File).to exist TEST_TIF_INPUT_FILE
     expect(File).to exist TEST_JP2_OUTPUT_FILE
     @ai = Assembly::Image.new(TEST_TIF_INPUT_FILE)
-    lambda{@ai.create_jp2(:output => TEST_JP2_OUTPUT_FILE)}.should raise_error(SecurityError)
+    expect{@ai.create_jp2(:output => TEST_JP2_OUTPUT_FILE)}.to raise_error(SecurityError)
   end
 
   it "should get the correct image height and width" do
     generate_test_image(TEST_TIF_INPUT_FILE)
     @ai = Assembly::Image.new(TEST_TIF_INPUT_FILE)
-    @ai.height.should == 100
-    @ai.width.should == 100    
+    expect(@ai.height).to eq 100
+    expect(@ai.width).to eq 100
   end
   
   it "should not run if the input file is a jp2" do
     generate_test_image(TEST_JP2_OUTPUT_FILE)
     expect(File).to exist TEST_JP2_OUTPUT_FILE
     @ai = Assembly::Image.new(TEST_JP2_OUTPUT_FILE)
-    @ai.valid_image?.should be true
-    @ai.jp2able?.should be false
-    lambda{@ai.create_jp2}.should raise_error
+    expect(@ai).to be_valid_image
+    expect(@ai).to_not be_jp2able
+    expect { @ai.create_jp2 }.to raise_error
   end
 
   it "should run if you specify a bogus output profile, because this is not currently an option" do
@@ -128,10 +128,10 @@ describe Assembly::Image do
     expect(File).to exist TEST_TIF_INPUT_FILE
     @ai = Assembly::Image.new(TEST_TIF_INPUT_FILE)
     result=@ai.create_jp2(:output_profile=>'bogusness')
-    result.class.should be Assembly::Image
-    result.path.should == TEST_JP2_INPUT_FILE    
-    is_jp2?(TEST_JP2_INPUT_FILE).should be true  
-    result.exif.colorspace.should == "sRGB"     
+    expect(result).to be_a_kind_of Assembly::Image
+    expect(result.path).to eq TEST_JP2_INPUT_FILE    
+    expect(TEST_JP2_INPUT_FILE).to be_a_jp2
+    expect(result.exif.colorspace).to eq "sRGB"     
   end
 
   it "should not run if you specify a bogus tmp folder" do
@@ -140,7 +140,7 @@ describe Assembly::Image do
     expect(File).to exist TEST_TIF_INPUT_FILE
     expect(File).to_not exist bogus_folder
     @ai = Assembly::Image.new(TEST_TIF_INPUT_FILE)
-    lambda{@ai.create_jp2(:tmp_folder=>bogus_folder)}.should raise_error
+    expect { @ai.create_jp2(:tmp_folder=>bogus_folder) }.to raise_error
   end
 
   it "should create a jp2 and preserve the temporary file if specified" do
@@ -148,24 +148,24 @@ describe Assembly::Image do
     expect(File).to exist TEST_TIF_INPUT_FILE
     @ai = Assembly::Image.new(TEST_TIF_INPUT_FILE)
     result=@ai.create_jp2(:output => TEST_JP2_OUTPUT_FILE, :preserve_tmp_source=>true)
-    result.class.should be Assembly::Image
-    result.path.should == TEST_JP2_OUTPUT_FILE    
-    is_jp2?(TEST_JP2_OUTPUT_FILE).should be true
-    result.exif.colorspace.should == "sRGB"    
-    File.exists?(@ai.tmp_path).should be true
+    expect(result).to be_a_kind_of Assembly::Image
+    expect(result.path).to eq TEST_JP2_OUTPUT_FILE    
+    expect(TEST_JP2_OUTPUT_FILE).to be_a_jp2
+    expect(result.exif.colorspace).to eq "sRGB"    
+    expect(File.exists?(@ai.tmp_path)).to be true
   end
 
   it "should create jp2 of the same filename and in the same location as the input if no output file is specified, and should cleanup tmp file" do
     generate_test_image(TEST_TIF_INPUT_FILE)
     expect(File).to exist TEST_TIF_INPUT_FILE
-    File.exists?(TEST_JP2_INPUT_FILE).should be false
+    expect(File.exists?(TEST_JP2_INPUT_FILE)).to be false
     @ai = Assembly::Image.new(TEST_TIF_INPUT_FILE)
     result=@ai.create_jp2
-    result.class.should be Assembly::Image
-    result.path.should == TEST_JP2_INPUT_FILE
-    is_jp2?(TEST_JP2_INPUT_FILE).should be true
-    result.exif.colorspace.should == "sRGB"
-    File.exists?(@ai.tmp_path).should be false    
+    expect(result).to be_a_kind_of Assembly::Image
+    expect(result.path).to eq TEST_JP2_INPUT_FILE
+    expect(TEST_JP2_INPUT_FILE).to be_a_jp2
+    expect(result.exif.colorspace).to eq "sRGB"
+    expect(File.exists?(@ai.tmp_path)).to be false    
   end
 
   it "should create jp2 from input JPEG of the same filename and in the same location as the input if no output file is specified, and should cleanup tmp file" do
@@ -174,11 +174,11 @@ describe Assembly::Image do
     expect(File).to_not exist TEST_JP2_INPUT_FILE
     @ai = Assembly::Image.new(TEST_JPEG_INPUT_FILE)
     result=@ai.create_jp2
-    result.class.should be Assembly::Image
-    result.path.should == TEST_JP2_INPUT_FILE
-    is_jp2?(TEST_JP2_INPUT_FILE).should be true
-    result.exif.colorspace.should == "sRGB"    
-    File.exists?(@ai.tmp_path).should be false    
+    expect(result).to be_a_kind_of Assembly::Image
+    expect(result.path).to eq TEST_JP2_INPUT_FILE
+    expect(TEST_JP2_INPUT_FILE).to be_a_jp2
+    expect(result.exif.colorspace).to eq "sRGB"    
+    expect(File.exists?(@ai.tmp_path)).to be false    
   end
 
   it "should recreate jp2 if the output file exists and if you allow overwriting" do
@@ -188,10 +188,10 @@ describe Assembly::Image do
     expect(File).to exist TEST_JP2_OUTPUT_FILE
     @ai = Assembly::Image.new(TEST_TIF_INPUT_FILE)
     result=@ai.create_jp2(:output => TEST_JP2_OUTPUT_FILE,:overwrite => true)
-    result.class.should be Assembly::Image
-    result.path.should == TEST_JP2_OUTPUT_FILE 
-    is_jp2?(TEST_JP2_OUTPUT_FILE).should be true
-    result.exif.colorspace.should == "sRGB"           
+    expect(result).to be_a_kind_of Assembly::Image
+    expect(result.path).to eq TEST_JP2_OUTPUT_FILE 
+    expect(TEST_JP2_OUTPUT_FILE).to be_a_jp2
+    expect(result.exif.colorspace).to eq "sRGB"           
   end
 
   after(:each) do

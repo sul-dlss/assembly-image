@@ -30,12 +30,13 @@ def remove_files(dir)
   Dir.foreach(dir) {|f| fn = File.join(dir, f); File.delete(fn) if !File.directory?(fn) && File.basename(fn) != '.empty'}
 end
 
-# check the existence and mime_type of the supplied file and confirm if it's jp2
-def is_jp2?(file)
-  if File.exists?(file)
-    exif = MiniExiftool.new file
-    return exif['mimetype'] == 'image/jp2'
-  else
-    false
+RSpec::Matchers.define :be_a_jp2 do
+  match do |actual|
+    if File.exists?(actual)
+      exif = MiniExiftool.new actual
+      exif['mimetype'] == 'image/jp2'
+    else
+      false
+    end
   end
 end
