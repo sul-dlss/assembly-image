@@ -45,7 +45,7 @@ image operations necessary for accessioning of content.
 - 1.6.2-1.6.3 small change to jp2 generation to try and fix bug with tiffs that have multiple input profile layers 
 - 1.6.4 added in some additional checks to try and create jp2s with mismatching exif data
 - 1.6.5 fix problem with lack of extension in incoming tif causing a problem when creating jp2
-
+- 1.6.7 release to github/rubygems
 ==Notes
 
 1. The gem assumes that the user context in which it is executed has write access to the 'tmp' folder.
