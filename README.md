@@ -96,16 +96,14 @@ yard server --reload
 ## Prerequisites
 
 1. Perl - you probably already have it
-2. Kakadu Software Binaries - for JP2 generation
+2. Kakadu Proprietary Software Binaries - for JP2 generation
 3. ImageMagick 6.5.4 or higher
 4. Exiftool
 
 ### Kakadu
 
 Download and install demonstration binaries from Kakadu:
-http://www.kakadusoftware.com/index.php?option=com_content&task=view&id=26&Itemid=22
-
-Note: The binaries will not work with RHEL 5.x; an RPM for RHEL 5 with compatible binaries coming soon.  Supposedly?
+http://kakadusoftware.com/downloads/
 
 ### Imagemagick
 
@@ -117,8 +115,6 @@ The version of ImageMagick included with RHEL 6 has all of the dependency librar
 yum install ImageMagick
 ```
 #### RHEL 5
-
-RPM to install with included binaries coming soon.
 
 The version of ImageMagick included with RHEL 5 is too old and does not have all the proper binaries included/built:
 
