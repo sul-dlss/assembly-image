@@ -1,13 +1,13 @@
 require 'logger'
 module Assembly
-  
+
   # The Images class contains methods to operate on multiple images in batch.
   class Images
-    
+
     def self.logger
       @logger ||= Logger.new(STDERR)
     end
-    
+
     def self.logger= logger
       @logger = logger
     end
@@ -27,27 +27,27 @@ module Assembly
     #   * :extension => defines the types of files that will be processed (default '.tif')
     #
     # Example:
-    #  Assembly::Images.batch_add_exif_profile_description('/full_path_to_tifs','Adobe RGB 1998')    
+    #  Assembly::Images.batch_add_exif_profile_description('/full_path_to_tifs','Adobe RGB 1998')
     def self.batch_add_exif_profile_description(source,profile_name,params={})
 
       extension = params[:extension] || 'tif'
       recursive = params[:recursive] || false
       force = params[:force] || false
-      
-      raise "Input path does not exist" unless File.directory?(source)
-      
+
+      raise 'Input path does not exist' unless File.directory?(source)
+
       logger.debug "Source: #{source}"
 
       # iterate over input directory looking for tifs
-      pattern = recursive ? "**/*.#{extension}" : "*.#{extension}*" 
+      pattern = recursive ? "**/*.#{extension}" : "*.#{extension}*"
       Dir.glob(File.join(source,pattern)).each do |file|
         img=Assembly::Image.new(file)
         logger.debug "Processing #{file}"
         img.add_exif_profile_description(profile_name,force)
       end
-      return "Complete"
+      'Complete'
     end
-        
+
     # Pass in a source path and get JP2s generate for each tiff that is in the source path
     #
     # If not passed in, the destination will be a "jp2" subfolder within the source folder.
@@ -64,20 +64,20 @@ module Assembly
     # Example:
     #  Assembly::Images.batch_generate_jp2('/full_path_to_tifs')
     def self.batch_generate_jp2(source,params={})
-      
-        raise "Input path does not exist" unless File.directory?(source)
+
+        raise 'Input path does not exist' unless File.directory?(source)
         output = params[:output] || File.join(source,'jp2') # default output directgory is jp2 sub-directory from source
         extension = params[:extension] || 'tif'
         overwrite = params[:overwrite] || false
         recursive = params[:recursive] || false
-                
+
         Dir.mkdir(output) unless File.directory?(output) # attemp to make output directory
-        raise "Output path does not exist or could not be created" unless File.directory?(output) 
+        raise 'Output path does not exist or could not be created' unless File.directory?(output)
 
         logger.debug "Source: #{source}"
         logger.debug "Destination: #{output}"
-  
-        pattern = recursive ? "**/*.#{extension}" : "*.#{extension}*" 
+
+        pattern = recursive ? "**/*.#{extension}" : "*.#{extension}*"
 
         # iterate over input directory looking for tifs
         Dir.glob(File.join(source,pattern)).each do |file|
@@ -90,8 +90,8 @@ module Assembly
             logger.debug "** Error for #{File.basename(file)}: #{e.message}"
           end
         end
-        return 'Complete'
-        
+        'Complete'
+
     end
   end
 end

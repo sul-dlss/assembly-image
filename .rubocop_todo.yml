@@ -161,14 +161,6 @@ Style/RedundantBegin:
   Exclude:
     - 'lib/assembly-image/image.rb'
 
-# Offense count: 3
-# Cop supports --auto-correct.
-# Configuration parameters: AllowMultipleReturnValues.
-Style/RedundantReturn:
-  Exclude:
-    - 'lib/assembly-image/image.rb'
-    - 'lib/assembly-image/images.rb'
-
 # Offense count: 1
 # Cop supports --auto-correct.
 # Configuration parameters: AllowAsExpressionSeparator.
@@ -250,18 +242,6 @@ Style/SpecialGlobalVars:
 # Configuration parameters: EnforcedStyle, SupportedStyles.
 Style/StringLiterals:
   Enabled: false
-
-# Offense count: 70
-# Cop supports --auto-correct.
-Style/TrailingWhitespace:
-  Exclude:
-    - 'assembly-image.gemspec'
-    - 'lib/assembly-image.rb'
-    - 'lib/assembly-image/image.rb'
-    - 'lib/assembly-image/images.rb'
-    - 'lib/assembly-image/version.rb'
-    - 'spec/image_spec.rb'
-    - 'spec/images_spec.rb'
 
 # Offense count: 1
 # Cop supports --auto-correct.
