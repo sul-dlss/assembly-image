@@ -105,6 +105,8 @@ yard server --reload
 Download and install demonstration binaries from Kakadu:
 http://kakadusoftware.com/downloads/
 
+NOTE: If you have upgrade to El Capitan on OS X, you will need to donwload and re-install the latest version of Kakadu, due to changes made with SIP.  These changes moved the old executable binaries to an inaccessible location.
+
 ### Imagemagick
 
 #### RHEL 6
@@ -151,4 +153,3 @@ sudo make install
 ```bash
 brew install exiftool
 ```
-
