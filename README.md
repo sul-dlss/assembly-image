@@ -1,3 +1,5 @@
+[![Build Status](https://travis-ci.org/sul-dlss/assembly-image.svg?branch=master)](https://travis-ci.org/sul-dlss/assembly-image)
+
 # Assembly Image Gem
 
 ## Overview
