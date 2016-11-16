@@ -1,3 +1,5 @@
+[![Build Status](https://travis-ci.org/sul-dlss/assembly-image.svg?branch=master)](https://travis-ci.org/sul-dlss/assembly-image)
+
 # Assembly Image Gem
 
 ## Overview
@@ -77,7 +79,7 @@ puts output.exif  # show exif header information for the JP2
 ## Running tests
 
 ```bash
-bundle exec rspec spec
+bundle exec rake
 ```
 
 ## Generate documentation

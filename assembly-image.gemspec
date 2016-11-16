@@ -14,14 +14,13 @@ Gem::Specification.new do |s|
 
   s.files         = `git ls-files`.split("\n")
   s.test_files    = `git ls-files -- {test,spec,features}/*`.split("\n")
-  s.executables   = `git ls-files -- bin/*`.split("\n").map{ |f| File.basename(f) }
+  s.bindir        = 'exe'
+  s.executables   = s.files.grep(%r{^exe/}) { |f| File.basename(f) }
   s.require_paths = ['lib']
 
   s.add_dependency 'uuidtools'
   s.add_dependency 'assembly-objectfile', '>= 1.6.4'
-  s.add_dependency 'mini_exiftool', '~> 1.6'
-  s.add_dependency 'activesupport'
-  s.add_dependency 'nokogiri'
+  s.add_dependency 'mini_exiftool', '>= 1.6', '< 3'
 
   s.add_development_dependency 'rspec', '~> 3.0'
   s.add_development_dependency 'yard'

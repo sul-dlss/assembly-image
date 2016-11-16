@@ -1,0 +1,26 @@
+notifications:
+  email: false
+
+rvm:
+  - 2.2.4
+
+language: ruby
+sudo: false
+
+before_install:
+  - cmake --version
+  - wget -q http://kakadusoftware.com/wp-content/uploads/2014/06/KDU77_Demo_Apps_for_Linux-x86-64_150710.zip
+install:
+  - cmake -E tar -xf KDU77_Demo_Apps_for_Linux-x86-64_150710.zip
+  - export LD_LIBRARY_PATH=${PWD}/KDU77_Demo_Apps_for_Linux-x86-64_150710:${LD_LIBRARY_PATH}
+  - export PATH=${PWD}/KDU77_Demo_Apps_for_Linux-x86-64_150710:${PATH}
+  - bundle install --jobs=3 --retry=3
+
+addons:
+  apt:
+    packages:
+    - libimage-exiftool-perl
+    
+env:
+  global:
+    - NOKOGIRI_USE_SYSTEM_LIBRARIES=true
