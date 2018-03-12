@@ -178,17 +178,17 @@ module Assembly
 
     def kdu_compress_default_options
       [
-        '-precise',
-        '-no_weights',
-        '-quiet',
-        'Creversible=no',
-        'Cmodes=BYPASS',
-        'Corder=RPCL',
-        'Cblk=\\{64,64\\}',
-        'Cprecincts=\\{256,256\\},\\{256,256\\},\\{128,128\\}',
-        'ORGgen_plt=yes',
-        '-rate 1.5',
-        'Clevels=5'
+        '-precise', # forces the use of 32-bit representations
+        '-no_weights', # minimization of the MSE over all reconstructed colour components
+        '-quiet', # suppress informative messages.
+        'Creversible=no', # Disable reversible compression
+        'Cmodes=BYPASS', #
+        'Corder=RPCL', # R=resolution P=position C=component L=layer
+        'Cblk=\\{64,64\\}', # code-block dimensions; 64x64 happens to also be the default
+        'Cprecincts=\\{256,256\\},\\{256,256\\},\\{128,128\\}', # Precinct dimensions; 256x256 for the 2 highest resolution levels, defaults to 128x128 for the rest
+        'ORGgen_plt=yes', # Insert packet length information
+        '-rate 1.5', # Ratio of compressed bits to the image size
+        'Clevels=5' # Number of wavelet decomposition levels, or stages
       ]
     end
 
