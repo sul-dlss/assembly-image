@@ -135,8 +135,6 @@ module Assembly
       raise "tmp_folder #{tmp_folder} does not exists" unless File.exists?(tmp_folder)
 
       preserve_tmp_source = params[:preserve_tmp_source] || false
-      samples_per_pixel=exif['samplesperpixel'].to_s || ''
-      bits_per_sample=exif['bitspersample'] || ''
 
       # make temp tiff filename
       tmp_tiff_file = Tempfile.new(['assembly-image', '.tif'], tmp_folder)
@@ -178,6 +176,14 @@ module Assembly
     end
 
     private
+
+    def samples_per_pixel
+      exif['samplesperpixel'].to_s || ''
+    end
+
+    def bits_per_sample
+      exif['bitspersample'] || ''
+    end
 
     # Get the number of JP2 layers to generate
     def layers
