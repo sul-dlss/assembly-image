@@ -147,6 +147,7 @@ module Assembly
         when 1
           if bits_per_sample == 1
             options << '-type Bilevel'
+            options << '-depth 8' # force the production of a grayscale access derivative
           elsif bits_per_sample > 1
             options << '-type Grayscale'
           end
