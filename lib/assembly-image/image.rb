@@ -134,60 +134,29 @@ module Assembly
       tmp_folder = params[:tmp_folder] || Dir.tmpdir
       raise "tmp_folder #{tmp_folder} does not exists" unless File.exists?(tmp_folder)
 
-      output_profile      = 'sRGBIEC6196621' # params[:output_profile] || 'sRGBIEC6196621'  # eventually we may allow the user to specify the output_profile...when we do, you can just uncomment this code and update the tests that check for this
       preserve_tmp_source = params[:preserve_tmp_source] || false
-      path_to_profiles    = File.join(Assembly::PATH_TO_IMAGE_GEM,'profiles')
-      output_profile_file = File.join(path_to_profiles,"#{output_profile}.icc")
-
-      raise "output profile #{output_profile} invalid" if !File.exists?(output_profile_file)
-
       samples_per_pixel=exif['samplesperpixel'].to_s || ''
       bits_per_sample=exif['bitspersample'] || ''
-
-      path_to_profiles   = File.join(Assembly::PATH_TO_IMAGE_GEM,'profiles')
-
-      if !profile.nil? # if the input color profile exists, contract paths to the profile and setup the command
-
-        input_profile = profile.gsub(/[^[:alnum:]]/, '')   # remove all non alpha-numeric characters, so we can get to a filename
-
-        # construct a path to the input profile, which might exist either in the gem itself or in the tmp folder
-        input_profile_file_gem = File.join(path_to_profiles,"#{input_profile}.icc")
-        input_profile_file_tmp = File.join(tmp_folder,"#{input_profile}.icc")
-        input_profile_file = File.exists?(input_profile_file_gem) ? input_profile_file_gem : input_profile_file_tmp
-
-        # if input profile was extracted and does not matches an existing known profile either in the gem or in the tmp folder,
-        # we'll issue an imagicmagick command to extract the profile to the tmp folder
-        unless File.exists?(input_profile_file)
-          input_profile_extraction_command = "MAGICK_TEMPORARY_PATH=#{tmp_folder} convert '#{@path}'[0] #{input_profile_file}" # extract profile from input image
-          result=`#{input_profile_extraction_command} 2>&1`
-          raise "input profile extraction command failed: #{input_profile_extraction_command} with result #{result}" unless $?.success?
-          raise 'input profile is not a known profile and could not be extracted from input file' unless File.exists?(input_profile_file) # if extraction failed or we cannot write the file, throw exception
-        end
-
-        profile_conversion_switch = "-profile #{input_profile_file} -profile #{output_profile_file}"
-
-      else
-
-        profile_conversion_switch = '' # no conversion needed if input color profile does not exist
-
-      end
 
       # make temp tiff filename
       tmp_tiff_file = Tempfile.new(['assembly-image', '.tif'], tmp_folder)
       @tmp_path = tmp_tiff_file.path
 
-      options    =  ''
+      options    =  []
       case samples_per_pixel
         when '3'
-          options += '-type TrueColor'
+          options << '-type TrueColor'
         when '1'
           if bits_per_sample.to_i == 1
-            options += '-type Bilevel'
+            options << '-type Bilevel'
           elsif bits_per_sample.to_i > 1
-            options += '-type Grayscale'
+            options << '-type Grayscale'
           end
       end
-      tiff_command       = "MAGICK_TEMPORARY_PATH=#{tmp_folder} convert -quiet -compress none #{profile_conversion_switch} #{options} '#{@path}[0]' '#{@tmp_path}'"
+
+      options << profile_conversion_switch(profile, tmp_folder: tmp_folder)
+
+      tiff_command       = "MAGICK_TEMPORARY_PATH=#{tmp_folder} convert -quiet -compress none #{options.join(' ')} '#{@path}[0]' '#{@tmp_path}'"
       result=`#{tiff_command} 2>&1`
       raise "tiff convert command failed: #{tiff_command} with result #{result}" unless $?.success?
 
@@ -209,9 +178,38 @@ module Assembly
 
       # create output response object, which is an Assembly::Image type object
       Assembly::Image.new(output)
-
     end
 
-  end
+    private
 
+    def profile_conversion_switch(profile, tmp_folder:)
+      path_to_profiles   = File.join(Assembly::PATH_TO_IMAGE_GEM,'profiles')
+      output_profile      = 'sRGBIEC6196621' # params[:output_profile] || 'sRGBIEC6196621'  # eventually we may allow the user to specify the output_profile...when we do, you can just uncomment this code and update the tests that check for this
+      output_profile_file = File.join(path_to_profiles,"#{output_profile}.icc")
+
+      raise "output profile #{output_profile} invalid" unless File.exists?(output_profile_file)
+
+      return '' if profile.nil?
+
+      # if the input color profile exists, contract paths to the profile and setup the command
+
+      input_profile = profile.gsub(/[^[:alnum:]]/, '')   # remove all non alpha-numeric characters, so we can get to a filename
+
+      # construct a path to the input profile, which might exist either in the gem itself or in the tmp folder
+      input_profile_file_gem = File.join(path_to_profiles,"#{input_profile}.icc")
+      input_profile_file_tmp = File.join(tmp_folder,"#{input_profile}.icc")
+      input_profile_file = File.exists?(input_profile_file_gem) ? input_profile_file_gem : input_profile_file_tmp
+
+      # if input profile was extracted and does not matches an existing known profile either in the gem or in the tmp folder,
+      # we'll issue an imagicmagick command to extract the profile to the tmp folder
+      unless File.exists?(input_profile_file)
+        input_profile_extraction_command = "MAGICK_TEMPORARY_PATH=#{tmp_folder} convert '#{@path}'[0] #{input_profile_file}" # extract profile from input image
+        result=`#{input_profile_extraction_command} 2>&1`
+        raise "input profile extraction command failed: #{input_profile_extraction_command} with result #{result}" unless $?.success?
+        raise 'input profile is not a known profile and could not be extracted from input file' unless File.exists?(input_profile_file) # if extraction failed or we cannot write the file, throw exception
+      end
+
+      "-profile #{input_profile_file} -profile #{output_profile_file}"
+    end
+  end
 end
