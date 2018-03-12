@@ -1,5 +1,5 @@
-require 'uuidtools'
 require 'assembly-objectfile'
+require 'tempfile'
 
 module Assembly
 
@@ -173,7 +173,8 @@ module Assembly
       end
 
       # make temp tiff filename
-      @tmp_path      = "#{tmp_folder}/#{UUIDTools::UUID.random_create.to_s}.tif"
+      tmp_tiff_file = Tempfile.new(['assembly-image', '.tif'], tmp_folder)
+      @tmp_path = tmp_tiff_file.path
 
       options    =  ''
       case samples_per_pixel
@@ -204,7 +205,7 @@ module Assembly
       result=`#{jp2_command} 2>&1`
       raise "JP2 creation command failed: #{jp2_command} with result #{result}" unless $?.success?
 
-      File.delete(@tmp_path) unless preserve_tmp_source
+      tmp_tiff_file.delete unless preserve_tmp_source
 
       # create output response object, which is an Assembly::Image type object
       Assembly::Image.new(output)
