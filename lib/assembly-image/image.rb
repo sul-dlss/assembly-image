@@ -159,13 +159,12 @@ module Assembly
       raise "tiff convert command failed: #{tiff_command} with result #{result}" unless $?.success?
 
       # jp2 creation command
-      kdu_bin     = 'kdu_compress '
-      options     = ''
-      options    += ' -jp2_space sRGB ' if samples_per_pixel == '3'
-      options    += ' -precise -no_weights -quiet Creversible=no Cmodes=BYPASS Corder=RPCL ' +
-                    'Cblk=\\{64,64\\} Cprecincts=\\{256,256\\},\\{256,256\\},\\{128,128\\} ' +
-                    'ORGgen_plt=yes -rate 1.5 Clevels=5 '
-      jp2_command = "#{kdu_bin} #{options} Clayers=#{layers.to_s} -i '#{@tmp_path}' -o '#{output}'"
+      kdu_bin = 'kdu_compress'
+      options = []
+      options << '-jp2_space sRGB' if samples_per_pixel == '3'
+      options += kdu_compress_default_options
+      options << "Clayers=#{layers.to_s}"
+      jp2_command = "#{kdu_bin} #{options.join(' ')} -i '#{@tmp_path}' -o '#{output}'"
       result=`#{jp2_command} 2>&1`
       raise "JP2 creation command failed: #{jp2_command} with result #{result}" unless $?.success?
 
@@ -176,6 +175,22 @@ module Assembly
     end
 
     private
+
+    def kdu_compress_default_options
+      [
+        '-precise',
+        '-no_weights',
+        '-quiet',
+        'Creversible=no',
+        'Cmodes=BYPASS',
+        'Corder=RPCL',
+        'Cblk=\\{64,64\\}',
+        'Cprecincts=\\{256,256\\},\\{256,256\\},\\{128,128\\}',
+        'ORGgen_plt=yes',
+        '-rate 1.5',
+        'Clevels=5'
+      ]
+    end
 
     def samples_per_pixel
       exif['samplesperpixel'].to_s || ''
