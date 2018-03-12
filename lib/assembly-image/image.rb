@@ -131,7 +131,7 @@ module Assembly
 
       raise SecurityError,'cannot recreate jp2 over itself' if overwrite && mimetype=='image/jp2' && output == @path
 
-      tmp_folder = params[:tmp_folder] || '/tmp'
+      tmp_folder = params[:tmp_folder] || Dir.tmpdir
       raise "tmp_folder #{tmp_folder} does not exists" unless File.exists?(tmp_folder)
 
       output_profile      = 'sRGBIEC6196621' # params[:output_profile] || 'sRGBIEC6196621'  # eventually we may allow the user to specify the output_profile...when we do, you can just uncomment this code and update the tests that check for this
