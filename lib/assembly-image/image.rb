@@ -160,9 +160,6 @@ module Assembly
       result=`#{tiff_command} 2>&1`
       raise "tiff convert command failed: #{tiff_command} with result #{result}" unless $?.success?
 
-      pixdem = width > height ? width : height
-      layers = (( Math.log(pixdem) / Math.log(2) ) - ( Math.log(96) / Math.log(2) )).ceil + 1
-
       # jp2 creation command
       kdu_bin     = 'kdu_compress '
       options     = ''
@@ -181,6 +178,12 @@ module Assembly
     end
 
     private
+
+    # Get the number of JP2 layers to generate
+    def layers
+      pixdem = [width, height].max
+      (( Math.log(pixdem) / Math.log(2) ) - ( Math.log(96) / Math.log(2) )).ceil + 1
+    end
 
     def profile_conversion_switch(profile, tmp_folder:)
       path_to_profiles   = File.join(Assembly::PATH_TO_IMAGE_GEM,'profiles')
