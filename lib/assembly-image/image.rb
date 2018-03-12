@@ -142,12 +142,12 @@ module Assembly
 
       options    =  []
       case samples_per_pixel
-        when '3'
+        when 3
           options << '-type TrueColor'
-        when '1'
-          if bits_per_sample.to_i == 1
+        when 1
+          if bits_per_sample == 1
             options << '-type Bilevel'
-          elsif bits_per_sample.to_i > 1
+          elsif bits_per_sample > 1
             options << '-type Grayscale'
           end
       end
@@ -161,7 +161,7 @@ module Assembly
       # jp2 creation command
       kdu_bin = 'kdu_compress'
       options = []
-      options << '-jp2_space sRGB' if samples_per_pixel == '3'
+      options << '-jp2_space sRGB' if samples_per_pixel == 3
       options += kdu_compress_default_options
       options << "Clayers=#{layers.to_s}"
       jp2_command = "#{kdu_bin} #{options.join(' ')} -i '#{@tmp_path}' -o '#{output}'"
@@ -193,11 +193,25 @@ module Assembly
     end
 
     def samples_per_pixel
-      exif['samplesperpixel'].to_s || ''
+      if exif['samplesperpixel']
+        exif['samplesperpixel'].to_i
+      else
+        case mimetype
+        when 'image/tiff'
+          1
+        end
+      end
     end
 
     def bits_per_sample
-      exif['bitspersample'] || ''
+      if exif['bitspersample']
+        exif['bitspersample'].to_i
+      else
+        case mimetype
+        when 'image/tiff'
+          1
+        end
+      end
     end
 
     # Get the number of JP2 layers to generate
