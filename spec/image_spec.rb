@@ -33,6 +33,8 @@ describe Assembly::Image do
     expect(File).to_not exist TEST_JP2_OUTPUT_FILE
     @ai = Assembly::Image.new(TEST_TIF_INPUT_FILE)
     result=@ai.create_jp2(:output => TEST_JP2_OUTPUT_FILE)
+    # Indicates a temp tiff was not created.
+    expect(@ai.tmp_path).to be_nil
     expect(result).to be_a_kind_of Assembly::Image
     expect(result.path).to eq TEST_JP2_OUTPUT_FILE
     expect(TEST_JP2_OUTPUT_FILE).to be_a_jp2
@@ -57,6 +59,8 @@ describe Assembly::Image do
     @ai = Assembly::Image.new(TEST_TIF_INPUT_FILE)
     expect(@ai).to have_color_profile
     result=@ai.create_jp2(:output => TEST_JP2_OUTPUT_FILE)
+    # Indicates a temp tiff was not created.
+    expect(@ai.tmp_path).to be_nil
     expect(TEST_JP2_OUTPUT_FILE).to be_a_jp2
     expect(result.exif.colorspace).to eq 'Grayscale'
   end
@@ -68,6 +72,8 @@ describe Assembly::Image do
     @ai = Assembly::Image.new(TEST_TIF_INPUT_FILE)
     expect(@ai).to_not have_color_profile
     result=@ai.create_jp2(:output => TEST_JP2_OUTPUT_FILE)
+    # Indicates a temp tiff was not created.
+    expect(@ai.tmp_path).to be_nil
     expect(TEST_JP2_OUTPUT_FILE).to be_a_jp2
     expect(result.exif.colorspace).to eq 'sRGB'
   end
@@ -77,6 +83,8 @@ describe Assembly::Image do
     expect(File).to exist TEST_TIF_INPUT_FILE
     expect(File).to_not exist TEST_JP2_OUTPUT_FILE
     @ai = Assembly::Image.new(TEST_TIF_INPUT_FILE)
+    # Indicates a temp tiff was not created.
+    expect(@ai.tmp_path).to be_nil
     expect(@ai).to_not have_color_profile
     result=@ai.create_jp2(:output => TEST_JP2_OUTPUT_FILE)
     expect(TEST_JP2_OUTPUT_FILE).to be_a_jp2
@@ -88,6 +96,8 @@ describe Assembly::Image do
     expect(File).to exist TEST_TIF_INPUT_FILE
     expect(File).to_not exist TEST_JP2_OUTPUT_FILE
     @ai = Assembly::Image.new(TEST_TIF_INPUT_FILE)
+    # Indicates a temp tiff was not created.
+    expect(@ai.tmp_path).to be_nil
     expect(@ai).to_not have_color_profile
     result=@ai.create_jp2(:output => TEST_JP2_OUTPUT_FILE)
     expect(TEST_JP2_OUTPUT_FILE).to be_a_jp2
@@ -99,6 +109,8 @@ describe Assembly::Image do
     expect(File).to exist TEST_TIF_INPUT_FILE
     expect(File).to_not exist TEST_JP2_OUTPUT_FILE
     @ai = Assembly::Image.new(TEST_TIF_INPUT_FILE)
+    # Indicates a temp tiff was not created.
+    expect(@ai.tmp_path).to be_nil
     expect(@ai).to_not have_color_profile
     expect(@ai).to be_a_valid_image
     expect(@ai).to be_jp2able
@@ -142,24 +154,40 @@ describe Assembly::Image do
     expect(result.exif.colorspace).to eq 'sRGB'
   end
 
+  it 'should create jp2 when given a JPEG' do
+    generate_test_image(TEST_JPEG_INPUT_FILE)
+    expect(File).to exist TEST_JPEG_INPUT_FILE
+    expect(File).to_not exist TEST_JP2_OUTPUT_FILE
+    @ai = Assembly::Image.new(TEST_JPEG_INPUT_FILE)
+    result=@ai.create_jp2(:output => TEST_JP2_OUTPUT_FILE)
+    # Indicates a temp tiff was created.
+    expect(@ai.tmp_path).not_to be_nil
+    expect(File).not_to exist @ai.tmp_path
+    expect(result).to be_a_kind_of Assembly::Image
+    expect(result.path).to eq TEST_JP2_OUTPUT_FILE
+    expect(TEST_JP2_OUTPUT_FILE).to be_a_jp2
+  end
+
   it 'should not run if you specify a bogus tmp folder' do
-    generate_test_image(TEST_TIF_INPUT_FILE)
+    generate_test_image(TEST_JPEG_INPUT_FILE)
     bogus_folder='/crapsticks'
-    expect(File).to exist TEST_TIF_INPUT_FILE
+    expect(File).to exist TEST_JPEG_INPUT_FILE
     expect(File).to_not exist bogus_folder
-    @ai = Assembly::Image.new(TEST_TIF_INPUT_FILE)
+    @ai = Assembly::Image.new(TEST_JPEG_INPUT_FILE)
     expect { @ai.create_jp2(:tmp_folder=>bogus_folder) }.to raise_error
   end
 
   it 'should create a jp2 and preserve the temporary file if specified' do
-    generate_test_image(TEST_TIF_INPUT_FILE)
-    expect(File).to exist TEST_TIF_INPUT_FILE
-    @ai = Assembly::Image.new(TEST_TIF_INPUT_FILE)
+    generate_test_image(TEST_JPEG_INPUT_FILE)
+    expect(File).to exist TEST_JPEG_INPUT_FILE
+    @ai = Assembly::Image.new(TEST_JPEG_INPUT_FILE)
     result=@ai.create_jp2(:output => TEST_JP2_OUTPUT_FILE, :preserve_tmp_source=>true)
+    # Indicates a temp tiff was created.
+    expect(@ai.tmp_path).not_to be_nil
+    expect(File).to exist @ai.tmp_path
     expect(result).to be_a_kind_of Assembly::Image
     expect(result.path).to eq TEST_JP2_OUTPUT_FILE
     expect(TEST_JP2_OUTPUT_FILE).to be_a_jp2
-    expect(result.exif.colorspace).to eq 'sRGB'
     expect(File.exists?(@ai.tmp_path)).to be true
   end
 
@@ -173,19 +201,7 @@ describe Assembly::Image do
     expect(result.path).to eq TEST_JP2_INPUT_FILE
     expect(TEST_JP2_INPUT_FILE).to be_a_jp2
     expect(result.exif.colorspace).to eq 'sRGB'
-    expect(File.exists?(@ai.tmp_path)).to be false
-  end
-
-  it 'should create jp2 from input JPEG of the same filename and in the same location as the input if no output file is specified, and should cleanup tmp file' do
-    generate_test_image(TEST_JPEG_INPUT_FILE)
-    expect(File).to exist TEST_JPEG_INPUT_FILE
-    expect(File).to_not exist TEST_JP2_INPUT_FILE
-    @ai = Assembly::Image.new(TEST_JPEG_INPUT_FILE)
-    result=@ai.create_jp2
-    expect(result).to be_a_kind_of Assembly::Image
-    expect(result.path).to eq TEST_JP2_INPUT_FILE
-    expect(TEST_JP2_INPUT_FILE).to be_a_jp2
-    expect(File.exists?(@ai.tmp_path)).to be false
+    expect(@ai.tmp_path).to be_nil
   end
 
   it 'should recreate jp2 if the output file exists and if you allow overwriting' do
