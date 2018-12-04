@@ -1,15 +1,15 @@
+# frozen_string_literal: true
+
 require 'logger'
 module Assembly
-
   # The Images class contains methods to operate on multiple images in batch.
   class Images
-
     def self.logger
       @logger ||= Logger.new(STDERR)
     end
 
-    def self.logger= logger
-      @logger = logger
+    class << self
+      attr_writer :logger
     end
 
     # Pass in a source path and have exif color profile descriptions added to all images contained.
@@ -28,8 +28,9 @@ module Assembly
     #
     # Example:
     #  Assembly::Images.batch_add_exif_profile_description('/full_path_to_tifs','Adobe RGB 1998')
-    def self.batch_add_exif_profile_description(source,profile_name,params={})
-
+    # rubocop:disable Metrics/MethodLength
+    # rubocop:disable Metrics/AbcSize
+    def self.batch_add_exif_profile_descr(source, profile_name, params = {})
       extension = params[:extension] || 'tif'
       recursive = params[:recursive] || false
       force = params[:force] || false
@@ -40,13 +41,15 @@ module Assembly
 
       # iterate over input directory looking for tifs
       pattern = recursive ? "**/*.#{extension}" : "*.#{extension}*"
-      Dir.glob(File.join(source,pattern)).each do |file|
-        img=Assembly::Image.new(file)
+      Dir.glob(File.join(source, pattern)).each do |file|
+        img = Assembly::Image.new(file)
         logger.debug "Processing #{file}"
-        img.add_exif_profile_description(profile_name,force)
+        img.add_exif_profile_description(profile_name, force)
       end
       'Complete'
     end
+    # rubocop:enable Metrics/MethodLength
+    # rubocop:enable Metrics/AbcSize
 
     # Pass in a source path and get JP2s generate for each tiff that is in the source path
     #
@@ -63,35 +66,42 @@ module Assembly
     #
     # Example:
     #  Assembly::Images.batch_generate_jp2('/full_path_to_tifs')
-    def self.batch_generate_jp2(source,params={})
+    # rubocop:disable Metrics/MethodLength
+    # rubocop:disable Metrics/AbcSize
+    # rubocop:disable Metrics/CyclomaticComplexity
+    # rubocop:disable Metrics/PerceivedComplexity
+    def self.batch_generate_jp2(source, params = {})
+      raise 'Input path does not exist' unless File.directory?(source)
 
-        raise 'Input path does not exist' unless File.directory?(source)
-        output = params[:output] || File.join(source,'jp2') # default output directgory is jp2 sub-directory from source
-        extension = params[:extension] || 'tif'
-        overwrite = params[:overwrite] || false
-        recursive = params[:recursive] || false
+      output = params[:output] || File.join(source, 'jp2') # default output directgory is jp2 sub-directory from source
+      extension = params[:extension] || 'tif'
+      overwrite = params[:overwrite] || false
+      recursive = params[:recursive] || false
 
-        Dir.mkdir(output) unless File.directory?(output) # attemp to make output directory
-        raise 'Output path does not exist or could not be created' unless File.directory?(output)
+      Dir.mkdir(output) unless File.directory?(output) # attemp to make output directory
+      raise 'Output path does not exist or could not be created' unless File.directory?(output)
 
-        logger.debug "Source: #{source}"
-        logger.debug "Destination: #{output}"
+      logger.debug "Source: #{source}"
+      logger.debug "Destination: #{output}"
 
-        pattern = recursive ? "**/*.#{extension}" : "*.#{extension}*"
+      pattern = recursive ? "**/*.#{extension}" : "*.#{extension}*"
 
-        # iterate over input directory looking for tifs
-        Dir.glob(File.join(source,pattern)).each do |file|
-          source_img=Assembly::Image.new(file)
-          output_img=File.join(output,File.basename(file,File.extname(file))+'.jp2') # output image gets same file name as source, but with a jp2 extension and in the correct output directory
-          begin
-            derivative_img=source_img.create_jp2(:overwrite=>overwrite,:output=>output_img)
-            logger.debug "Generated jp2 for #{File.basename(file)}"
-          rescue Exception => e
-            logger.debug "** Error for #{File.basename(file)}: #{e.message}"
-          end
+      # iterate over input directory looking for tifs
+      Dir.glob(File.join(source, pattern)).each do |file|
+        source_img = Assembly::Image.new(file)
+        output_img = File.join(output, File.basename(file, File.extname(file)) + '.jp2') # output image gets same file name as source, but with a jp2 extension and in the correct output directory
+        begin
+          source_img.create_jp2(overwrite: overwrite, output: output_img)
+          logger.debug "Generated jp2 for #{File.basename(file)}"
+        rescue StandardError => e
+          logger.debug "** Error for #{File.basename(file)}: #{e.message}"
         end
-        'Complete'
-
+      end
+      'Complete'
     end
+    # rubocop:enable Metrics/MethodLength
+    # rubocop:enable Metrics/AbcSize
+    # rubocop:enable Metrics/CyclomaticComplexity
+    # rubocop:enable Metrics/PerceivedComplexity
   end
 end

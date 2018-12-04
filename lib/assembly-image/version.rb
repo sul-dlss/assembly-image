@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 # Main Assembly namespace
 module Assembly
   # Main Image class
