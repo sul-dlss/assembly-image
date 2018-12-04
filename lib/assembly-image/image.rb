@@ -131,33 +131,13 @@ module Assembly
 
       raise SecurityError,'cannot recreate jp2 over itself' if overwrite && mimetype=='image/jp2' && output == @path
 
-      tmp_folder = params[:tmp_folder] || Dir.tmpdir
-      raise "tmp_folder #{tmp_folder} does not exists" unless File.exists?(tmp_folder)
+      # Using instance variable so that can check in tests.
+      source_path = if mimetype != 'image/tiff'
+                      @tmp_path = make_tmp_tiff(tmp_folder: params[:tmp_folder])
+                 else
+                    @path
+                 end
 
-      preserve_tmp_source = params[:preserve_tmp_source] || false
-
-      # make temp tiff filename
-      tmp_tiff_file = Tempfile.new(['assembly-image', '.tif'], tmp_folder)
-      @tmp_path = tmp_tiff_file.path
-
-      options    =  []
-      case samples_per_pixel
-        when 3
-          options << '-type TrueColor'
-        when 1
-          if bits_per_sample == 1
-            options << '-type Bilevel'
-            options << '-depth 8' # force the production of a grayscale access derivative
-          elsif bits_per_sample > 1
-            options << '-type Grayscale'
-          end
-      end
-
-      options << profile_conversion_switch(profile, tmp_folder: tmp_folder)
-
-      tiff_command       = "MAGICK_TEMPORARY_PATH=#{tmp_folder} convert -quiet -compress none #{options.join(' ')} '#{@path}[0]' '#{@tmp_path}'"
-      result=`#{tiff_command} 2>&1`
-      raise "tiff convert command failed: #{tiff_command} with result #{result}" unless $?.success?
 
       # jp2 creation command
       kdu_bin = 'kdu_compress'
@@ -165,11 +145,11 @@ module Assembly
       options << '-jp2_space sRGB' if samples_per_pixel == 3
       options += kdu_compress_default_options
       options << "Clayers=#{layers.to_s}"
-      jp2_command = "#{kdu_bin} #{options.join(' ')} -i '#{@tmp_path}' -o '#{output}'"
+      jp2_command = "#{kdu_bin} #{options.join(' ')} -i '#{source_path}' -o '#{output}'"
       result=`#{jp2_command} 2>&1`
       raise "JP2 creation command failed: #{jp2_command} with result #{result}" unless $?.success?
 
-      tmp_tiff_file.delete unless preserve_tmp_source
+      File.delete(source_path) unless @tmp_path.nil? || params[:preserve_tmp_source]
 
       # create output response object, which is an Assembly::Image type object
       Assembly::Image.new(output)
@@ -249,6 +229,37 @@ module Assembly
       end
 
       "-profile #{input_profile_file} -profile #{output_profile_file}"
+    end
+
+    def make_tmp_tiff(tmp_folder: nil)
+      tmp_folder = tmp_folder || Dir.tmpdir
+      raise "tmp_folder #{tmp_folder} does not exists" unless File.exists?(tmp_folder)
+
+      # preserve_tmp_source = params[:preserve_tmp_source] || false
+
+      # make temp tiff filename
+      tmp_tiff_file = Tempfile.new(['assembly-image', '.tif'], tmp_folder)
+      tmp_path = tmp_tiff_file.path
+
+      options    =  []
+      case samples_per_pixel
+      when 3
+        options << '-type TrueColor'
+      when 1
+        if bits_per_sample == 1
+          options << '-type Bilevel'
+          options << '-depth 8' # force the production of a grayscale access derivative
+        elsif bits_per_sample > 1
+          options << '-type Grayscale'
+        end
+      end
+
+      options << profile_conversion_switch(profile, tmp_folder: tmp_folder)
+
+      tiff_command = "MAGICK_TEMPORARY_PATH=#{tmp_folder} convert -quiet -compress none #{options.join(' ')} '#{@path}[0]' '#{tmp_path}'"
+      result=`#{tiff_command} 2>&1`
+      raise "tiff convert command failed: #{tiff_command} with result #{result}" unless $?.success?
+      tmp_path
     end
   end
 end
