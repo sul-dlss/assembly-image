@@ -50,6 +50,7 @@ perform image operations necessary for accessioning of content.
 * 1.6.5 fix problem with lack of extension in incoming tif causing a problem when creating jp2
 * 1.6.7 release to github/rubygems
 * 1.6.9 update mini_exiftool
+* 1.7.1 for jp2, only transcode to tiff if not a tiff 
 
 ## Notes
 
