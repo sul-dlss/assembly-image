@@ -129,7 +129,8 @@ module Assembly
                       @path
                     end
 
-      result = `#{jp2_create_command(source_path: source_path, output: output)}`
+      jp2_command = jp2_create_command(source_path: source_path, output: output)
+      result = `#{jp2_command}`
       raise "JP2 creation command failed: #{jp2_command} with result #{result}" unless $CHILD_STATUS.success?
 
       File.delete(source_path) unless @tmp_path.nil? || params[:preserve_tmp_source]
