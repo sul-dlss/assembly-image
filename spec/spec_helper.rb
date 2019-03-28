@@ -15,6 +15,8 @@ TEST_DRUID           = 'nx288wh8889'
 
 # generate a sample image file with a specified profile
 # rubocop:disable Metrics/AbcSize
+# rubocop:disable Metrics/CyclomaticComplexity
+# rubocop:disable Metrics/MethodLength
 def generate_test_image(file, params = {})
   color = params[:color] || 'red'
   profile = params[:profile] || 'sRGBIEC6196621'
@@ -22,12 +24,15 @@ def generate_test_image(file, params = {})
   create_command = "convert -size 100x100 xc:#{color} "
   create_command += ' -profile ' + File.join(Assembly::PATH_TO_IMAGE_GEM, 'profiles', profile + '.icc') + ' ' unless profile == ''
   create_command += " -type #{image_type} " if image_type
+  create_command += ' -compress lzw ' if params[:compress]
   create_command += file
   create_command += ' 2>&1'
   output = `#{ create_command }`
   raise "Failed to create test image #{file} (#{params}): \n#{output}" unless $CHILD_STATUS.success?
 end
 # rubocop:enable Metrics/AbcSize
+# rubocop:enable Metrics/CyclomaticComplexity
+# rubocop:enable Metrics/MethodLength
 
 def remove_files(dir)
   Dir.foreach(dir) do |f|
