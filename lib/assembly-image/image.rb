@@ -2,6 +2,7 @@
 
 require 'assembly-objectfile'
 require 'tempfile'
+require 'English' # see https://github.com/rubocop-hq/rubocop/issues/1747 (not #MAGA related)
 
 module Assembly
   # The Image class contains methods to operate on an image.
