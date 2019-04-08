@@ -2,6 +2,7 @@
 
 require 'assembly-objectfile'
 require 'tempfile'
+require 'English'
 
 module Assembly
   # The Image class contains methods to operate on an image.
