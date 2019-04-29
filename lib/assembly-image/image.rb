@@ -283,7 +283,18 @@ module Assembly
 
       options << profile_conversion_switch(profile, tmp_folder: tmp_folder)
 
-      tiff_command = "MAGICK_TEMPORARY_PATH=#{tmp_folder} convert -quiet -compress none #{options.join(' ')} '#{@path}[0]' '#{tmp_path}'"
+      estimated_size = width * height * exif.samples_per_pixel * exif.bits_per_sample.to_i / 8
+      largetiffs_supported = !`convert -list format`.split(/\n/).index{ |s| s=~ /TIFF64.*rw/ }.nil?
+
+      tiff64 = if (estimated_size > 2**32) && largetiffs_supported
+                 'tiff64:'
+               elsif (estimated_size < 2**32)
+                 ''
+               else
+                 raise 'System does not support image files with more than 4GB of image data.'
+               end
+
+      tiff_command = "MAGICK_TEMPORARY_PATH=#{tmp_folder} convert -quiet -compress none #{options.join(' ')} '#{@path}[0]' '#{tiff64}' '#{tmp_path}'"
       result = `#{tiff_command} 2>&1`
       raise "tiff convert command failed: #{tiff_command} with result #{result}" unless $CHILD_STATUS.success?
 
