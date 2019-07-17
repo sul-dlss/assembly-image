@@ -17,10 +17,10 @@ TEST_DRUID           = 'nx288wh8889'
 # rubocop:disable Metrics/CyclomaticComplexity
 # rubocop:disable Metrics/MethodLength
 def generate_test_image(file, params = {})
-  color = params[:color] || 'red'
+  color = params[:color] || 'TrueColor'
   profile = params[:profile] || 'sRGBIEC6196621'
   image_type = params[:image_type]
-  create_command = "convert -size 100x100 xc:#{color} "
+  create_command = "convert rose: -scale 100x100\! -type #{color} "
   create_command += ' -profile ' + File.join(Assembly::PATH_TO_IMAGE_GEM, 'profiles', profile + '.icc') + ' ' unless profile == ''
   create_command += " -type #{image_type} " if image_type
   create_command += ' -compress lzw ' if params[:compress]

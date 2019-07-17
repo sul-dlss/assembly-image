@@ -75,7 +75,7 @@ describe Assembly::Image do
     #  of supplied image components and/or colour palette.  You can address this
     #  problem by supplying a `-jp2_space' or `-jpx_space' argument to explicitly
     #  identify a colour space that has anywhere from 1 to 1 colour components.
-    generate_test_image(TEST_TIF_INPUT_FILE, color: 'white', image_type: 'Bilevel')
+    generate_test_image(TEST_TIF_INPUT_FILE, image_type: 'Bilevel')
     expect(File).to exist TEST_TIF_INPUT_FILE
     expect(File).to_not exist TEST_JP2_OUTPUT_FILE
     @ai = Assembly::Image.new(TEST_TIF_INPUT_FILE)
@@ -88,7 +88,7 @@ describe Assembly::Image do
   end
 
   it 'creates color jp2 when given a color tif but bitonal image data (1 channels and 1 bits per pixel)' do
-    generate_test_image(TEST_TIF_INPUT_FILE, color: 'white', image_type: 'TrueColor', profile: '')
+    generate_test_image(TEST_TIF_INPUT_FILE, color: 'Bilevel', image_type: 'TrueColor', profile: '')
     expect(File).to exist TEST_TIF_INPUT_FILE
     expect(File).to_not exist TEST_JP2_OUTPUT_FILE
     @ai = Assembly::Image.new(TEST_TIF_INPUT_FILE)
@@ -101,7 +101,7 @@ describe Assembly::Image do
   end
 
   it 'creates grayscale jp2 when given a graycale tif but with bitonal image data (1 channel and 1 bits per pixel)' do
-    generate_test_image(TEST_TIF_INPUT_FILE, color: 'white', image_type: 'Grayscale', profile: '')
+    generate_test_image(TEST_TIF_INPUT_FILE, color: 'Bilevel', image_type: 'Grayscale', profile: '')
     expect(File).to exist TEST_TIF_INPUT_FILE
     expect(File).to_not exist TEST_JP2_OUTPUT_FILE
     @ai = Assembly::Image.new(TEST_TIF_INPUT_FILE)
@@ -114,7 +114,7 @@ describe Assembly::Image do
   end
 
   it 'creates color jp2 when given a color tif but with greyscale image data (1 channel and 8 bits per pixel)' do
-    generate_test_image(TEST_TIF_INPUT_FILE, color: 'gray', image_type: 'TrueColor', profile: '')
+    generate_test_image(TEST_TIF_INPUT_FILE, color: 'Grayscale', image_type: 'TrueColor', profile: '')
     expect(File).to exist TEST_TIF_INPUT_FILE
     expect(File).to_not exist TEST_JP2_OUTPUT_FILE
     @ai = Assembly::Image.new(TEST_TIF_INPUT_FILE)
@@ -157,8 +157,17 @@ describe Assembly::Image do
   end
 
   it 'does not run if the input file is a jp2' do
-    generate_test_image(TEST_JP2_OUTPUT_FILE)
-    expect(File).to exist TEST_JP2_OUTPUT_FILE
+    generate_test_image(TEST_TIF_INPUT_FILE, profile: '') # generate a test input with no profile
+    expect(File).to exist TEST_TIF_INPUT_FILE
+    expect(File).to_not exist TEST_JP2_OUTPUT_FILE
+    @ai = Assembly::Image.new(TEST_TIF_INPUT_FILE)
+    # Indicates a temp tiff was not created.
+    expect(@ai.tmp_path).to be_nil
+    expect(@ai).to_not have_color_profile
+    expect(@ai).to be_a_valid_image
+    expect(@ai).to be_jp2able
+    @ai.create_jp2(output: TEST_JP2_OUTPUT_FILE)
+    expect(TEST_JP2_OUTPUT_FILE).to be_a_jp2
     @ai = Assembly::Image.new(TEST_JP2_OUTPUT_FILE)
     expect(@ai).to be_valid_image
     expect(@ai).to_not be_jp2able
