@@ -181,6 +181,7 @@ module Assembly
     # rubocop:disable Metrics/MethodLength
     def kdu_compress_default_options
       [
+        '-num_threads 2', # forces Kakadu to only use 2 threads
         '-precise', # forces the use of 32-bit representations
         '-no_weights', # minimization of the MSE over all reconstructed colour components
         '-quiet', # suppress informative messages.
@@ -269,6 +270,10 @@ module Assembly
       tmp_path = tmp_tiff_file.path
 
       options = []
+
+      # Limit the amount of memory ImageMagick is able to use.
+      options << '-limit memory 1GiB -limit map 1GiB'
+
       case samples_per_pixel
       when 3
         options << '-type TrueColor'
