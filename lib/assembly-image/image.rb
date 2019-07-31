@@ -62,9 +62,9 @@ module Assembly
     # Example:
     #   source_img=Assembly::ObjectFile.new('/input/path_to_file.tif')
     #   puts source_img.compressed? # gives true
-    def compressed?
-      exif.compression != 'Uncompressed'
-    end
+    # def compressed?
+    #   exif.compression != 'Uncompressed'
+    # end
 
     # Add an exif color profile descriptions to the image.
     # This is useful if your source TIFFs do not have color profile descriptions in the EXIF data, but you know what it should be.
@@ -136,17 +136,13 @@ module Assembly
       create_jp2_checks(output: output, overwrite: params[:overwrite])
 
       # Using instance variable so that can check in tests.
-      source_path = if create_temp_tiff?
-                      @tmp_path = make_tmp_tiff(tmp_folder: params[:tmp_folder])
-                    else
-                      @path
-                    end
+      @tmp_path = make_tmp_tiff(tmp_folder: params[:tmp_folder])
 
-      jp2_command = jp2_create_command(source_path: source_path, output: output)
+      jp2_command = jp2_create_command(source_path: @tmp_path, output: output)
       result = `#{jp2_command}`
       raise "JP2 creation command failed: #{jp2_command} with result #{result}" unless $CHILD_STATUS.success?
 
-      File.delete(source_path) unless @tmp_path.nil? || params[:preserve_tmp_source]
+      File.delete(@tmp_path) unless @tmp_path.nil? || params[:preserve_tmp_source]
 
       # create output response object, which is an Assembly::Image type object
       Assembly::Image.new(output)
@@ -156,9 +152,9 @@ module Assembly
 
     private
 
-    def create_temp_tiff?
-      mimetype != 'image/tiff' || compressed?
-    end
+    # def create_temp_tiff?
+    #   mimetype != 'image/tiff' || compressed?
+    # end
 
     def create_jp2_checks(output:, overwrite:)
       check_for_file
