@@ -274,12 +274,8 @@ module Assembly
       when 3
         options << '-type TrueColor'
       when 1
-        if bits_per_sample == 1
-          options << '-type Bilevel'
-          options << '-depth 8' # force the production of a grayscale access derivative
-        elsif bits_per_sample > 1
-          options << '-type Grayscale'
-        end
+        options << '-depth 8' # force the production of a grayscale access derivative
+        options << '-type Grayscale'
       end
 
       options << profile_conversion_switch(profile, tmp_folder: tmp_folder)
