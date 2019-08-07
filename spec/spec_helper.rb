@@ -16,11 +16,14 @@ TEST_DRUID           = 'nx288wh8889'
 # rubocop:disable Metrics/AbcSize
 # rubocop:disable Metrics/CyclomaticComplexity
 # rubocop:disable Metrics/MethodLength
+# rubocop:disable Metrics/PerceivedComplexity
 def generate_test_image(file, params = {})
+  width = params[:width] || '100'
+  height = params[:height] || '100'
   color = params[:color] || 'TrueColor'
   profile = params[:profile] || 'sRGBIEC6196621'
   image_type = params[:image_type]
-  create_command = "convert rose: -scale 100x100\! -type #{color} "
+  create_command = "convert rose: -scale #{width}x#{height}\! -type #{color} "
   create_command += ' -profile ' + File.join(Assembly::PATH_TO_IMAGE_GEM, 'profiles', profile + '.icc') + ' ' unless profile == ''
   create_command += " -type #{image_type} " if image_type
   create_command += ' -compress lzw ' if params[:compress]
@@ -32,6 +35,7 @@ end
 # rubocop:enable Metrics/AbcSize
 # rubocop:enable Metrics/CyclomaticComplexity
 # rubocop:enable Metrics/MethodLength
+# rubocop:enable Metrics/PerceivedComplexity
 
 def remove_files(dir)
   Dir.foreach(dir) do |f|

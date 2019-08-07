@@ -128,8 +128,6 @@ module Assembly
     #   derivative_img=source_img.create_jp2(:overwrite=>true)
     #   puts derivative_img.mimetype # 'image/jp2'
     #   puts derivative_image.path # '/input/path_to_file.jp2'
-    # rubocop:disable Metrics/AbcSize
-    # rubocop:disable Metrics/MethodLength
     # rubocop:disable Metrics/CyclomaticComplexity:
     def create_jp2(params = {})
       output = params[:output] || jp2_filename
@@ -147,8 +145,6 @@ module Assembly
       # create output response object, which is an Assembly::Image type object
       Assembly::Image.new(output)
     end
-    # rubocop:enable Metrics/AbcSize
-    # rubocop:enable Metrics/MethodLength
 
     private
 
@@ -200,6 +196,8 @@ module Assembly
         case mimetype
         when 'image/tiff'
           1
+        when 'image/jpeg'
+          3
         end
       end
     end
@@ -213,6 +211,16 @@ module Assembly
           1
         end
       end
+    end
+
+    # Get size of image data in bytes
+    def image_data_size
+      (samples_per_pixel * height * width * bits_per_sample) / 8
+    end
+
+    # Bigtiff needs to be used if size of image exceeds 2^32 bytes.
+    def need_bigtiff?
+      image_data_size >= 2**32
     end
 
     # Get the number of JP2 layers to generate
@@ -280,7 +288,12 @@ module Assembly
 
       options << profile_conversion_switch(profile, tmp_folder: tmp_folder)
 
-      tiff_command = "MAGICK_TEMPORARY_PATH=#{tmp_folder} convert -quiet -compress none #{options.join(' ')} '#{@path}[0]' '#{tmp_path}'"
+      # The output in the covnert command needs to be prefixed by the image type. By default ImageMagick
+      # will assume TIFF: when the file extension is .tif/.tiff. TIFF64: Needs to be forced when image will
+      # exceed 2^32 bytes in size
+      tiff_type = need_bigtiff? ? 'TIFF64:' : ''
+
+      tiff_command = "MAGICK_TEMPORARY_PATH=#{tmp_folder} convert -quiet -compress none #{options.join(' ')} '#{@path}[0]' #{tiff_type}'#{tmp_path}'"
       result = `#{tiff_command} 2>&1`
       raise "tiff convert command failed: #{tiff_command} with result #{result}" unless $CHILD_STATUS.success?
 
