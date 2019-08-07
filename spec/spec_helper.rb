@@ -29,7 +29,7 @@ def generate_test_image(file, params = {})
   create_command += ' -compress lzw ' if params[:compress]
   create_command += file
   create_command += ' 2>&1'
-  output = `#{ create_command }`
+  output = `#{create_command}`
   raise "Failed to create test image #{file} (#{params}): \n#{output}" unless $CHILD_STATUS.success?
 end
 # rubocop:enable Metrics/AbcSize
