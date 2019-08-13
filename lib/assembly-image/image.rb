@@ -62,9 +62,9 @@ module Assembly
     # Example:
     #   source_img=Assembly::ObjectFile.new('/input/path_to_file.tif')
     #   puts source_img.compressed? # gives true
-    def compressed?
-      exif.compression != 'Uncompressed'
-    end
+    # def compressed?
+    #   exif.compression != 'Uncompressed'
+    # end
 
     # Add an exif color profile descriptions to the image.
     # This is useful if your source TIFFs do not have color profile descriptions in the EXIF data, but you know what it should be.
@@ -128,37 +128,29 @@ module Assembly
     #   derivative_img=source_img.create_jp2(:overwrite=>true)
     #   puts derivative_img.mimetype # 'image/jp2'
     #   puts derivative_image.path # '/input/path_to_file.jp2'
-    # rubocop:disable Metrics/AbcSize
-    # rubocop:disable Metrics/MethodLength
     # rubocop:disable Metrics/CyclomaticComplexity:
     def create_jp2(params = {})
       output = params[:output] || jp2_filename
       create_jp2_checks(output: output, overwrite: params[:overwrite])
 
       # Using instance variable so that can check in tests.
-      source_path = if create_temp_tiff?
-                      @tmp_path = make_tmp_tiff(tmp_folder: params[:tmp_folder])
-                    else
-                      @path
-                    end
+      @tmp_path = make_tmp_tiff(tmp_folder: params[:tmp_folder])
 
-      jp2_command = jp2_create_command(source_path: source_path, output: output)
+      jp2_command = jp2_create_command(source_path: @tmp_path, output: output)
       result = `#{jp2_command}`
       raise "JP2 creation command failed: #{jp2_command} with result #{result}" unless $CHILD_STATUS.success?
 
-      File.delete(source_path) unless @tmp_path.nil? || params[:preserve_tmp_source]
+      File.delete(@tmp_path) unless @tmp_path.nil? || params[:preserve_tmp_source]
 
       # create output response object, which is an Assembly::Image type object
       Assembly::Image.new(output)
     end
-    # rubocop:enable Metrics/AbcSize
-    # rubocop:enable Metrics/MethodLength
 
     private
 
-    def create_temp_tiff?
-      mimetype != 'image/tiff' || compressed?
-    end
+    # def create_temp_tiff?
+    #   mimetype != 'image/tiff' || compressed?
+    # end
 
     def create_jp2_checks(output:, overwrite:)
       check_for_file
@@ -204,6 +196,8 @@ module Assembly
         case mimetype
         when 'image/tiff'
           1
+        when 'image/jpeg'
+          3
         end
       end
     end
@@ -217,6 +211,16 @@ module Assembly
           1
         end
       end
+    end
+
+    # Get size of image data in bytes
+    def image_data_size
+      (samples_per_pixel * height * width * bits_per_sample) / 8
+    end
+
+    # Bigtiff needs to be used if size of image exceeds 2^32 bytes.
+    def need_bigtiff?
+      image_data_size >= 2**32
     end
 
     # Get the number of JP2 layers to generate
@@ -278,17 +282,18 @@ module Assembly
       when 3
         options << '-type TrueColor'
       when 1
-        if bits_per_sample == 1
-          options << '-type Bilevel'
-          options << '-depth 8' # force the production of a grayscale access derivative
-        elsif bits_per_sample > 1
-          options << '-type Grayscale'
-        end
+        options << '-depth 8' # force the production of a grayscale access derivative
+        options << '-type Grayscale'
       end
 
       options << profile_conversion_switch(profile, tmp_folder: tmp_folder)
 
-      tiff_command = "MAGICK_TEMPORARY_PATH=#{tmp_folder} convert -quiet -compress none #{options.join(' ')} '#{@path}[0]' '#{tmp_path}'"
+      # The output in the covnert command needs to be prefixed by the image type. By default ImageMagick
+      # will assume TIFF: when the file extension is .tif/.tiff. TIFF64: Needs to be forced when image will
+      # exceed 2^32 bytes in size
+      tiff_type = need_bigtiff? ? 'TIFF64:' : ''
+
+      tiff_command = "MAGICK_TEMPORARY_PATH=#{tmp_folder} convert -quiet -compress none #{options.join(' ')} '#{@path}[0]' #{tiff_type}'#{tmp_path}'"
       result = `#{tiff_command} 2>&1`
       raise "tiff convert command failed: #{tiff_command} with result #{result}" unless $CHILD_STATUS.success?
 
