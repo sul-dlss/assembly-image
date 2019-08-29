@@ -1,5 +1,10 @@
 # frozen_string_literal: true
 
+require 'simplecov'
+SimpleCov.start do
+  add_filter 'spec'
+end
+
 bootfile = File.expand_path(File.dirname(__FILE__) + '/../config/boot')
 require bootfile
 

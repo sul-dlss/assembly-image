@@ -1,4 +1,7 @@
 [![Build Status](https://travis-ci.org/sul-dlss/assembly-image.svg?branch=master)](https://travis-ci.org/sul-dlss/assembly-image)
+[![Test Coverage](https://api.codeclimate.com/v1/badges/5bcd886bed28b1979ac0/test_coverage)](https://codeclimate.com/github/sul-dlss/assembly-image/test_coverage)
+[![Maintainability](https://api.codeclimate.com/v1/badges/5bcd886bed28b1979ac0/maintainability)](https://codeclimate.com/github/sul-dlss/assembly-image/maintainability)
+[![Gem Version](https://badge.fury.io/rb/assembly-image.svg)](https://badge.fury.io/rb/assembly-image)
 
 # Assembly Image Gem
 
@@ -51,7 +54,7 @@ perform image operations necessary for accessioning of content.
 * 1.6.7 release to github/rubygems
 * 1.6.9 update mini_exiftool
 * 1.7.1 for jp2, only transcode to tiff if not a tiff
-* 1.7.3 for jp2, only transcode to tiff if not an uncompressed tiff 
+* 1.7.3 for jp2, only transcode to tiff if not an uncompressed tiff
 
 ## Notes
 
