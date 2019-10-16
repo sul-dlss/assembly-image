@@ -46,6 +46,42 @@ describe Assembly::Image do
   #   expect(@jp2.width).to eq 100
   # end
 
+  it 'creates the jp2 with a temp file when given an CMYK jpeg' do
+    generate_test_image(TEST_JPEG_INPUT_FILE, colorspace: 'CMYK', profile: '', color: 'optimize')
+    expect(File).to exist TEST_JPEG_INPUT_FILE
+    expect(File).to_not exist TEST_JP2_OUTPUT_FILE
+    @ai = Assembly::Image.new(TEST_JPEG_INPUT_FILE)
+    expect(@ai.exif['ColorComponents']).to eql 4
+    result = @ai.create_jp2(output: TEST_JP2_OUTPUT_FILE)
+    # Indicates a temp tiff was not created.
+    expect(@ai.tmp_path).to_not be_nil
+    expect(result).to be_a_kind_of Assembly::Image
+    expect(result.path).to eq TEST_JP2_OUTPUT_FILE
+    expect(TEST_JP2_OUTPUT_FILE).to be_a_jp2
+    expect(result.exif.colorspace).to eq 'sRGB'
+    @jp2 = Assembly::Image.new(TEST_JP2_OUTPUT_FILE)
+    expect(@jp2.height).to eq 100
+    expect(@jp2.width).to eq 100
+  end
+
+  it 'creates the jp2 with a temp file when given an CMYK tif' do
+    generate_test_image(TEST_TIF_INPUT_FILE, colorspace: 'CMYK', profile: '', color: 'optimize')
+    expect(File).to exist TEST_TIF_INPUT_FILE
+    expect(File).to_not exist TEST_JP2_OUTPUT_FILE
+    @ai = Assembly::Image.new(TEST_TIF_INPUT_FILE)
+    expect(@ai.exif['SamplesPerPixel']).to eql 4
+    result = @ai.create_jp2(output: TEST_JP2_OUTPUT_FILE)
+    # Indicates a temp tiff was not created.
+    expect(@ai.tmp_path).to_not be_nil
+    expect(result).to be_a_kind_of Assembly::Image
+    expect(result.path).to eq TEST_JP2_OUTPUT_FILE
+    expect(TEST_JP2_OUTPUT_FILE).to be_a_jp2
+    expect(result.exif.colorspace).to eq 'sRGB'
+    @jp2 = Assembly::Image.new(TEST_JP2_OUTPUT_FILE)
+    expect(@jp2.height).to eq 100
+    expect(@jp2.width).to eq 100
+  end
+
   it 'creates the jp2 with a temp file when given an LZW compressed RGB tif' do
     generate_test_image(TEST_TIF_INPUT_FILE, compress: 'lzw')
     expect(File).to exist TEST_TIF_INPUT_FILE

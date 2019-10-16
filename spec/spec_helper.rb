@@ -28,7 +28,9 @@ def generate_test_image(file, params = {})
   color = params[:color] || 'TrueColor'
   profile = params[:profile] || 'sRGBIEC6196621'
   image_type = params[:image_type]
+  colorspace = params[:colorspace]
   create_command = "convert rose: -scale #{width}x#{height}\! -type #{color} "
+  create_command += " -colorspace #{colorspace} " if params[:colorspace]
   create_command += ' -profile ' + File.join(Assembly::PATH_TO_IMAGE_GEM, 'profiles', profile + '.icc') + ' ' unless profile == ''
   create_command += " -type #{image_type} " if image_type
   create_command += ' -compress lzw ' if params[:compress]

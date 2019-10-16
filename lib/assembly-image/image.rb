@@ -279,7 +279,7 @@ module Assembly
       options << '-limit memory 1GiB -limit map 1GiB'
 
       case samples_per_pixel
-      when 3
+      when 3..4
         options << '-type TrueColor'
       when 1
         options << '-depth 8' # force the production of a grayscale access derivative
