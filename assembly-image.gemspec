@@ -12,8 +12,6 @@ Gem::Specification.new do |s|
   s.summary     = 'Ruby immplementation of image services needed to prepare objects to be accessioned in SULAIR digital library'
   s.description = 'Contains classes to create derivative image files and perform other image operations'
 
-  s.rubyforge_project = 'assembly-image'
-
   s.files         = `git ls-files`.split("\n")
   s.test_files    = `git ls-files -- {test,spec,features}/*`.split("\n")
   s.bindir        = 'exe'
