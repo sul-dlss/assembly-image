@@ -7,10 +7,7 @@ require 'English' # see https://github.com/rubocop-hq/rubocop/issues/1747 (not #
 module Assembly
   # The Image class contains methods to operate on an image.
   # rubocop:disable Metrics/ClassLength
-  class Image
-    # include common behaviors from assembly-objectfile gem
-    include Assembly::ObjectFileable
-
+  class Image < Assembly::ObjectFile
     # stores the path to the tmp file generated during the JP2 creation process
     attr_accessor :tmp_path
 
