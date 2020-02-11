@@ -22,6 +22,7 @@ Gem::Specification.new do |s|
 
   s.add_dependency 'assembly-objectfile', '>= 1.6.4'
   s.add_dependency 'mini_exiftool', '>= 1.6', '< 3'
+  s.add_dependency 'ruby-vips', '>= 2.0'
 
   s.add_development_dependency 'rake'
   s.add_development_dependency 'rspec', '~> 3.0'
