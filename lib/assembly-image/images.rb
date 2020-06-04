@@ -42,7 +42,7 @@ module Assembly
       # iterate over input directory looking for tifs
       pattern = recursive ? "**/*.#{extension}" : "*.#{extension}*"
       Dir.glob(File.join(source, pattern)).each do |file|
-        img = Assembly::Image.new(file)
+        img = Assembly::Image.new(Assembly::ObjectFile.new(file))
         logger.debug "Processing #{file}"
         img.add_exif_profile_description(profile_name, force)
       end
@@ -88,7 +88,7 @@ module Assembly
 
       # iterate over input directory looking for tifs
       Dir.glob(File.join(source, pattern)).each do |file|
-        source_img = Assembly::Image.new(file)
+        source_img = Assembly::Image.new(Assembly::ObjectFile.new(file))
         output_img = File.join(output, File.basename(file, File.extname(file)) + '.jp2') # output image gets same file name as source, but with a jp2 extension and in the correct output directory
         begin
           source_img.create_jp2(overwrite: overwrite, output: output_img)
