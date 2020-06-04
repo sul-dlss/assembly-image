@@ -3,7 +3,7 @@
 require 'spec_helper'
 
 # rubocop:disable Metrics/BlockLength
-describe Assembly::Image do
+RSpec.describe Assembly::Image do
   it 'does not run if no input file is passed in' do
     @ai = Assembly::Image.new('')
     expect{ @ai.create_jp2 }.to raise_error

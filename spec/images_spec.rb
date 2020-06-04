@@ -3,7 +3,7 @@
 require 'spec_helper'
 
 # rubocop:disable Metrics/BlockLength
-describe Assembly::Images do
+RSpec.describe Assembly::Images do
   it 'should not run if no input folder is passed in' do
     expect{ Assembly::Images.batch_generate_jp2('') }.to raise_error
   end
