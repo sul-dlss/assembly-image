@@ -1,5 +1,7 @@
 # frozen_string_literal: true
 
+require 'active_support'
+require 'active_support/core_ext/module/delegation'
 require 'assembly-objectfile'
 require 'tempfile'
 require 'English' # see https://github.com/rubocop-hq/rubocop/issues/1747 (not #MAGA related)
@@ -8,11 +10,21 @@ module Assembly
   # The Image class contains methods to operate on an image.
   # rubocop:disable Metrics/ClassLength
   class Image
-    # include common behaviors from assembly-objectfile gem
-    include Assembly::ObjectFileable
+    def initialize(source_path_or_object_file)
+      if source_path_or_object_file.is_a? String
+        Deprecation.warn(self, 'Assembly::Image now takes an Assembly::ObjectFile and you provided a String. This will be removed in 2.0')
+        @object_file = Assembly::ObjectFile.new(source_path_or_object_file)
+      else
+        @object_file = source_path_or_object_file
+      end
+    end
+
+    delegate :exif, :path, :file_exists?, :jp2able?, :valid_image?, :mimetype, to: :object_file
 
     # stores the path to the tmp file generated during the JP2 creation process
     attr_accessor :tmp_path
+
+    attr_reader :object_file
 
     # Examines the input image for validity.  Used to determine if image is correct and if JP2 generation is likely to succeed.
     #  This method is automatically called before you create a jp2 but it can be called separately earlier as a sanity check.
@@ -30,8 +42,7 @@ module Assembly
     #
     # @return [string] image color profile
     # Example:
-    #   source_img=Assembly::Image.new('/input/path_to_file.tif')
-    #   puts source_img.profile # gives 'Adobe RGB 1998'
+    #   puts assembly_image.profile # gives 'Adobe RGB 1998'
     def profile
       exif.nil? ? nil : exif['profiledescription']
     end
@@ -40,8 +51,7 @@ module Assembly
     #
     # @return [integer] image height in pixels
     # Example:
-    #   source_img=Assembly::Image.new('/input/path_to_file.tif')
-    #   puts source_img.height # gives 100
+    #   puts assembly_image.height # gives 100
     def height
       exif.imageheight
     end
@@ -49,22 +59,10 @@ module Assembly
     # Get the image width from exif data
     # @return [integer] image height in pixels
     # Example:
-    #   source_img=Assembly::Image.new('/input/path_to_file.tif')
-    #   puts source_img.width # gives 100
+    #   puts assembly_image.width # gives 100
     def width
       exif.imagewidth
     end
-
-    # Examines the input image to determine if it is compressed.
-    #
-    # @return [boolean] true if image is compressed, false if not.
-    #
-    # Example:
-    #   source_img=Assembly::ObjectFile.new('/input/path_to_file.tif')
-    #   puts source_img.compressed? # gives true
-    # def compressed?
-    #   exif.compression != 'Uncompressed'
-    # end
 
     # Add an exif color profile descriptions to the image.
     # This is useful if your source TIFFs do not have color profile descriptions in the EXIF data, but you know what it should be.
@@ -77,8 +75,7 @@ module Assembly
     # @param [String] force if set to true, force overwrite a color profile description even if it already exists (default: false)
     #
     # Example:
-    #  source_img=Assembly::Image.new('/input/path_to_file.tif')
-    #  source_img.add_exif_profile_description('Adobe RGB 1998')
+    #  assembly_image.add_exif_profile_description('Adobe RGB 1998')
     def add_exif_profile_description(profile_name, force = false)
       if profile.nil? || force
         input_profile = profile_name.gsub(/[^[:alnum:]]/, '') # remove all non alpha-numeric characters, so we can get to a filename
@@ -89,25 +86,23 @@ module Assembly
         raise "profile addition command failed: #{command} with result #{result}" unless $CHILD_STATUS.success?
       end
     rescue StandardError => e
-      puts "** Error for #{filename}: #{e.message}"
+      puts "** Error for #{path}: #{e.message}"
     end
 
     # Returns the full default jp2 path and filename that will be created from the given image
     #
     # @return [string] full default jp2 path and filename that will be created from the given image
     # Example:
-    #   source_img=Assembly::Image.new('/input/path_to_file.tif')
-    #   puts source_img.jp2_filename # gives /input/path_to_file.jp2
+    #   puts ssembly_image.jp2_filename # gives /input/path_to_file.jp2
     def jp2_filename
-      File.extname(@path).empty? ? "#{@path}.jp2" : @path.gsub(File.extname(@path), '.jp2')
+      File.extname(path).empty? ? "#{path}.jp2" : path.gsub(File.extname(path), '.jp2')
     end
 
     # Returns the full DPG equivalent jp2 path and filename that would match with the given image
     #
     # @return [string] full DPG equivalent jp2 path and filename
     # Example:
-    #   source_img=Assembly::Image.new('/input/path_to_file.tif')
-    #   puts source_img.jp2_filename # gives /input/path_to_file.jp2
+    #   puts assembly_image.jp2_filename # gives /input/path_to_file.jp2
     def dpg_jp2_filename
       jp2_filename.gsub('_00_', '_05_')
     end
@@ -143,21 +138,17 @@ module Assembly
       File.delete(@tmp_path) unless @tmp_path.nil? || params[:preserve_tmp_source]
 
       # create output response object, which is an Assembly::Image type object
-      Assembly::Image.new(output)
+      Assembly::Image.new(Assembly::ObjectFile.new(output))
     end
 
     private
 
-    # def create_temp_tiff?
-    #   mimetype != 'image/tiff' || compressed?
-    # end
-
     def create_jp2_checks(output:, overwrite:)
-      check_for_file
+      raise "File #{path} does not exist" unless file_exists?
       raise 'input file is not a valid image, or is the wrong mimetype' unless jp2able?
 
       raise SecurityError, "output #{output} exists, cannot overwrite" if !overwrite && File.exist?(output)
-      raise SecurityError, 'cannot recreate jp2 over itself' if overwrite && mimetype == 'image/jp2' && output == @path
+      raise SecurityError, 'cannot recreate jp2 over itself' if overwrite && mimetype == 'image/jp2' && output == path
     end
     # rubocop:enable Metrics/CyclomaticComplexity
 
@@ -255,7 +246,7 @@ module Assembly
       # if input profile was extracted and does not matches an existing known profile either in the gem or in the tmp folder,
       # we'll issue an imagicmagick command to extract the profile to the tmp folder
       unless File.exist?(input_profile_file)
-        input_profile_extract_command = "MAGICK_TEMPORARY_PATH=#{tmp_folder} convert '#{@path}'[0] #{input_profile_file}" # extract profile from input image
+        input_profile_extract_command = "MAGICK_TEMPORARY_PATH=#{tmp_folder} convert '#{path}'[0] #{input_profile_file}" # extract profile from input image
         result = `#{input_profile_extract_command} 2>&1`
         raise "input profile extraction command failed: #{input_profile_extract_command} with result #{result}" unless $CHILD_STATUS.success?
         # if extraction failed or we cannot write the file, throw exception
@@ -293,7 +284,8 @@ module Assembly
       # exceed 2^32 bytes in size
       tiff_type = need_bigtiff? ? 'TIFF64:' : ''
 
-      tiff_command = "MAGICK_TEMPORARY_PATH=#{tmp_folder} convert -quiet -compress none #{options.join(' ')} '#{@path}[0]' #{tiff_type}'#{tmp_path}'"
+      tiff_command = "MAGICK_TEMPORARY_PATH=#{tmp_folder} convert -quiet -compress none #{options.join(' ')} '#{path}[0]' #{tiff_type}'#{tmp_path}'"
+
       result = `#{tiff_command} 2>&1`
       raise "tiff convert command failed: #{tiff_command} with result #{result}" unless $CHILD_STATUS.success?
 
