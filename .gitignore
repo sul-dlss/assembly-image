@@ -11,3 +11,6 @@ pkg/*
 tags
 tmp
 .yardoc/*
+
+coverage
+spec/examples.txt
