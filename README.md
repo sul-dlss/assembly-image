@@ -1,4 +1,4 @@
-[![Build Status](https://travis-ci.org/sul-dlss/assembly-image.svg?branch=master)](https://travis-ci.org/sul-dlss/assembly-image)
+[![Build Status](https://travis-ci.com/sul-dlss/assembly-image.svg?branch=main)](https://travis-ci.com/sul-dlss/assembly-image)
 [![Test Coverage](https://api.codeclimate.com/v1/badges/5bcd886bed28b1979ac0/test_coverage)](https://codeclimate.com/github/sul-dlss/assembly-image/test_coverage)
 [![Maintainability](https://api.codeclimate.com/v1/badges/5bcd886bed28b1979ac0/maintainability)](https://codeclimate.com/github/sul-dlss/assembly-image/maintainability)
 [![Gem Version](https://badge.fury.io/rb/assembly-image.svg)](https://badge.fury.io/rb/assembly-image)
