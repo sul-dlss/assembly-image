@@ -7,6 +7,12 @@ RSpec.describe Assembly::Image do
   let(:ai) { described_class.new(input_path) }
   let(:input_path) { TEST_TIF_INPUT_FILE }
 
+  after do
+    # after each test, empty out the input and output test directories
+    remove_files(TEST_INPUT_DIR)
+    remove_files(TEST_OUTPUT_DIR)
+  end
+
   describe '#jp2_filename' do
     it 'indicates the default jp2 filename' do
       expect(ai.jp2_filename).to eq TEST_TIF_INPUT_FILE.gsub('.tif', '.jp2')
@@ -55,15 +61,15 @@ RSpec.describe Assembly::Image do
 
       it 'creates the jp2 with a temp file' do
         expect(File).to exist TEST_TIF_INPUT_FILE
-        expect(File).to_not exist TEST_JP2_OUTPUT_FILE
+        expect(File).not_to exist TEST_JP2_OUTPUT_FILE
         result = ai.create_jp2(output: TEST_JP2_OUTPUT_FILE)
         # Indicates a temp tiff was not created.
-        expect(ai.tmp_path).to_not be_nil
-        expect(result).to be_a_kind_of Assembly::Image
+        expect(ai.tmp_path).not_to be_nil
+        expect(result).to be_a_kind_of described_class
         expect(result.path).to eq TEST_JP2_OUTPUT_FILE
         expect(TEST_JP2_OUTPUT_FILE).to be_a_jp2
         expect(result.exif.colorspace).to eq 'sRGB'
-        jp2 = Assembly::Image.new(TEST_JP2_OUTPUT_FILE)
+        jp2 = described_class.new(TEST_JP2_OUTPUT_FILE)
         expect(jp2.height).to eq 100
         expect(jp2.width).to eq 100
       end
@@ -76,14 +82,14 @@ RSpec.describe Assembly::Image do
 
       it 'creates the jp2 with a temp file' do
         expect(File).to exist TEST_TIF_INPUT_FILE
-        expect(File).to_not exist TEST_JP2_OUTPUT_FILE
+        expect(File).not_to exist TEST_JP2_OUTPUT_FILE
         result = ai.create_jp2(output: TEST_JP2_OUTPUT_FILE)
-        expect(ai.tmp_path).to_not be_nil
-        expect(result).to be_a_kind_of Assembly::Image
+        expect(ai.tmp_path).not_to be_nil
+        expect(result).to be_a_kind_of described_class
         expect(result.path).to eq TEST_JP2_OUTPUT_FILE
         expect(TEST_JP2_OUTPUT_FILE).to be_a_jp2
         expect(result.exif.colorspace).to eq 'sRGB'
-        jp2 = Assembly::Image.new(TEST_JP2_OUTPUT_FILE)
+        jp2 = described_class.new(TEST_JP2_OUTPUT_FILE)
         expect(jp2.height).to eq 37_838
         expect(jp2.width).to eq 37_838
       end
@@ -96,14 +102,14 @@ RSpec.describe Assembly::Image do
 
       it 'creates the jp2 with a temp file' do
         expect(File).to exist TEST_TIF_INPUT_FILE
-        expect(File).to_not exist TEST_JP2_OUTPUT_FILE
+        expect(File).not_to exist TEST_JP2_OUTPUT_FILE
         result = ai.create_jp2(output: TEST_JP2_OUTPUT_FILE)
-        expect(ai.tmp_path).to_not be_nil
-        expect(result).to be_a_kind_of Assembly::Image
+        expect(ai.tmp_path).not_to be_nil
+        expect(result).to be_a_kind_of described_class
         expect(result.path).to eq TEST_JP2_OUTPUT_FILE
         expect(TEST_JP2_OUTPUT_FILE).to be_a_jp2
         expect(result.exif.colorspace).to eq 'sRGB'
-        jp2 = Assembly::Image.new(TEST_JP2_OUTPUT_FILE)
+        jp2 = described_class.new(TEST_JP2_OUTPUT_FILE)
         expect(jp2.height).to eq 37_838
         expect(jp2.width).to eq 37_838
       end
@@ -117,7 +123,7 @@ RSpec.describe Assembly::Image do
 
       it 'creates grayscale jp2' do
         expect(File).to exist TEST_TIF_INPUT_FILE
-        expect(File).to_not exist TEST_JP2_OUTPUT_FILE
+        expect(File).not_to exist TEST_JP2_OUTPUT_FILE
         result = ai.create_jp2(output: TEST_JP2_OUTPUT_FILE)
         expect(TEST_JP2_OUTPUT_FILE).to be_a_jp2
         expect(result.exif.colorspace).to eq 'Grayscale'
@@ -131,8 +137,8 @@ RSpec.describe Assembly::Image do
 
       it 'creates color jp2' do
         expect(File).to exist TEST_TIF_INPUT_FILE
-        expect(File).to_not exist TEST_JP2_OUTPUT_FILE
-        expect(ai).to_not have_color_profile
+        expect(File).not_to exist TEST_JP2_OUTPUT_FILE
+        expect(ai).not_to have_color_profile
         result = ai.create_jp2(output: TEST_JP2_OUTPUT_FILE)
         expect(TEST_JP2_OUTPUT_FILE).to be_a_jp2
         expect(result.exif.colorspace).to eq 'sRGB'
@@ -146,10 +152,10 @@ RSpec.describe Assembly::Image do
 
       it 'creates grayscale jp2' do
         expect(File).to exist TEST_TIF_INPUT_FILE
-        expect(File).to_not exist TEST_JP2_OUTPUT_FILE
+        expect(File).not_to exist TEST_JP2_OUTPUT_FILE
         # Indicates a temp tiff was not created.
         expect(ai.tmp_path).to be_nil
-        expect(ai).to_not have_color_profile
+        expect(ai).not_to have_color_profile
         result = ai.create_jp2(output: TEST_JP2_OUTPUT_FILE)
         expect(TEST_JP2_OUTPUT_FILE).to be_a_jp2
         expect(result.exif.colorspace).to eq 'Grayscale'
@@ -163,10 +169,10 @@ RSpec.describe Assembly::Image do
 
       it 'creates color jp2' do
         expect(File).to exist TEST_TIF_INPUT_FILE
-        expect(File).to_not exist TEST_JP2_OUTPUT_FILE
+        expect(File).not_to exist TEST_JP2_OUTPUT_FILE
         # Indicates a temp tiff was not created.
         expect(ai.tmp_path).to be_nil
-        expect(ai).to_not have_color_profile
+        expect(ai).not_to have_color_profile
         result = ai.create_jp2(output: TEST_JP2_OUTPUT_FILE)
         expect(TEST_JP2_OUTPUT_FILE).to be_a_jp2
         expect(result.exif.colorspace).to eq 'sRGB'
@@ -180,10 +186,10 @@ RSpec.describe Assembly::Image do
 
       it 'creates a jp2' do
         expect(File).to exist TEST_TIF_INPUT_FILE
-        expect(File).to_not exist TEST_JP2_OUTPUT_FILE
+        expect(File).not_to exist TEST_JP2_OUTPUT_FILE
         # Indicates a temp tiff was not created.
         expect(ai.tmp_path).to be_nil
-        expect(ai).to_not have_color_profile
+        expect(ai).not_to have_color_profile
         expect(ai).to be_a_valid_image
         expect(ai).to be_jp2able
         ai.create_jp2(output: TEST_JP2_OUTPUT_FILE)
@@ -222,17 +228,17 @@ RSpec.describe Assembly::Image do
 
       it 'does not run' do
         expect(File).to exist TEST_TIF_INPUT_FILE
-        expect(File).to_not exist TEST_JP2_OUTPUT_FILE
+        expect(File).not_to exist TEST_JP2_OUTPUT_FILE
         # Indicates a temp tiff was not created.
         expect(ai.tmp_path).to be_nil
-        expect(ai).to_not have_color_profile
+        expect(ai).not_to have_color_profile
         expect(ai).to be_a_valid_image
         expect(ai).to be_jp2able
         ai.create_jp2(output: TEST_JP2_OUTPUT_FILE)
         expect(TEST_JP2_OUTPUT_FILE).to be_a_jp2
-        jp2_file = Assembly::Image.new(TEST_JP2_OUTPUT_FILE)
+        jp2_file = described_class.new(TEST_JP2_OUTPUT_FILE)
         expect(jp2_file).to be_valid_image
-        expect(jp2_file).to_not be_jp2able
+        expect(jp2_file).not_to be_jp2able
         expect { jp2_file.create_jp2 }.to raise_error
       end
     end
@@ -245,7 +251,7 @@ RSpec.describe Assembly::Image do
       it 'runs, because this is not currently an option' do
         expect(File).to exist TEST_TIF_INPUT_FILE
         result = ai.create_jp2(output_profile: 'bogusness')
-        expect(result).to be_a_kind_of Assembly::Image
+        expect(result).to be_a_kind_of described_class
         expect(result.path).to eq TEST_JP2_INPUT_FILE
         expect(TEST_JP2_INPUT_FILE).to be_a_jp2
         expect(result.exif.colorspace).to eq 'sRGB'
@@ -256,16 +262,17 @@ RSpec.describe Assembly::Image do
       before do
         generate_test_image(TEST_JPEG_INPUT_FILE)
       end
+
       let(:input_path) { TEST_JPEG_INPUT_FILE }
 
       it 'creates jp2 when given a JPEG' do
         expect(File).to exist TEST_JPEG_INPUT_FILE
-        expect(File).to_not exist TEST_JP2_OUTPUT_FILE
+        expect(File).not_to exist TEST_JP2_OUTPUT_FILE
         result = ai.create_jp2(output: TEST_JP2_OUTPUT_FILE)
         # Indicates a temp tiff was created.
         expect(ai.tmp_path).not_to be_nil
         expect(File).not_to exist ai.tmp_path
-        expect(result).to be_a_kind_of Assembly::Image
+        expect(result).to be_a_kind_of described_class
         expect(result.path).to eq TEST_JP2_OUTPUT_FILE
         expect(TEST_JP2_OUTPUT_FILE).to be_a_jp2
       end
@@ -275,12 +282,13 @@ RSpec.describe Assembly::Image do
       before do
         generate_test_image(TEST_JPEG_INPUT_FILE)
       end
+
       let(:input_path) { TEST_JPEG_INPUT_FILE }
 
       it 'does not run' do
         bogus_folder = '/crapsticks'
         expect(File).to exist TEST_JPEG_INPUT_FILE
-        expect(File).to_not exist bogus_folder
+        expect(File).not_to exist bogus_folder
         expect { ai.create_jp2(tmp_folder: bogus_folder) }.to raise_error
       end
     end
@@ -289,6 +297,7 @@ RSpec.describe Assembly::Image do
       before do
         generate_test_image(TEST_JPEG_INPUT_FILE)
       end
+
       let(:input_path) { TEST_JPEG_INPUT_FILE }
 
       it 'creates a jp2 and preserves the temporary file' do
@@ -297,7 +306,7 @@ RSpec.describe Assembly::Image do
         # Indicates a temp tiff was created.
         expect(ai.tmp_path).not_to be_nil
         expect(File).to exist ai.tmp_path
-        expect(result).to be_a_kind_of Assembly::Image
+        expect(result).to be_a_kind_of described_class
         expect(result.path).to eq TEST_JP2_OUTPUT_FILE
         expect(TEST_JP2_OUTPUT_FILE).to be_a_jp2
         expect(File.exist?(ai.tmp_path)).to be true
@@ -313,7 +322,7 @@ RSpec.describe Assembly::Image do
         expect(File).to exist TEST_TIF_INPUT_FILE
         expect(File.exist?(TEST_JP2_INPUT_FILE)).to be false
         result = ai.create_jp2
-        expect(result).to be_a_kind_of Assembly::Image
+        expect(result).to be_a_kind_of described_class
         expect(result.path).to eq TEST_JP2_INPUT_FILE
         expect(TEST_JP2_INPUT_FILE).to be_a_jp2
         expect(result.exif.colorspace).to eq 'sRGB'
@@ -330,18 +339,12 @@ RSpec.describe Assembly::Image do
         expect(File).to exist TEST_TIF_INPUT_FILE
         expect(File).to exist TEST_JP2_OUTPUT_FILE
         result = ai.create_jp2(output: TEST_JP2_OUTPUT_FILE, overwrite: true)
-        expect(result).to be_a_kind_of Assembly::Image
+        expect(result).to be_a_kind_of described_class
         expect(result.path).to eq TEST_JP2_OUTPUT_FILE
         expect(TEST_JP2_OUTPUT_FILE).to be_a_jp2
         expect(result.exif.colorspace).to eq 'sRGB'
       end
     end
-  end
-
-  after do
-    # after each test, empty out the input and output test directories
-    remove_files(TEST_INPUT_DIR)
-    remove_files(TEST_OUTPUT_DIR)
   end
 end
 # rubocop:enable Metrics/BlockLength
