@@ -11,6 +11,7 @@ Gem::Specification.new do |s|
   s.homepage    = ''
   s.summary     = 'Ruby immplementation of image services needed to prepare objects to be accessioned in SULAIR digital library'
   s.description = 'Contains classes to create derivative image files and perform other image operations'
+  s.metadata['rubygems_mfa_required'] = 'true'
 
   s.files         = `git ls-files`.split("\n")
   s.test_files    = `git ls-files -- {test,spec,features}/*`.split("\n")
@@ -24,6 +25,7 @@ Gem::Specification.new do |s|
   s.add_development_dependency 'rake'
   s.add_development_dependency 'rspec', '~> 3.0'
   s.add_development_dependency 'rubocop'
-  s.add_development_dependency 'simplecov', '~> 0.17.0' # CodeClimate cannot use SimpleCov >= 0.18.0 for generating test coverage
+  s.add_development_dependency 'rubocop-rspec'
+  s.add_development_dependency 'simplecov'
   s.add_development_dependency 'yard'
 end
