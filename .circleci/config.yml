@@ -1,0 +1,22 @@
+version: 2.1
+orbs:
+  ruby-rails: sul-dlss/ruby-rails@3.0.1
+workflows:
+  build:
+    jobs:
+      - ruby-rails/lint-gem:
+          name: lint
+      - ruby-rails/test-gem:
+          name: test
+          before-test:
+            - run:
+                name: Install exiftool
+                command: curl -L http://cpanmin.us | perl - --sudo Image::ExifTool
+            - setup_remote_docker
+            - run:
+                name: Install Kakadu
+                command: |
+                  docker create --name kakadu josejuansanchez/kakadu:1.0
+                  docker cp kakadu:/kakadu kakadu
+                  sudo cp kakadu/*.so /usr/lib
+                  sudo cp kakadu/* /usr/bin
