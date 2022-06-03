@@ -152,8 +152,6 @@ RSpec.describe Assembly::Image do
       it 'creates grayscale jp2' do
         expect(File).to exist TEST_TIF_INPUT_FILE
         expect(File).not_to exist TEST_JP2_OUTPUT_FILE
-        # Indicates a temp tiff was not created.
-        expect(ai.tmp_path).to be_nil
         expect(ai).not_to have_color_profile
         result = ai.create_jp2(output: TEST_JP2_OUTPUT_FILE)
         expect(TEST_JP2_OUTPUT_FILE).to be_a_jp2
@@ -169,8 +167,6 @@ RSpec.describe Assembly::Image do
       it 'creates color jp2' do
         expect(File).to exist TEST_TIF_INPUT_FILE
         expect(File).not_to exist TEST_JP2_OUTPUT_FILE
-        # Indicates a temp tiff was not created.
-        expect(ai.tmp_path).to be_nil
         expect(ai).not_to have_color_profile
         result = ai.create_jp2(output: TEST_JP2_OUTPUT_FILE)
         expect(TEST_JP2_OUTPUT_FILE).to be_a_jp2
@@ -186,8 +182,6 @@ RSpec.describe Assembly::Image do
       it 'creates a jp2' do
         expect(File).to exist TEST_TIF_INPUT_FILE
         expect(File).not_to exist TEST_JP2_OUTPUT_FILE
-        # Indicates a temp tiff was not created.
-        expect(ai.tmp_path).to be_nil
         expect(ai).not_to have_color_profile
         expect(ai).to be_a_valid_image
         expect(ai).to be_jp2able
@@ -228,8 +222,6 @@ RSpec.describe Assembly::Image do
       it 'does not run' do
         expect(File).to exist TEST_TIF_INPUT_FILE
         expect(File).not_to exist TEST_JP2_OUTPUT_FILE
-        # Indicates a temp tiff was not created.
-        expect(ai.tmp_path).to be_nil
         expect(ai).not_to have_color_profile
         expect(ai).to be_a_valid_image
         expect(ai).to be_jp2able
