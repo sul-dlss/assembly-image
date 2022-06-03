@@ -3,7 +3,7 @@
 require 'spec_helper'
 
 RSpec.describe Assembly::Image do
-  let(:ai) { described_class.new(input_path) }
+  let(:assembly_image) { described_class.new(input_path) }
   let(:input_path) { TEST_TIF_INPUT_FILE }
 
   after do
@@ -14,14 +14,14 @@ RSpec.describe Assembly::Image do
 
   describe '#jp2_filename' do
     it 'indicates the default jp2 filename' do
-      expect(ai.jp2_filename).to eq TEST_TIF_INPUT_FILE.gsub('.tif', '.jp2')
+      expect(assembly_image.jp2_filename).to eq TEST_TIF_INPUT_FILE.gsub('.tif', '.jp2')
     end
 
     context 'with a file with no extension' do
       let(:input_path) { '/path/to/a/file_with_no_extension' }
 
       it 'indicates the default jp2 filename' do
-        expect(ai.jp2_filename).to eq '/path/to/a/file_with_no_extension.jp2'
+        expect(assembly_image.jp2_filename).to eq '/path/to/a/file_with_no_extension.jp2'
       end
     end
   end
@@ -31,7 +31,7 @@ RSpec.describe Assembly::Image do
       let(:input_path) { TEST_DPG_TIF_INPUT_FILE }
 
       it 'indicates the default DPG jp2 filename' do
-        expect(ai.dpg_jp2_filename).to eq TEST_DPG_TIF_INPUT_FILE.gsub('.tif', '.jp2').gsub('_00_', '_05_')
+        expect(assembly_image.dpg_jp2_filename).to eq TEST_DPG_TIF_INPUT_FILE.gsub('.tif', '.jp2').gsub('_00_', '_05_')
       end
     end
 
@@ -39,7 +39,7 @@ RSpec.describe Assembly::Image do
       let(:input_path) { '/path/to/a/file_with_no_00_extension' }
 
       it 'indicates the default jp2 filename' do
-        expect(ai.dpg_jp2_filename).to eq '/path/to/a/file_with_no_05_extension.jp2'
+        expect(assembly_image.dpg_jp2_filename).to eq '/path/to/a/file_with_no_05_extension.jp2'
       end
     end
   end
@@ -49,7 +49,7 @@ RSpec.describe Assembly::Image do
       let(:input_path) { '' }
 
       it 'does not run if no input file is passed in' do
-        expect { ai.create_jp2 }.to raise_error
+        expect { assembly_image.create_jp2 }.to raise_error
       end
     end
 
@@ -61,8 +61,8 @@ RSpec.describe Assembly::Image do
       it 'creates the jp2 with a temp file' do
         expect(File).to exist TEST_TIF_INPUT_FILE
         expect(File).not_to exist TEST_JP2_OUTPUT_FILE
-        result = ai.create_jp2(output: TEST_JP2_OUTPUT_FILE)
-        expect(ai.tmp_path).not_to be_nil
+        result = assembly_image.create_jp2(output: TEST_JP2_OUTPUT_FILE)
+        expect(assembly_image.tmp_path).not_to be_nil
         expect(result).to be_a_kind_of described_class
         expect(result.path).to eq TEST_JP2_OUTPUT_FILE
         expect(TEST_JP2_OUTPUT_FILE).to be_a_jp2
@@ -81,8 +81,8 @@ RSpec.describe Assembly::Image do
       it 'creates the jp2 with a temp file' do
         expect(File).to exist TEST_TIF_INPUT_FILE
         expect(File).not_to exist TEST_JP2_OUTPUT_FILE
-        result = ai.create_jp2(output: TEST_JP2_OUTPUT_FILE)
-        expect(ai.tmp_path).not_to be_nil
+        result = assembly_image.create_jp2(output: TEST_JP2_OUTPUT_FILE)
+        expect(assembly_image.tmp_path).not_to be_nil
         expect(result).to be_a_kind_of described_class
         expect(result.path).to eq TEST_JP2_OUTPUT_FILE
         expect(TEST_JP2_OUTPUT_FILE).to be_a_jp2
@@ -102,7 +102,7 @@ RSpec.describe Assembly::Image do
       it 'creates grayscale jp2' do
         expect(File).to exist TEST_TIF_INPUT_FILE
         expect(File).not_to exist TEST_JP2_OUTPUT_FILE
-        result = ai.create_jp2(output: TEST_JP2_OUTPUT_FILE)
+        result = assembly_image.create_jp2(output: TEST_JP2_OUTPUT_FILE)
         expect(TEST_JP2_OUTPUT_FILE).to be_a_jp2
         expect(result.exif.colorspace).to eq 'Grayscale'
       end
@@ -116,8 +116,8 @@ RSpec.describe Assembly::Image do
       it 'creates color jp2' do
         expect(File).to exist TEST_TIF_INPUT_FILE
         expect(File).not_to exist TEST_JP2_OUTPUT_FILE
-        expect(ai).not_to have_color_profile
-        result = ai.create_jp2(output: TEST_JP2_OUTPUT_FILE)
+        expect(assembly_image).not_to have_color_profile
+        result = assembly_image.create_jp2(output: TEST_JP2_OUTPUT_FILE)
         expect(TEST_JP2_OUTPUT_FILE).to be_a_jp2
         expect(result.exif.colorspace).to eq 'sRGB'
       end
@@ -131,8 +131,8 @@ RSpec.describe Assembly::Image do
       it 'creates grayscale jp2' do
         expect(File).to exist TEST_TIF_INPUT_FILE
         expect(File).not_to exist TEST_JP2_OUTPUT_FILE
-        expect(ai).not_to have_color_profile
-        result = ai.create_jp2(output: TEST_JP2_OUTPUT_FILE)
+        expect(assembly_image).not_to have_color_profile
+        result = assembly_image.create_jp2(output: TEST_JP2_OUTPUT_FILE)
         expect(TEST_JP2_OUTPUT_FILE).to be_a_jp2
         expect(result.exif.colorspace).to eq 'Grayscale'
       end
@@ -146,8 +146,8 @@ RSpec.describe Assembly::Image do
       it 'creates color jp2' do
         expect(File).to exist TEST_TIF_INPUT_FILE
         expect(File).not_to exist TEST_JP2_OUTPUT_FILE
-        expect(ai).not_to have_color_profile
-        result = ai.create_jp2(output: TEST_JP2_OUTPUT_FILE)
+        expect(assembly_image).not_to have_color_profile
+        result = assembly_image.create_jp2(output: TEST_JP2_OUTPUT_FILE)
         expect(TEST_JP2_OUTPUT_FILE).to be_a_jp2
         expect(result.exif.colorspace).to eq 'sRGB'
       end
@@ -161,10 +161,10 @@ RSpec.describe Assembly::Image do
       it 'creates a jp2' do
         expect(File).to exist TEST_TIF_INPUT_FILE
         expect(File).not_to exist TEST_JP2_OUTPUT_FILE
-        expect(ai).not_to have_color_profile
-        expect(ai).to be_a_valid_image
-        expect(ai).to be_jp2able
-        ai.create_jp2(output: TEST_JP2_OUTPUT_FILE)
+        expect(assembly_image).not_to have_color_profile
+        expect(assembly_image).to be_a_valid_image
+        expect(assembly_image).to be_jp2able
+        assembly_image.create_jp2(output: TEST_JP2_OUTPUT_FILE)
         expect(TEST_JP2_OUTPUT_FILE).to be_a_jp2
       end
     end
@@ -178,7 +178,7 @@ RSpec.describe Assembly::Image do
       it 'does not run' do
         expect(File).to exist TEST_TIF_INPUT_FILE
         expect(File).to exist TEST_JP2_OUTPUT_FILE
-        expect { ai.create_jp2(output: TEST_JP2_OUTPUT_FILE) }.to raise_error(SecurityError)
+        expect { assembly_image.create_jp2(output: TEST_JP2_OUTPUT_FILE) }.to raise_error(SecurityError)
       end
     end
 
@@ -188,8 +188,8 @@ RSpec.describe Assembly::Image do
       end
 
       it 'gets the correct image height and width' do
-        expect(ai.height).to eq 100
-        expect(ai.width).to eq 100
+        expect(assembly_image.height).to eq 100
+        expect(assembly_image.width).to eq 100
       end
     end
 
@@ -201,10 +201,10 @@ RSpec.describe Assembly::Image do
       it 'does not run' do
         expect(File).to exist TEST_TIF_INPUT_FILE
         expect(File).not_to exist TEST_JP2_OUTPUT_FILE
-        expect(ai).not_to have_color_profile
-        expect(ai).to be_a_valid_image
-        expect(ai).to be_jp2able
-        ai.create_jp2(output: TEST_JP2_OUTPUT_FILE)
+        expect(assembly_image).not_to have_color_profile
+        expect(assembly_image).to be_a_valid_image
+        expect(assembly_image).to be_jp2able
+        assembly_image.create_jp2(output: TEST_JP2_OUTPUT_FILE)
         expect(TEST_JP2_OUTPUT_FILE).to be_a_jp2
         jp2_file = described_class.new(TEST_JP2_OUTPUT_FILE)
         expect(jp2_file).to be_valid_image
@@ -220,7 +220,7 @@ RSpec.describe Assembly::Image do
 
       it 'runs, because this is not currently an option' do
         expect(File).to exist TEST_TIF_INPUT_FILE
-        result = ai.create_jp2(output_profile: 'bogusness')
+        result = assembly_image.create_jp2(output_profile: 'bogusness')
         expect(result).to be_a_kind_of described_class
         expect(result.path).to eq TEST_JP2_INPUT_FILE
         expect(TEST_JP2_INPUT_FILE).to be_a_jp2
@@ -239,7 +239,7 @@ RSpec.describe Assembly::Image do
         bogus_folder = '/crapsticks'
         expect(File).to exist TEST_JPEG_INPUT_FILE
         expect(File).not_to exist bogus_folder
-        expect { ai.create_jp2(tmp_folder: bogus_folder) }.to raise_error
+        expect { assembly_image.create_jp2(tmp_folder: bogus_folder) }.to raise_error
       end
     end
 
@@ -251,7 +251,7 @@ RSpec.describe Assembly::Image do
       it 'creates a jp2 of the same filename and in the same location as the input and cleans up the tmp file' do
         expect(File).to exist TEST_TIF_INPUT_FILE
         expect(File.exist?(TEST_JP2_INPUT_FILE)).to be false
-        result = ai.create_jp2
+        result = assembly_image.create_jp2
         expect(result).to be_a_kind_of described_class
         expect(result.path).to eq TEST_JP2_INPUT_FILE
         expect(TEST_JP2_INPUT_FILE).to be_a_jp2
@@ -268,7 +268,7 @@ RSpec.describe Assembly::Image do
       it 'recreates jp2' do
         expect(File).to exist TEST_TIF_INPUT_FILE
         expect(File).to exist TEST_JP2_OUTPUT_FILE
-        result = ai.create_jp2(output: TEST_JP2_OUTPUT_FILE, overwrite: true)
+        result = assembly_image.create_jp2(output: TEST_JP2_OUTPUT_FILE, overwrite: true)
         expect(result).to be_a_kind_of described_class
         expect(result.path).to eq TEST_JP2_OUTPUT_FILE
         expect(TEST_JP2_OUTPUT_FILE).to be_a_jp2
