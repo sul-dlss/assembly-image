@@ -48,7 +48,11 @@ module Assembly
 
         jp2_command = jp2_create_command(source_path: @tmp_path, output: output_path)
         result = `#{jp2_command}`
-        raise "JP2 creation command failed: #{jp2_command} with result #{result}" unless $CHILD_STATUS.success?
+        unless $CHILD_STATUS.success?
+          # Clean up any partial result
+          File.delete(output_path) if File.exist?(output_path)
+          raise "JP2 creation command failed: #{jp2_command} with result #{result}"
+        end
 
         File.delete(@tmp_path) unless @tmp_path.nil? || preserve_tmp_source?
 
