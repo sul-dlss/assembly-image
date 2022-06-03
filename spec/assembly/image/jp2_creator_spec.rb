@@ -36,26 +36,6 @@ RSpec.describe Assembly::Image::Jp2Creator do
     end
   end
 
-  context 'when preserve_tmp_source is provided' do
-    before do
-      generate_test_image(TEST_JPEG_INPUT_FILE)
-    end
-
-    let(:input_path) { TEST_JPEG_INPUT_FILE }
-    let(:creator) { described_class.new(ai, output: TEST_JP2_OUTPUT_FILE, preserve_tmp_source: true) }
-
-    it 'creates a jp2 and preserves the temporary file' do
-      expect(File).to exist TEST_JPEG_INPUT_FILE
-      expect(result).to be_a_kind_of Assembly::Image
-      expect(result.path).to eq TEST_JP2_OUTPUT_FILE
-      expect(TEST_JP2_OUTPUT_FILE).to be_a_jp2
-
-      # Indicates a temp tiff was created.
-      expect(creator.tmp_path).not_to be_nil
-      expect(File).to exist creator.tmp_path
-    end
-  end
-
   context 'when the input file is a JPEG' do
     before do
       generate_test_image(TEST_JPEG_INPUT_FILE)
