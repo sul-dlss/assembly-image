@@ -2,7 +2,6 @@
 
 require 'spec_helper'
 
-# rubocop:disable Metrics/BlockLength
 RSpec.describe Assembly::Image do
   let(:ai) { described_class.new(input_path) }
   let(:input_path) { TEST_TIF_INPUT_FILE }
@@ -347,4 +346,3 @@ RSpec.describe Assembly::Image do
     end
   end
 end
-# rubocop:enable Metrics/BlockLength

@@ -2,7 +2,6 @@
 
 require 'spec_helper'
 
-# rubocop:disable Metrics/BlockLength
 RSpec.describe Assembly::Images do
   after do
     # after each test, empty out the input and output test directories
@@ -46,4 +45,3 @@ RSpec.describe Assembly::Images do
     ['test1', 'test2', 'test3'].each { |image| expect(Assembly::Image.new(File.join(TEST_INPUT_DIR, "#{image}.tif")).exif.profiledescription).to eq 'sRGB IEC61966-2.1' }
   end
 end
-# rubocop:enable Metrics/BlockLength
