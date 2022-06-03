@@ -116,7 +116,6 @@ module Assembly
     #   * :output => path to the output JP2 file (default: mirrors the source file name and path, but with a .jp2 extension)
     #   * :overwrite => if set to false, an existing JP2 file with the same name won't be overwritten (default: false)
     #   * :tmp_folder =>  the temporary folder to use when creating the jp2 (default: '/tmp'); also used by imagemagick
-    #   * :preserve_tmp_source => if set to true, preserve the temporary file generated during the creation process and store path in 'tmp_path' attribute (default: false)
     #
     # Example:
     #   source_img=Assembly::Image.new('/input/path_to_file.tif')

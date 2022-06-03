@@ -17,7 +17,6 @@ module Assembly
       #   * :output => path to the output JP2 file (default: mirrors the source file name and path, but with a .jp2 extension)
       #   * :overwrite => if set to false, an existing JP2 file with the same name won't be overwritten (default: false)
       #   * :tmp_folder =>  the temporary folder to use when creating the jp2 (default: '/tmp'); also used by imagemagick
-      #   * :preserve_tmp_source => if set to true, preserve the temporary file generated during the creation process and store path in 'tmp_path' attribute (default: false)
       #
       # Example:
       #   source_img = Assembly::Image.new('/input/path_to_file.tif')
@@ -32,7 +31,6 @@ module Assembly
         @image = image
         @output_path = params.fetch(:output, image.jp2_filename)
         @tmp_folder = params[:tmp_folder]
-        @preserve_tmp_source = params[:preserve_tmp_source]
         @overwrite = params[:overwrite]
         @params = params
       end
@@ -48,19 +46,19 @@ module Assembly
 
         jp2_command = jp2_create_command(source_path: @tmp_path, output: output_path)
         result = `#{jp2_command}`
-        raise "JP2 creation command failed: #{jp2_command} with result #{result}" unless $CHILD_STATUS.success?
+        unless $CHILD_STATUS.success?
+          # Clean up any partial result
+          File.delete(output_path) if File.exist?(output_path)
+          raise "JP2 creation command failed: #{jp2_command} with result #{result}"
+        end
 
-        File.delete(@tmp_path) unless @tmp_path.nil? || preserve_tmp_source?
+        File.delete(@tmp_path) unless @tmp_path.nil?
 
         # create output response object, which is an Assembly::Image type object
         Image.new(output_path)
       end
 
       private
-
-      def preserve_tmp_source?
-        @preserve_tmp_source
-      end
 
       def overwrite?
         @overwrite
