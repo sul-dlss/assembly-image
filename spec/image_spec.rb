@@ -53,27 +53,6 @@ RSpec.describe Assembly::Image do
       end
     end
 
-    context 'when given an LZW compressed RGB tif' do
-      before do
-        generate_test_image(TEST_TIF_INPUT_FILE, compress: 'lzw')
-      end
-
-      it 'creates the jp2 with a temp file' do
-        expect(File).to exist TEST_TIF_INPUT_FILE
-        expect(File).not_to exist TEST_JP2_OUTPUT_FILE
-        result = ai.create_jp2(output: TEST_JP2_OUTPUT_FILE)
-        # Indicates a temp tiff was not created.
-        expect(ai.tmp_path).not_to be_nil
-        expect(result).to be_a_kind_of described_class
-        expect(result.path).to eq TEST_JP2_OUTPUT_FILE
-        expect(TEST_JP2_OUTPUT_FILE).to be_a_jp2
-        expect(result.exif.colorspace).to eq 'sRGB'
-        jp2 = described_class.new(TEST_JP2_OUTPUT_FILE)
-        expect(jp2.height).to eq 100
-        expect(jp2.width).to eq 100
-      end
-    end
-
     context 'when given an uncompressed compressed RGB tif with more than 4GB of image data', skip: 'This test will create a 4GB test image and a 4GB temporary image, so skipping by default.' do
       before do
         generate_test_image(TEST_TIF_INPUT_FILE, compress: 'none', width: '37838', height: '37838')
@@ -249,26 +228,6 @@ RSpec.describe Assembly::Image do
       end
     end
 
-    context 'when the input file is a JPEG' do
-      before do
-        generate_test_image(TEST_JPEG_INPUT_FILE)
-      end
-
-      let(:input_path) { TEST_JPEG_INPUT_FILE }
-
-      it 'creates jp2 when given a JPEG' do
-        expect(File).to exist TEST_JPEG_INPUT_FILE
-        expect(File).not_to exist TEST_JP2_OUTPUT_FILE
-        result = ai.create_jp2(output: TEST_JP2_OUTPUT_FILE)
-        # Indicates a temp tiff was created.
-        expect(ai.tmp_path).not_to be_nil
-        expect(File).not_to exist ai.tmp_path
-        expect(result).to be_a_kind_of described_class
-        expect(result.path).to eq TEST_JP2_OUTPUT_FILE
-        expect(TEST_JP2_OUTPUT_FILE).to be_a_jp2
-      end
-    end
-
     context 'when an invalid tmp folder' do
       before do
         generate_test_image(TEST_JPEG_INPUT_FILE)
@@ -281,26 +240,6 @@ RSpec.describe Assembly::Image do
         expect(File).to exist TEST_JPEG_INPUT_FILE
         expect(File).not_to exist bogus_folder
         expect { ai.create_jp2(tmp_folder: bogus_folder) }.to raise_error
-      end
-    end
-
-    context 'when preserve_tmp_source is provided' do
-      before do
-        generate_test_image(TEST_JPEG_INPUT_FILE)
-      end
-
-      let(:input_path) { TEST_JPEG_INPUT_FILE }
-
-      it 'creates a jp2 and preserves the temporary file' do
-        expect(File).to exist TEST_JPEG_INPUT_FILE
-        result = ai.create_jp2(output: TEST_JP2_OUTPUT_FILE, preserve_tmp_source: true)
-        # Indicates a temp tiff was created.
-        expect(ai.tmp_path).not_to be_nil
-        expect(File).to exist ai.tmp_path
-        expect(result).to be_a_kind_of described_class
-        expect(result.path).to eq TEST_JP2_OUTPUT_FILE
-        expect(TEST_JP2_OUTPUT_FILE).to be_a_jp2
-        expect(File.exist?(ai.tmp_path)).to be true
       end
     end
 
