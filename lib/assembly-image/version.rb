@@ -4,7 +4,7 @@
 module Assembly
   # Main Image class
   class Image
-    # Project version number
-    VERSION = '1.7.7'
+    # Gem version
+    VERSION = '1.7.8'
   end
 end
