@@ -22,7 +22,8 @@ addons:
   apt:
     packages:
     - libimage-exiftool-perl
-    
+    - libvips
+
 env:
   global:
     - NOKOGIRI_USE_SYSTEM_LIBRARIES=true
