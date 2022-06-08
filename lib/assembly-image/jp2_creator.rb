@@ -42,6 +42,7 @@ module Assembly
         create_jp2_checks
 
         # Using instance variable so that can check in tests.
+        # We do this because we need to reliably compress the tiff and KDUcompress doesn’t support arbitrary image types
         @tmp_path = make_tmp_tiff(tmp_folder: tmp_folder)
 
         jp2_command = jp2_create_command(source_path: @tmp_path, output: output_path)
@@ -141,6 +142,7 @@ module Assembly
         image.image_data_size >= 2**32
       end
 
+      # We do this because we need to reliably compress the tiff and KDUcompress doesn’t support arbitrary image types
       def make_tmp_tiff(tmp_folder: nil)
         tmp_folder ||= Dir.tmpdir
         raise "tmp_folder #{tmp_folder} does not exists" unless File.exist?(tmp_folder)
