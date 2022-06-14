@@ -7,7 +7,9 @@
 
 ## Overview
 This gem contains classes used by the Stanford University Digital Library to
-perform image operations necessary for accessioning of content.
+perform image operations necessary for accessioning of content.  
+
+Requires image processing software - see PreRequisites section below.
 
 ## Notes
 
