@@ -5,10 +5,7 @@ require_relative 'jp2_creator'
 
 module Assembly
   # The Image class contains methods to operate on an image.
-  class Image
-    # include common behaviors from assembly-objectfile gem
-    include Assembly::ObjectFileable
-
+  class Image < Assembly::ObjectFile
     # Examines the input image for validity.  Used to determine if image is correct and if JP2 generation is likely to succeed.
     #  This method is automatically called before you create a jp2 but it can be called separately earlier as a sanity check.
     #
