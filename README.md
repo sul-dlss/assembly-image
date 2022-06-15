@@ -7,7 +7,7 @@
 
 ## Overview
 This gem contains classes used by the Stanford University Digital Library to
-perform image operations necessary for accessioning of content.  
+perform image operations necessary for accessioning of content.
 
 Requires image processing software - see PreRequisites section below.
 
@@ -69,33 +69,12 @@ http://kakadusoftware.com/downloads/
 
 NOTE: If you have upgrade to El Capitan on OS X, you will need to donwload and re-install the latest version of Kakadu, due to changes made with SIP.  These changes moved the old executable binaries to an inaccessible location.
 
-### Imagemagick
-
-#### RHEL 6
-
-The version of ImageMagick included with RHEL 6 has all of the dependency libraries included:
-
-```bash
-yum install ImageMagick
-```
-#### RHEL 5
-
-The version of ImageMagick included with RHEL 5 is too old and does not have all the proper binaries included/built:
-
-```bash
-yum install lcms lcms-devel libjpeg libjpeg-devel libpng libpng-devel
-```
-Required libraries from source:
-* libtiff (version 3.9.4 or higher)
-
-Build Imagemagick from source:
-http://www.imagemagick.org/download/ImageMagick.tar.gz
+### Libvips
 
 #### Mac
 
 ```bash
-brew install jasper libtiff
-brew install imagemagick --use-tiff --use-jpeg2000
+brew install libvips
 ```
 
 ### Exiftool

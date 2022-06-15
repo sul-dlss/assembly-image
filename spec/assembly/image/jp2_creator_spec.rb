@@ -31,8 +31,8 @@ RSpec.describe Assembly::Image::Jp2Creator do
       expect(creator.tmp_path).not_to be_nil
       expect(result.exif.colorspace).to eq 'sRGB'
       jp2 = Assembly::Image.new(TEST_JP2_OUTPUT_FILE)
-      expect(jp2.height).to eq 100
-      expect(jp2.width).to eq 100
+      expect(jp2.height).to eq 36
+      expect(jp2.width).to eq 43
     end
   end
 

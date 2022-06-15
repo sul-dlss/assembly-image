@@ -22,9 +22,6 @@ Naming/FileName:
   Exclude:
    - lib/assembly-image.rb
 
-RSpec/ExampleLength:
-  Max: 12
-
 Style/WordArray:
   Enabled: false
 
