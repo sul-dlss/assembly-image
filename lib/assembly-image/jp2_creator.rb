@@ -1,10 +1,11 @@
 # frozen_string_literal: true
 
+require 'assembly-objectfile'
 require 'tempfile'
 require 'English' # see https://github.com/rubocop-hq/rubocop/issues/1747 (not #MAGA related)
 
 module Assembly
-  class Image
+  class Image < Assembly::ObjectFile
     # Creates jp2 derivatives
     class Jp2Creator # rubocop:disable  Metrics/ClassLength
       # Create a JP2 file for the current image.
