@@ -1,5 +1,6 @@
 # frozen_string_literal: true
 
+require 'ruby-vips'
 require 'assembly-objectfile'
 require_relative 'jp2_creator'
 
@@ -74,8 +75,7 @@ module Assembly
     def add_exif_profile_description(profile_name, force = false)
       if profile.nil? || force
         input_profile = profile_name.gsub(/[^[:alnum:]]/, '') # remove all non alpha-numeric characters, so we can get to a filename
-        path_to_profiles = File.join(Assembly::PATH_TO_IMAGE_GEM, 'profiles')
-        input_profile_file = File.join(path_to_profiles, "#{input_profile}.icc")
+        input_profile_file = File.join(PATH_TO_PROFILES, "#{input_profile}.icc")
         command = "exiftool '-icc_profile<=#{input_profile_file}' #{path}"
         result = `#{command} 2>&1`
         raise "profile addition command failed: #{command} with result #{result}" unless $CHILD_STATUS.success?
@@ -92,16 +92,6 @@ module Assembly
     #   puts source_img.jp2_filename # gives /input/path_to_file.jp2
     def jp2_filename
       File.extname(path).empty? ? "#{path}.jp2" : path.gsub(File.extname(path), '.jp2')
-    end
-
-    # Returns the full DPG equivalent jp2 path and filename that would match with the given image
-    #
-    # @return [string] full DPG equivalent jp2 path and filename
-    # Example:
-    #   source_img=Assembly::Image.new('/input/path_to_file.tif')
-    #   puts source_img.jp2_filename # gives /input/path_to_file.jp2
-    def dpg_jp2_filename
-      jp2_filename.gsub('_00_', '_05_')
     end
 
     # Create a JP2 file for the current image.
