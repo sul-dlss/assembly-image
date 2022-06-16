@@ -213,10 +213,8 @@ def generate_test_image(file, params = {})
     options.merge!(compression: compression) unless compression.nil?
     options.merge!(squash: true) if depth.eql?(1)
     temp_image.tiffsave(file, **options)
-  when '.jpeg', '.jpg'
+  when '.jpeg', '.jpg', '.jp2'
     temp_image.jpegsave(file, **options)
-  when '.jp2'
-    temp_image.jp2ksave(file, **options)
   end
 end
 # rubocop:enable Metrics/AbcSize
