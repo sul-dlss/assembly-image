@@ -6,11 +6,7 @@ RSpec.describe Assembly::Image do
   let(:assembly_image) { described_class.new(input_path) }
   let(:input_path) { TEST_TIF_INPUT_FILE }
 
-  after do
-    # after each test, empty out the input and output test directories
-    remove_files(TEST_INPUT_DIR)
-    remove_files(TEST_OUTPUT_DIR)
-  end
+before { cleanup }
 
   describe '#jp2_filename' do
     it 'indicates the default jp2 filename' do
@@ -31,7 +27,7 @@ RSpec.describe Assembly::Image do
       let(:input_path) { '' }
 
       it 'does not run if no input file is passed in' do
-        expect { assembly_image.create_jp2 }.to raise_error
+        expect { assembly_image.create_jp2 }.to raise_error(RuntimeError)
       end
     end
 
@@ -240,7 +236,7 @@ RSpec.describe Assembly::Image do
         jp2_file = described_class.new(TEST_JP2_OUTPUT_FILE)
         expect(jp2_file).to be_valid_image
         expect(jp2_file).not_to be_jp2able
-        expect { jp2_file.create_jp2 }.to raise_error
+        expect { jp2_file.create_jp2 }.to raise_error(RuntimeError)
       end
     end
 
@@ -270,7 +266,7 @@ RSpec.describe Assembly::Image do
         bogus_folder = '/crapsticks'
         expect(File).to exist TEST_JPEG_INPUT_FILE
         expect(File).not_to exist bogus_folder
-        expect { assembly_image.create_jp2(tmp_folder: bogus_folder) }.to raise_error
+        expect { assembly_image.create_jp2(tmp_folder: bogus_folder) }.to raise_error(RuntimeError)
       end
     end
 

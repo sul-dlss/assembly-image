@@ -222,6 +222,11 @@ end
 # rubocop:enable Metrics/MethodLength
 # rubocop:enable Metrics/PerceivedComplexity
 
+def cleanup
+  remove_files(TEST_INPUT_DIR)
+  remove_files(TEST_OUTPUT_DIR)
+end
+
 def remove_files(dir)
   Dir.foreach(dir) do |f|
     fn = File.join(dir, f)

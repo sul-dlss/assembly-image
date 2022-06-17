@@ -3,18 +3,14 @@
 require 'spec_helper'
 
 RSpec.describe Assembly::Images do
-  after do
-    # after each test, empty out the input and output test directories
-    remove_files(TEST_INPUT_DIR)
-    remove_files(TEST_OUTPUT_DIR)
-  end
+  before { cleanup }
 
   it 'does not run if no input folder is passed in' do
-    expect{ described_class.batch_generate_jp2('') }.to raise_error
+    expect{ described_class.batch_generate_jp2('') }.to raise_error(RuntimeError)
   end
 
   it 'does not run if a non-existent input folder is passed in' do
-    expect{ described_class.batch_generate_jp2('/junk/path') }.to raise_error
+    expect{ described_class.batch_generate_jp2('/junk/path') }.to raise_error(RuntimeError)
   end
 
   it 'runs and batch produces jp2s from input tiffs' do
