@@ -215,8 +215,6 @@ def generate_test_image(file, params = {})
     temp_image.tiffsave(file, **options)
   when '.jpeg', '.jpg'
     temp_image.jpegsave(file, **options)
-  when '.jp2'
-    temp_image.jp2ksave(file, **options)
   else
     raise "unknown type: #{image_type}"
   end
