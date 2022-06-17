@@ -1,12 +1,13 @@
 # frozen_string_literal: true
 
 require 'spec_helper'
+require 'fileutils'
 
 RSpec.describe Assembly::Image do
   let(:assembly_image) { described_class.new(input_path) }
   let(:input_path) { TEST_TIF_INPUT_FILE }
 
-before { cleanup }
+  before { cleanup }
 
   describe '#jp2_filename' do
     it 'indicates the default jp2 filename' do
@@ -76,21 +77,26 @@ before { cleanup }
     end
 
     context 'when given a bitonal tif' do
+      let(:input_path) { "#{TEST_TIF_INPUT_FILE}_bitonal.tif" }
+      let(:test_jp2_output_file) { "#{TEST_JP2_OUTPUT_FILE}_bitonal.jp2" }
+
       before do
-        generate_test_image(TEST_TIF_INPUT_FILE, color: 'bin', bands: 1, depth: 1)
+        File.delete(input_path) if File.exist? input_path
+        File.delete(test_jp2_output_file) if File.exist? test_jp2_output_file
+        generate_test_image(input_path, color: 'bin', bands: 1, depth: 1)
       end
 
-      it 'creates grayscale jp2' do
-        expect(File).to exist TEST_TIF_INPUT_FILE
-        expect(File).not_to exist TEST_JP2_OUTPUT_FILE
+      it 'creates valid jp2' do
+        expect(File).to exist input_path
+        expect(File).not_to exist test_jp2_output_file
         expect(assembly_image.exif.samplesperpixel).to be 1
         expect(assembly_image.exif.bitspersample).to be 1
         expect(assembly_image).not_to have_color_profile
-        result = assembly_image.create_jp2(output: TEST_JP2_OUTPUT_FILE)
+        result = assembly_image.create_jp2(output: test_jp2_output_file)
         expect(result).to be_a_kind_of described_class
-        expect(result.path).to eq TEST_JP2_OUTPUT_FILE
-        expect(TEST_JP2_OUTPUT_FILE).to be_a_jp2
-        # expect(result.exif.colorspace).to eq 'Grayscale'
+        expect(result.path).to eq test_jp2_output_file
+        expect(test_jp2_output_file).to be_a_jp2
+        expect(result.exif.colorspace).to eq 'Grayscale'
       end
     end
 
@@ -116,23 +122,28 @@ before { cleanup }
     end
 
     context 'when given a graycale tif but with bitonal image data (1 channel and 1 bits per pixel)' do
+      let(:input_path) { "#{TEST_TIF_INPUT_FILE}_gray.tif" }
+      let(:test_jp2_output_file) { "#{TEST_JP2_OUTPUT_FILE}_gray.jp2" }
+
       before do
-        generate_test_image(TEST_TIF_INPUT_FILE, color: 'grey', bands: 1)
+        File.delete(input_path) if File.exist? input_path
+        File.delete(test_jp2_output_file) if File.exist? test_jp2_output_file
+        generate_test_image(input_path, color: 'grey', bands: 1)
       end
 
       it 'creates grayscale jp2' do
-        expect(File).to exist TEST_TIF_INPUT_FILE
-        expect(File).not_to exist TEST_JP2_OUTPUT_FILE
+        expect(File).to exist input_path
+        expect(File).not_to exist test_jp2_output_file
         expect(assembly_image).not_to have_color_profile
         expect(assembly_image.exif.samplesperpixel).to be 1
         expect(assembly_image.exif.bitspersample).to be 8
         expect(assembly_image).to be_a_valid_image
         expect(assembly_image).to be_jp2able
-        result = assembly_image.create_jp2(output: TEST_JP2_OUTPUT_FILE)
-        expect(TEST_JP2_OUTPUT_FILE).to be_a_jp2
+        result = assembly_image.create_jp2(output: test_jp2_output_file)
+        expect(test_jp2_output_file).to be_a_jp2
         expect(result).to be_a_kind_of described_class
-        expect(result.path).to eq TEST_JP2_OUTPUT_FILE
-        # expect(result.exif.colorspace).to eq 'Grayscale'
+        expect(result.path).to eq test_jp2_output_file
+        expect(result.exif.colorspace).to eq 'Grayscale'
       end
     end
 
@@ -174,6 +185,7 @@ before { cleanup }
         expect(result).to be_a_kind_of described_class
         expect(result.path).to eq TEST_JP2_OUTPUT_FILE
         expect(TEST_JP2_OUTPUT_FILE).to be_a_jp2
+        # TODO: figure out why result.exif.colorspace is nil
         # expect(result.exif.colorspace).to eq 'sRGB'
       end
     end
@@ -199,7 +211,7 @@ before { cleanup }
     context "when the output file exists and you don't allow overwriting" do
       before do
         generate_test_image(TEST_TIF_INPUT_FILE)
-        generate_test_image(TEST_JP2_OUTPUT_FILE)
+        FileUtils.touch(TEST_JP2_OUTPUT_FILE)
       end
 
       it 'does not run' do
@@ -289,7 +301,7 @@ before { cleanup }
     context 'when the output file exists and you allow overwriting' do
       before do
         generate_test_image(TEST_TIF_INPUT_FILE)
-        generate_test_image(TEST_JP2_OUTPUT_FILE)
+        FileUtils.touch(TEST_JP2_OUTPUT_FILE)
       end
 
       it 'recreates jp2' do
