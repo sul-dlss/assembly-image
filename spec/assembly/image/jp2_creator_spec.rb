@@ -9,11 +9,7 @@ RSpec.describe Assembly::Image::Jp2Creator do
   let(:input_path) { TEST_TIF_INPUT_FILE }
   let(:creator) { described_class.new(ai, output: TEST_JP2_OUTPUT_FILE) }
 
-  after do
-    # after each test, empty out the input and output test directories
-    remove_files(TEST_INPUT_DIR)
-    remove_files(TEST_OUTPUT_DIR)
-  end
+  before { cleanup }
 
   context 'when given an LZW compressed RGB tif' do
     before do
