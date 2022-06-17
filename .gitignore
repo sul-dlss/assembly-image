@@ -14,3 +14,5 @@ tmp
 
 coverage
 spec/examples.txt
+spec/test_data/input/*
+spec/test_data/output/*
