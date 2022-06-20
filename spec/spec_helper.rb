@@ -104,10 +104,10 @@ RSpec.configure do |config|
 end
 
 # rubocop:disable Metrics/MethodLength
-# rubocop:disable Layout/SpaceInsideArrayLiteralBrackets
-# rubocop:disable Layout/ExtraSpacing
 # Color values for 30-patch ColorGauge color target.
 def color_gauge_values(type = 'adobeRGB')
+  # rubocop:disable Layout/SpaceInsideArrayLiteralBrackets
+  # rubocop:disable Layout/ExtraSpacing
   adobe_rgb = [
     [109,  83,  71],  [187, 146, 129], [101, 120, 151], [ 97, 108,  68], [130, 128, 172],
     [130, 187, 171],  [ 64, 134, 165], [241, 242, 237], [231, 232, 229], [216, 217, 215],
@@ -136,7 +136,8 @@ def color_gauge_values(type = 'adobeRGB')
     [ 69, 220, 189,  51], [161,  59, 223,  15], [241, 223,  28,   5], [ 44,  95, 238,   3],
     [100,  31, 228,   0], [184, 210,  90,  56]
   ]
-
+  # rubocop:enable Layout/SpaceInsideArrayLiteralBrackets
+  # rubocop:enable Layout/ExtraSpacing
   case type
   when 'adobe_rgb'
     adobe_rgb
@@ -149,8 +150,6 @@ def color_gauge_values(type = 'adobeRGB')
   end
 end
 # rubocop:enable Metrics/MethodLength
-# rubocop:enable Layout/SpaceInsideArrayLiteralBrackets
-# rubocop:enable Layout/ExtraSpacing
 
 # generate a sample image file with a specified profile
 # rubocop:disable Metrics/AbcSize

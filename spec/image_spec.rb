@@ -6,7 +6,7 @@ require 'fileutils'
 RSpec.describe Assembly::Image do
   let(:assembly_image) { described_class.new(input_path) }
   let(:input_path) { TEST_TIF_INPUT_FILE }
-  let(:output_file) { File.join(TEST_OUTPUT_DIR, File.basename(input_path).gsub('.tif', '.jp2')) }
+  let(:jp2_output_file) { File.join(TEST_OUTPUT_DIR, File.basename(input_path).gsub('.tif', '.jp2')) }
 
   before { cleanup }
 
@@ -42,16 +42,15 @@ RSpec.describe Assembly::Image do
 
       it 'creates the jp2 with a temp file' do
         expect(File).to exist input_path
-        expect(File).not_to exist output_file
-        result = assembly_image.create_jp2(output: output_file)
+        expect(File).not_to exist jp2_output_file
+        result = assembly_image.create_jp2(output: jp2_output_file)
         expect(assembly_image.tmp_path).not_to be_nil
         expect(result).to be_a_kind_of described_class
-        expect(result.path).to eq output_file
-        expect(output_file).to be_a_jp2
+        expect(result.path).to eq jp2_output_file
+        expect(jp2_output_file).to be_a_jp2
         expect(result.exif.colorspace).to eq 'sRGB'
-        jp2 = described_class.new(output_file)
-        expect(jp2.height).to eq 37_838
-        expect(jp2.width).to eq 37_838
+        expect(result.height).to eq 37_838
+        expect(result.width).to eq 37_838
       end
     end
 
@@ -64,20 +63,19 @@ RSpec.describe Assembly::Image do
 
       it 'creates the jp2 with a temp file' do
         expect(File).to exist input_path
-        expect(File).not_to exist output_file
+        expect(File).not_to exist jp2_output_file
         expect(assembly_image.exif.samplesperpixel).to be 3
         expect(assembly_image.exif.bitspersample).to eql '8 8 8'
         expect(assembly_image).to be_a_valid_image
         expect(assembly_image).to be_jp2abl
-        result = assembly_image.create_jp2(output: output_file)
+        result = assembly_image.create_jp2(output: jp2_output_file)
         expect(assembly_image.tmp_path).not_to be_nil
         expect(result).to be_a_kind_of described_class
-        expect(result.path).to eq output_file
-        expect(output_file).to be_a_jp2
+        expect(result.path).to eq jp2_output_file
+        expect(jp2_output_file).to be_a_jp2
         expect(result.exif.colorspace).to eq 'sRGB'
-        jp2 = described_class.new(output_file)
-        expect(jp2.height).to eq 37_838
-        expect(jp2.width).to eq 37_838
+        expect(result.height).to eq 37_838
+        expect(result.width).to eq 37_838
       end
     end
 
@@ -90,14 +88,14 @@ RSpec.describe Assembly::Image do
 
       it 'creates valid jp2' do
         expect(File).to exist input_path
-        expect(File).not_to exist output_file
+        expect(File).not_to exist jp2_output_file
         expect(assembly_image.exif.samplesperpixel).to be 1
         expect(assembly_image.exif.bitspersample).to be 1
         expect(assembly_image).not_to have_color_profile
-        result = assembly_image.create_jp2(output: output_file)
+        result = assembly_image.create_jp2(output: jp2_output_file)
         expect(result).to be_a_kind_of described_class
-        expect(result.path).to eq output_file
-        expect(output_file).to be_a_jp2
+        expect(result.path).to eq jp2_output_file
+        expect(jp2_output_file).to be_a_jp2
         expect(result.exif.colorspace).to eq 'Grayscale'
       end
     end
@@ -111,16 +109,16 @@ RSpec.describe Assembly::Image do
 
       it 'creates color jp2' do
         expect(File).to exist input_path
-        expect(File).not_to exist output_file
+        expect(File).not_to exist jp2_output_file
         expect(assembly_image).not_to have_color_profile
         expect(assembly_image.exif.samplesperpixel).to be 3
         expect(assembly_image.exif.bitspersample).to eql '8 8 8'
         expect(assembly_image).to be_a_valid_image
         expect(assembly_image).to be_jp2able
-        result = assembly_image.create_jp2(output: output_file)
+        result = assembly_image.create_jp2(output: jp2_output_file)
         expect(result).to be_a_kind_of described_class
-        expect(result.path).to eq output_file
-        expect(output_file).to be_a_jp2
+        expect(result.path).to eq jp2_output_file
+        expect(jp2_output_file).to be_a_jp2
         expect(result.exif.colorspace).to eq 'sRGB'
       end
     end
@@ -134,16 +132,16 @@ RSpec.describe Assembly::Image do
 
       it 'creates grayscale jp2' do
         expect(File).to exist input_path
-        expect(File).not_to exist output_file
+        expect(File).not_to exist jp2_output_file
         expect(assembly_image).not_to have_color_profile
         expect(assembly_image.exif.samplesperpixel).to be 1
         expect(assembly_image.exif.bitspersample).to be 8
         expect(assembly_image).to be_a_valid_image
         expect(assembly_image).to be_jp2able
-        result = assembly_image.create_jp2(output: output_file)
-        expect(output_file).to be_a_jp2
+        result = assembly_image.create_jp2(output: jp2_output_file)
+        expect(jp2_output_file).to be_a_jp2
         expect(result).to be_a_kind_of described_class
-        expect(result.path).to eq output_file
+        expect(result.path).to eq jp2_output_file
         expect(result.exif.colorspace).to eq 'Grayscale'
       end
     end
@@ -157,16 +155,16 @@ RSpec.describe Assembly::Image do
 
       it 'creates color jp2' do
         expect(File).to exist input_path
-        expect(File).not_to exist output_file
+        expect(File).not_to exist jp2_output_file
         expect(assembly_image.exif.samplesperpixel).to be 3
         expect(assembly_image.exif.bitspersample).to eql '8 8 8'
         expect(assembly_image).to be_a_valid_image
         expect(assembly_image).to be_jp2able
         expect(assembly_image).not_to have_color_profile
-        result = assembly_image.create_jp2(output: output_file)
+        result = assembly_image.create_jp2(output: jp2_output_file)
         expect(result).to be_a_kind_of described_class
-        expect(result.path).to eq output_file
-        expect(output_file).to be_a_jp2
+        expect(result.path).to eq jp2_output_file
+        expect(jp2_output_file).to be_a_jp2
         expect(result.exif.colorspace).to eq 'sRGB'
       end
     end
@@ -180,16 +178,16 @@ RSpec.describe Assembly::Image do
 
       it 'creates jp2' do
         expect(File).to exist input_path
-        expect(File).not_to exist output_file
+        expect(File).not_to exist jp2_output_file
         expect(assembly_image.exif.samplesperpixel).to be 4
         expect(assembly_image.exif.bitspersample).to eql '8 8 8 8'
         expect(assembly_image).to be_a_valid_image
         expect(assembly_image).to be_jp2able
         expect(assembly_image).to have_color_profile
-        result = assembly_image.create_jp2(output: output_file)
+        result = assembly_image.create_jp2(output: jp2_output_file)
         expect(result).to be_a_kind_of described_class
-        expect(result.path).to eq output_file
-        expect(output_file).to be_a_jp2
+        expect(result.path).to eq jp2_output_file
+        expect(jp2_output_file).to be_a_jp2
         # TODO: figure out why result.exif.colorspace is nil
         # expect(result.exif.colorspace).to eq 'sRGB'
       end
@@ -204,27 +202,27 @@ RSpec.describe Assembly::Image do
 
       it 'creates a jp2' do
         expect(File).to exist input_path
-        expect(File).not_to exist output_file
+        expect(File).not_to exist jp2_output_file
         expect(assembly_image.exif.samplesperpixel).to be 3
         expect(assembly_image.exif.bitspersample).to eql '8 8 8'
         expect(assembly_image).not_to have_color_profile
         expect(assembly_image).to be_a_valid_image
         expect(assembly_image).to be_jp2able
-        assembly_image.create_jp2(output: output_file)
-        expect(output_file).to be_a_jp2
+        assembly_image.create_jp2(output: jp2_output_file)
+        expect(jp2_output_file).to be_a_jp2
       end
     end
 
     context "when the output file exists and you don't allow overwriting" do
       before do
         generate_test_image(input_path)
-        FileUtils.touch(output_file) # just need a file with this name, don't care what
+        FileUtils.touch(jp2_output_file) # just need a file with this name, don't care what
       end
 
       it 'does not run' do
         expect(File).to exist input_path
-        expect(File).to exist output_file
-        expect { assembly_image.create_jp2(output: output_file) }.to raise_error(SecurityError)
+        expect(File).to exist jp2_output_file
+        expect { assembly_image.create_jp2(output: jp2_output_file) }.to raise_error(SecurityError)
       end
     end
 
@@ -246,13 +244,13 @@ RSpec.describe Assembly::Image do
 
       it 'does not run' do
         expect(File).to exist input_path
-        expect(File).not_to exist output_file
+        expect(File).not_to exist jp2_output_file
         expect(assembly_image).not_to have_color_profile
         expect(assembly_image).to be_a_valid_image
         expect(assembly_image).to be_jp2able
-        assembly_image.create_jp2(output: output_file)
-        expect(output_file).to be_a_jp2
-        jp2_file = described_class.new(output_file)
+        assembly_image.create_jp2(output: jp2_output_file)
+        expect(jp2_output_file).to be_a_jp2
+        jp2_file = described_class.new(jp2_output_file)
         expect(jp2_file).to be_valid_image
         expect(jp2_file).not_to be_jp2able
         expect { jp2_file.create_jp2 }.to raise_error(RuntimeError)
@@ -308,16 +306,16 @@ RSpec.describe Assembly::Image do
     context 'when the output file exists and you allow overwriting' do
       before do
         generate_test_image(input_path)
-        FileUtils.touch(output_file) # just need a file with this name, don't care what
+        FileUtils.touch(jp2_output_file) # just need a file with this name, don't care what
       end
 
       it 'recreates jp2' do
         expect(File).to exist input_path
-        expect(File).to exist output_file
-        result = assembly_image.create_jp2(output: output_file, overwrite: true)
+        expect(File).to exist jp2_output_file
+        result = assembly_image.create_jp2(output: jp2_output_file, overwrite: true)
         expect(result).to be_a_kind_of described_class
-        expect(result.path).to eq output_file
-        expect(output_file).to be_a_jp2
+        expect(result.path).to eq jp2_output_file
+        expect(jp2_output_file).to be_a_jp2
         expect(result.exif.colorspace).to eq 'sRGB'
       end
     end
