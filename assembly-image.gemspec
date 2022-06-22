@@ -21,7 +21,7 @@ Gem::Specification.new do |s|
   s.add_dependency 'mini_exiftool', '>= 1.6', '< 3'
   s.add_dependency 'ruby-vips', '>= 2.0'
 
-  s.add_development_dependency 'byebug'
+  s.add_development_dependency 'pry-byebug'
   s.add_development_dependency 'rake'
   s.add_development_dependency 'rspec', '~> 3.0'
   s.add_development_dependency 'rubocop'

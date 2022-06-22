@@ -176,7 +176,7 @@ RSpec.describe Assembly::Image do
         generate_test_image(input_path, color: 'cmyk', cg_type: 'cmyk', profile: 'cmyk', bands: 4)
       end
 
-      it 'creates jp2' do
+      it 'creates an srgb jp2' do
         expect(File).to exist input_path
         expect(File).not_to exist jp2_output_file
         expect(assembly_image.exif.samplesperpixel).to be 4
@@ -188,8 +188,9 @@ RSpec.describe Assembly::Image do
         expect(result).to be_a_kind_of described_class
         expect(result.path).to eq jp2_output_file
         expect(jp2_output_file).to be_a_jp2
-        # TODO: figure out why result.exif.colorspace is nil
-        # expect(result.exif.colorspace).to eq 'sRGB'
+        # note, we verify the CMYK has been converted to an SRGB JP2 correctly by using ruby-vips instead of exif, since exif does not correctly
+        #  identify the color space
+        expect(Vips::Image.new_from_file(jp2_output_file).get_value('interpretation')).to eq :srgb
       end
     end
 

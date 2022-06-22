@@ -8,7 +8,7 @@ end
 bootfile = File.expand_path(File.dirname(__FILE__) + '/../config/boot')
 require bootfile
 require 'ruby-vips'
-require 'byebug'
+require 'pry-byebug'
 
 TEST_INPUT_DIR       = File.join(Assembly::PATH_TO_IMAGE_GEM, 'spec', 'test_data', 'input')
 TEST_OUTPUT_DIR      = File.join(Assembly::PATH_TO_IMAGE_GEM, 'spec', 'test_data', 'output')
@@ -17,6 +17,7 @@ TEST_JPEG_INPUT_FILE = File.join(TEST_INPUT_DIR, 'test.jpg')
 TEST_JP2_INPUT_FILE  = File.join(TEST_INPUT_DIR, 'test.jp2')
 TEST_JP2_OUTPUT_FILE = File.join(TEST_OUTPUT_DIR, 'test.jp2')
 TEST_PROFILE_DIR     = File.join(Assembly::PATH_TO_IMAGE_GEM, 'profiles')
+TEST_DATA_DIR        = File.join(Assembly::PATH_TO_IMAGE_GEM, 'spec', 'test_data')
 TEST_DRUID           = 'nx288wh8889'
 
 RSpec.configure do |config|
