@@ -37,8 +37,6 @@ module Assembly
 
       raise 'Input path does not exist' unless File.directory?(source)
 
-      logger.debug "Source: #{source}"
-
       # iterate over input directory looking for tifs
       pattern = recursive ? "**/*.#{extension}" : "*.#{extension}*"
       Dir.glob(File.join(source, pattern)).each do |file|
@@ -80,9 +78,6 @@ module Assembly
 
       Dir.mkdir(output) unless File.directory?(output) # attemp to make output directory
       raise 'Output path does not exist or could not be created' unless File.directory?(output)
-
-      logger.debug "Source: #{source}"
-      logger.debug "Destination: #{output}"
 
       pattern = recursive ? "**/*.#{extension}" : "*.#{extension}*"
 
