@@ -59,7 +59,7 @@ yard server --reload
 ## Prerequisites
 
 1. Kakadu Proprietary Software Binaries - for JP2 generation
-1. ImageMagick 6.5.4 or higher
+1. Libvips
 1. Exiftool
 
 ### Kakadu
