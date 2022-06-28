@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-require 'ruby-vips'
+require 'vips'
 require 'assembly-objectfile'
 require_relative 'jp2_creator'
 
