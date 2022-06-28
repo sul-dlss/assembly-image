@@ -164,3 +164,11 @@ RSpec/VerifiedDoubleReference: # new in 2.10.0
 
 Gemspec/DeprecatedAttributeAssignment: # new in 1.30
   Enabled: true
+Layout/LineContinuationLeadingSpace: # new in 1.31
+  Enabled: true
+Layout/LineContinuationSpacing: # new in 1.31
+  Enabled: true
+Lint/ConstantOverwrittenInRescue: # new in 1.31
+  Enabled: true
+Lint/NonAtomicFileOperation: # new in 1.31
+  Enabled: true

@@ -2,7 +2,6 @@
 *.gem
 .DS_Store
 .bundle
-Gemfile.lock
 config/certs/*
 config/environments/*
 doc/*
