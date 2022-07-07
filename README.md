@@ -67,9 +67,8 @@ yard server --reload
 Download and install demonstration binaries from Kakadu:
 http://kakadusoftware.com/downloads/
 
-NOTE: If you have upgrade to El Capitan on OS X, you will need to donwload and re-install the latest version of Kakadu, due to changes made with SIP.  These changes moved the old executable binaries to an inaccessible location.
-
 ### Libvips
+Note: libvips may require a significant amount of space for temporary files. The location for this can be controlled by the TMPDIR environment variable.
 
 #### Mac
 
