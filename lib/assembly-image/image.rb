@@ -65,9 +65,9 @@ module Assembly
       Jp2Creator.create(self, params)
     end
 
-    def samples_per_pixel
+    def srgb?
       vips_image = Vips::Image.new_from_file path
-      vips_image.bands
+      vips_image.interpretation == :srgb
     end
   end
 end

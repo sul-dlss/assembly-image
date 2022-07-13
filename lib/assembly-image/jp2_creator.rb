@@ -69,7 +69,7 @@ module Assembly
       def jp2_create_command(source_path:, output:)
         options = []
         # TODO: Consider using ruby-vips to determine the colorspace instead of relying on exif (which is done below)
-        options << '-jp2_space sRGB' if image.samples_per_pixel == 3
+        options << '-jp2_space sRGB' if image.srgb?
         options += KDU_COMPRESS_DEFAULT_OPTIONS
         options << "Clayers=#{layers}"
         "kdu_compress #{options.join(' ')} -i '#{source_path}' -o '#{output}' 2>&1"
