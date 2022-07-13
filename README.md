@@ -7,9 +7,9 @@
 
 ## Overview
 This gem contains classes used by the Stanford University Digital Library to
-perform image operations necessary for accessioning of content.
+create JP2 image derivatives.
 
-Requires image processing software - see PreRequisites section below.
+Requires image processing software - see [prerequisites section](#prerequisites) below.
 
 ## Notes
 
@@ -32,9 +32,7 @@ To use the JP2 creation method, you first instantiate the image object with an i
 ```ruby
 require 'assembly-image'
 input = Assembly::Image.new('/full/path/to/file.tif')
-puts input.exif   # show exif header information for the TIF
-output = input.create_jp2(:output=>'/full/path/to/output.jp2') # generate a new JP2 in the specified location
-puts output.exif  # show exif header information for the JP2
+output = input.create_jp2(output: '/full/path/to/output.jp2') # generate a new JP2 in the specified location
 ```
 
 ## Running tests
@@ -78,7 +76,7 @@ brew install libvips
 
 ### Exiftool
 
-#### RHEL
+#### Linux
 Download latest version from: http://www.sno.phy.queensu.ca/~phil/exiftool
 
 ```bash
