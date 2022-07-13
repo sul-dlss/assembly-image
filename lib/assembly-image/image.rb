@@ -98,7 +98,6 @@ module Assembly
     #   derivative_img=source_img.create_jp2(:overwrite=>true)
     #   puts derivative_img.mimetype # 'image/jp2'
     #   puts derivative_image.path # '/input/path_to_file.jp2'
-    # rubocop:disable Metrics/CyclomaticComplexity:
     def create_jp2(params = {})
       Jp2Creator.create(self, params)
     end
@@ -112,25 +111,6 @@ module Assembly
           1
         when 'image/jpeg'
           3
-        end
-      end
-    end
-
-    # Get size of image data in bytes
-    def image_data_size
-      (samples_per_pixel * height * width * bits_per_sample) / 8
-    end
-
-    private
-
-    # rubocop:enable Metrics/CyclomaticComplexity
-    def bits_per_sample
-      if exif['bitspersample']
-        exif['bitspersample'].to_i
-      else
-        case mimetype
-        when 'image/tiff'
-          1
         end
       end
     end
