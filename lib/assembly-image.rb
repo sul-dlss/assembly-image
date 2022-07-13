@@ -9,4 +9,3 @@ module Assembly
 end
 
 require 'assembly-image/image'
-require 'assembly-image/images'
