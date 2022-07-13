@@ -100,11 +100,6 @@ module Assembly
         raise SecurityError, 'cannot recreate jp2 over itself' if overwrite? && image.mimetype == 'image/jp2' && output_path == image.path
       end
 
-      # Bigtiff needs to be used if size of image exceeds 2^32 bytes.
-      def need_bigtiff?
-        image.image_data_size >= 2**32
-      end
-
       # We do this because we need to reliably compress the tiff and KDUcompress doesn’t support arbitrary image types
       # rubocop:disable Metrics/MethodLength
       def make_tmp_tiff(tmp_folder: nil)
@@ -124,7 +119,7 @@ module Assembly
                        vips_image
                      end
 
-        vips_image.tiffsave(tmp_path, bigtiff: need_bigtiff?)
+        vips_image.tiffsave(tmp_path, bigtiff: true) # Use bigtiff so we can support images > 4GB
         tmp_path
       end
       # rubocop:enable Metrics/MethodLength
