@@ -48,17 +48,6 @@ module Assembly
       exif.imagewidth
     end
 
-    # Examines the input image to determine if it is compressed.
-    #
-    # @return [boolean] true if image is compressed, false if not.
-    #
-    # Example:
-    #   source_img=Assembly::ObjectFile.new('/input/path_to_file.tif')
-    #   puts source_img.compressed? # gives true
-    # def compressed?
-    #   exif.compression != 'Uncompressed'
-    # end
-
     # Add an exif color profile descriptions to the image.
     # This is useful if your source TIFFs do not have color profile descriptions in the EXIF data, but you know what it should be.
     # This will allow the images to pass the validaty check and have JP2s created successfully.
