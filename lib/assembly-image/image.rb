@@ -7,18 +7,6 @@ require_relative 'jp2_creator'
 module Assembly
   # The Image class contains methods to operate on an image.
   class Image < Assembly::ObjectFile
-    # Examines the input image for validity.  Used to determine if image is correct and if JP2 generation is likely to succeed.
-    #  This method is automatically called before you create a jp2 but it can be called separately earlier as a sanity check.
-    #
-    # @return [boolean] true if image is valid, false if not.
-    #
-    # Example:
-    #   source_img=Assembly::ObjectFile.new('/input/path_to_file.tif')
-    #   puts source_img.valid? # gives true
-    def valid?
-      valid_image? # behavior is defined in assembly-objectfile gem
-    end
-
     # Get the image color profile
     #
     # @return [string] image color profile
