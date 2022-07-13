@@ -66,16 +66,8 @@ module Assembly
     end
 
     def samples_per_pixel
-      if exif['samplesperpixel']
-        exif['samplesperpixel'].to_i
-      else
-        case mimetype
-        when 'image/tiff'
-          1
-        when 'image/jpeg'
-          3
-        end
-      end
+      vips_image = Vips::Image.new_from_file path
+      vips_image.bands
     end
   end
 end
