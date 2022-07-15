@@ -24,7 +24,7 @@ RSpec.describe Assembly::Image::Jp2Creator do
       expect(TEST_JP2_OUTPUT_FILE).to be_a_jp2
 
       # Indicates a temp tiff was not created.
-      expect(creator.tmp_path).not_to be_nil
+      expect(creator.tmp_tiff_path).not_to be_nil
       expect(result.exif.colorspace).to eq 'sRGB'
       jp2 = Assembly::Image.new(TEST_JP2_OUTPUT_FILE)
       expect(jp2.height).to eq 36
@@ -47,8 +47,8 @@ RSpec.describe Assembly::Image::Jp2Creator do
       expect(TEST_JP2_OUTPUT_FILE).to be_a_jp2
 
       # Indicates a temp tiff was created.
-      expect(creator.tmp_path).not_to be_nil
-      expect(File).not_to exist creator.tmp_path
+      expect(creator.tmp_tiff_path).not_to be_nil
+      expect(File).not_to exist creator.tmp_tiff_path
     end
   end
 
