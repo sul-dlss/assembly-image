@@ -17,6 +17,7 @@ Gem::Specification.new do |s|
   s.executables   = s.files.grep(%r{^exe/}) { |f| File.basename(f) }
   s.require_paths = ['lib']
 
+  s.add_dependency 'activesupport', '> 6.1'
   s.add_dependency 'assembly-objectfile', '>= 1.6.4'
   s.add_dependency 'mini_exiftool', '>= 1.6', '< 3'
   s.add_dependency 'ruby-vips', '>= 2.0'
