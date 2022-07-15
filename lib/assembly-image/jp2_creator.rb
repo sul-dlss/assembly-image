@@ -105,6 +105,7 @@ module Assembly
 
       # We do this because we need to reliably compress the tiff and KDUcompress doesn’t support arbitrary image types
       # rubocop:disable Metrics/MethodLength
+      # rubocop:disable Metrics/AbcSize
       def make_tmp_tiff(tmp_folder: nil)
         tmp_folder ||= Dir.tmpdir
         raise "tmp_folder #{tmp_folder} does not exists" unless File.exist?(tmp_folder)
@@ -120,9 +121,10 @@ module Assembly
                        vips_image
                      end
 
-        tiff_image.tiffsave(tmp_path, bigtiff: true) # Use bigtiff so we can support images > 4GB
+        tiff_image.autorot.tiffsave(tmp_path, bigtiff: true) # Use bigtiff so we can support images > 4GB
         tmp_path
       end
+      # rubocop:enable Metrics/AbcSize
       # rubocop:enable Metrics/MethodLength
     end
   end

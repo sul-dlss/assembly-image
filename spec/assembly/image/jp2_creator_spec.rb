@@ -11,6 +11,20 @@ RSpec.describe Assembly::Image::Jp2Creator do
 
   before { cleanup }
 
+  describe '#make_tmp_tiff' do
+    subject(:tiff_file) { creator.send(:make_tmp_tiff) }
+
+    let(:input_path) { 'spec/test_data/color_rgb_srgb_rot90cw.tif' }
+    let(:vips_output) { Vips::Image.new_from_file tiff_file }
+    let(:plum) { [94.0, 58.0, 101.0] }
+
+    context 'when given a tiff with a rotation hint' do
+      it 'rotates it' do
+        expect(vips_output.getpoint(3, 3)).to eq plum
+      end
+    end
+  end
+
   context 'when given an LZW compressed RGB tif' do
     before do
       generate_test_image(TEST_TIF_INPUT_FILE, compress: 'lzw')
