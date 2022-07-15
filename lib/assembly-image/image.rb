@@ -9,12 +9,12 @@ module Assembly
   class Image < Assembly::ObjectFile
     # @return [integer] image height in pixels
     def height
-      exif.imageheight
+      vips_image.height
     end
 
     # @return [integer] image width in pixels
     def width
-      exif.imagewidth
+      vips_image.width
     end
 
     # @return [string] full default jp2 path and filename that will be created from the given image
