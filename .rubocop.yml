@@ -28,7 +28,7 @@ Style/WordArray:
 Naming/PredicateName:
   ForbiddenPrefixes:
     - is_
-    
+
 Gemspec/RequireMFA: # new in 1.23
   Enabled: true
 Layout/LineEndStringConcatenationIndentation: # new in 1.18
@@ -143,7 +143,7 @@ RSpec/SubjectDeclaration: # new in 2.5
 RSpec/FactoryBot/SyntaxMethods: # new in 2.7
   Enabled: true
 RSpec/Rails/AvoidSetupHook: # new in 2.4
-  Enabled: true
+  Enabled: false
 
 Lint/RefinementImportMethods: # new in 1.27
   Enabled: true
@@ -176,3 +176,8 @@ Lint/ConstantOverwrittenInRescue: # new in 1.31
   Enabled: true
 Lint/NonAtomicFileOperation: # new in 1.31
   Enabled: true
+
+RSpec/Capybara/SpecificMatcher: # new in 2.12
+  Enabled: true
+RSpec/Rails/HaveHttpStatus: # new in 2.12
+  Enabled: false
