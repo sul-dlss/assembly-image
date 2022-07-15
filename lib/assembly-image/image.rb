@@ -65,8 +65,11 @@ module Assembly
       Jp2Creator.create(self, params)
     end
 
+    def vips_image
+      @vips_image ||= Vips::Image.new_from_file path
+    end
+
     def srgb?
-      vips_image = Vips::Image.new_from_file path
       vips_image.interpretation == :srgb
     end
   end

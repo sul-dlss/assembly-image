@@ -3,6 +3,7 @@
 require 'assembly-objectfile'
 require 'tempfile'
 require 'English' # see https://github.com/rubocop-hq/rubocop/issues/1747 (not #MAGA related)
+require 'active_support/core_ext/module/delegation'
 
 module Assembly
   class Image < Assembly::ObjectFile
@@ -37,6 +38,8 @@ module Assembly
       end
 
       attr_reader :image, :output_path, :tmp_folder, :tmp_path
+
+      delegate :vips_image, to: :image
 
       # @return [Assembly::Image] object containing the generated JP2 file
       def create
@@ -109,9 +112,7 @@ module Assembly
         # make temp tiff filename
         tmp_tiff_file = Tempfile.new(['assembly-image', '.tif'], tmp_folder)
         tmp_path = tmp_tiff_file.path
-        vips_image = Vips::Image.new_from_file image.path
-
-        vips_image = if vips_image.interpretation.eql?(:cmyk)
+        tiff_image = if vips_image.interpretation.eql?(:cmyk)
                        vips_image.icc_transform(SRGB_ICC, input_profile: CMYK_ICC)
                      elsif !image.profile.nil?
                        vips_image.icc_transform(SRGB_ICC, embedded: true)
@@ -119,7 +120,7 @@ module Assembly
                        vips_image
                      end
 
-        vips_image.tiffsave(tmp_path, bigtiff: true) # Use bigtiff so we can support images > 4GB
+        tiff_image.tiffsave(tmp_path, bigtiff: true) # Use bigtiff so we can support images > 4GB
         tmp_path
       end
       # rubocop:enable Metrics/MethodLength
