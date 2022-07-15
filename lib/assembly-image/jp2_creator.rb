@@ -37,7 +37,7 @@ module Assembly
         @params = params
       end
 
-      attr_reader :image, :output_path, :tmp_folder, :tmp_path
+      attr_reader :image, :output_path, :tmp_folder, :tmp_tiff_path
 
       delegate :vips_image, to: :image
 
@@ -47,9 +47,9 @@ module Assembly
 
         # Using instance variable so that can check in tests.
         # We do this because we need to reliably compress the tiff and KDUcompress doesn’t support arbitrary image types
-        @tmp_path = make_tmp_tiff(tmp_folder: tmp_folder)
+        @tmp_tiff_path = make_tmp_tiff(tmp_folder: tmp_folder)
 
-        jp2_command = jp2_create_command(source_path: @tmp_path, output: output_path)
+        jp2_command = jp2_create_command(source_path: tmp_tiff_path, output: output_path)
         result = `#{jp2_command}`
         unless $CHILD_STATUS.success?
           # Clean up any partial result
@@ -57,7 +57,7 @@ module Assembly
           raise "JP2 creation command failed: #{jp2_command} with result #{result}"
         end
 
-        File.delete(@tmp_path) unless @tmp_path.nil?
+        File.delete(tmp_tiff_path) unless tmp_tiff_path.nil?
 
         # create output response object, which is an Assembly::Image type object
         Image.new(output_path)
@@ -111,17 +111,17 @@ module Assembly
 
         # make temp tiff filename
         tmp_tiff_file = Tempfile.new(['assembly-image', '.tif'], tmp_folder)
-        tmp_path = tmp_tiff_file.path
-        tiff_image = if vips_image.interpretation.eql?(:cmyk)
-                       vips_image.icc_transform(SRGB_ICC, input_profile: CMYK_ICC)
-                     elsif image.has_profile?
-                       vips_image.icc_transform(SRGB_ICC, embedded: true)
-                     else
-                       vips_image
-                     end
+        result_path = tmp_tiff_file.path
+        tmp_tiff_image = if vips_image.interpretation.eql?(:cmyk)
+                           vips_image.icc_transform(SRGB_ICC, input_profile: CMYK_ICC)
+                         elsif image.has_profile?
+                           vips_image.icc_transform(SRGB_ICC, embedded: true)
+                         else
+                           vips_image
+                         end
 
-        tiff_image.tiffsave(tmp_path, bigtiff: true) # Use bigtiff so we can support images > 4GB
-        tmp_path
+        tmp_tiff_image.tiffsave(result_path, bigtiff: true) # Use bigtiff so we can support images > 4GB
+        result_path
       end
       # rubocop:enable Metrics/MethodLength
     end

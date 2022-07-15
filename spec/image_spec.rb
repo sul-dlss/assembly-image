@@ -44,7 +44,7 @@ RSpec.describe Assembly::Image do
         expect(File).to exist input_path
         expect(File).not_to exist jp2_output_file
         result = assembly_image.create_jp2(output: jp2_output_file)
-        expect(assembly_image.tmp_path).not_to be_nil
+        expect(assembly_image.tmp_tiff_path).not_to be_nil
         expect(result).to be_a_kind_of described_class
         expect(result.path).to eq jp2_output_file
         expect(jp2_output_file).to be_a_jp2
@@ -69,7 +69,7 @@ RSpec.describe Assembly::Image do
         expect(assembly_image).to be_a_valid_image
         expect(assembly_image).to be_jp2abl
         result = assembly_image.create_jp2(output: jp2_output_file)
-        expect(assembly_image.tmp_path).not_to be_nil
+        expect(assembly_image.tmp_tiff_path).not_to be_nil
         expect(result).to be_a_kind_of described_class
         expect(result.path).to eq jp2_output_file
         expect(jp2_output_file).to be_a_jp2
