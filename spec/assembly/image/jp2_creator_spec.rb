@@ -5,9 +5,9 @@ require 'spec_helper'
 RSpec.describe Assembly::Image::Jp2Creator do
   subject(:result) { creator.create }
 
-  let(:ai) { Assembly::Image.new(input_path) }
+  let(:assembly_image) { Assembly::Image.new(input_path) }
   let(:input_path) { TEST_TIF_INPUT_FILE }
-  let(:creator) { described_class.new(ai, output: TEST_JP2_OUTPUT_FILE) }
+  let(:creator) { described_class.new(assembly_image, output: TEST_JP2_OUTPUT_FILE) }
 
   before { cleanup }
 
@@ -49,6 +49,21 @@ RSpec.describe Assembly::Image::Jp2Creator do
       # Indicates a temp tiff was created.
       expect(creator.tmp_path).not_to be_nil
       expect(File).not_to exist creator.tmp_path
+    end
+  end
+
+  describe '#make_tmp_tiff' do
+    subject(:tiff_file) { creator.send(:make_tmp_tiff) }
+
+    let(:input_path) { 'spec/test_data/color_rgb_srgb_rot90cw.tif' }
+    let(:vips_output) { Vips::Image.new_from_file tiff_file }
+    let(:plum) { [94.0, 58.0, 101.0] }
+
+    context 'when given a tiff with a rotation hint' do
+      it 'rotates it' do
+        expect(Vips::Image.new_from_file(input_path).getpoint(3, 3)).not_to eq plum
+        expect(vips_output.getpoint(3, 3)).to eq plum
+      end
     end
   end
 end

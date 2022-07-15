@@ -43,7 +43,8 @@ module Assembly
     end
 
     def vips_image
-      @vips_image ||= Vips::Image.new_from_file path
+      # autorot will only affect images that need rotation: https://www.libvips.org/API/current/libvips-conversion.html#vips-autorot
+      @vips_image ||= Vips::Image.new_from_file(path).autorot
     end
 
     def srgb?
