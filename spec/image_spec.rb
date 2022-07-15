@@ -258,21 +258,6 @@ RSpec.describe Assembly::Image do
       end
     end
 
-    context 'when you specify a bogus output profile' do
-      before do
-        generate_test_image(input_path)
-      end
-
-      it 'runs, because this is not currently an option' do
-        expect(File).to exist input_path
-        result = assembly_image.create_jp2(output_profile: 'bogusness')
-        expect(result).to be_a_kind_of described_class
-        expect(result.path).to eq TEST_JP2_INPUT_FILE
-        expect(TEST_JP2_INPUT_FILE).to be_a_jp2
-        expect(result.exif.colorspace).to eq 'sRGB'
-      end
-    end
-
     context 'when an invalid tmp folder' do
       before do
         generate_test_image(TEST_JPEG_INPUT_FILE)
