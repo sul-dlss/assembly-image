@@ -114,7 +114,7 @@ module Assembly
         tmp_path = tmp_tiff_file.path
         tiff_image = if vips_image.interpretation.eql?(:cmyk)
                        vips_image.icc_transform(SRGB_ICC, input_profile: CMYK_ICC)
-                     elsif !image.profile.nil?
+                     elsif image.has_profile?
                        vips_image.icc_transform(SRGB_ICC, embedded: true)
                      else
                        vips_image

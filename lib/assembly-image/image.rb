@@ -7,16 +7,6 @@ require_relative 'jp2_creator'
 module Assembly
   # The Image class contains methods to operate on an image.
   class Image < Assembly::ObjectFile
-    # Get the image color profile
-    #
-    # @return [string] image color profile
-    # Example:
-    #   source_img=Assembly::Image.new('/input/path_to_file.tif')
-    #   puts source_img.profile # gives 'Adobe RGB 1998'
-    def profile
-      exif.nil? ? nil : exif['profiledescription']
-    end
-
     # Get the image height from exif data
     #
     # @return [integer] image height in pixels
@@ -71,6 +61,11 @@ module Assembly
 
     def srgb?
       vips_image.interpretation == :srgb
+    end
+
+    # Does the image include an ICC profile?
+    def has_profile?
+      vips_image.get_fields.include?('icc-profile-data')
     end
   end
 end

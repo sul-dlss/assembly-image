@@ -25,6 +25,10 @@ Naming/FileName:
 Style/WordArray:
   Enabled: false
 
+Naming/PredicateName:
+  ForbiddenPrefixes:
+    - is_
+    
 Gemspec/RequireMFA: # new in 1.23
   Enabled: true
 Layout/LineEndStringConcatenationIndentation: # new in 1.18
