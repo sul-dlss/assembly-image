@@ -169,31 +169,6 @@ RSpec.describe Assembly::Image do
       end
     end
 
-    context 'when given a cmyk tif' do
-      let(:input_path) { File.join(TEST_INPUT_DIR, 'cmky.tif') }
-
-      before do
-        generate_test_image(input_path, color: 'cmyk', cg_type: 'cmyk', profile: 'cmyk', bands: 4)
-      end
-
-      it 'creates an srgb jp2', skip: 'Need to verify the color space is correct in jp2' do
-        expect(File).to exist input_path
-        expect(File).not_to exist jp2_output_file
-        expect(assembly_image.exif.samplesperpixel).to be 4
-        expect(assembly_image.exif.bitspersample).to eql '8 8 8 8'
-        expect(assembly_image).to be_a_valid_image
-        expect(assembly_image).to be_jp2able
-        expect(assembly_image).to have_color_profile
-        result = assembly_image.create_jp2(output: jp2_output_file)
-        expect(result).to be_a_kind_of described_class
-        expect(result.path).to eq jp2_output_file
-        expect(jp2_output_file).to have_jp2_mimetype
-        # note, we verify the CMYK has been converted to an SRGB JP2 correctly by using ruby-vips instead of exif, since exif does not correctly
-        #  identify the color space...note: this line current does not work in circleci, potentially due to libvips version differences
-        expect(Vips::Image.new_from_file(jp2_output_file).get_value('interpretation')).to eq :srgb
-      end
-    end
-
     context 'when the source image has no profile' do
       let(:input_path) { File.join(TEST_INPUT_DIR, 'no_profile.tif') }
 
