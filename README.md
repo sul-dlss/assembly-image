@@ -6,24 +6,16 @@
 # Assembly Image Gem
 
 ## Overview
-This gem contains classes used by the Stanford University Digital Library to
-create JP2 image derivatives.
+This gem contains classes used by the Stanford University Digital Library to create JP2 image derivatives.
 
 Requires image processing software - see [prerequisites section](#prerequisites) below.
 
 ## Notes
 
 1. The gem assumes that the user context in which it is executed has write access to the 'tmp' folder.
-This is because color profiles can be extracted from images during the JP2
-creation process, and these profiles need to be stored as local files, and it
-is beneficial to cache them for later usage by images with the same color profile.
-If you know there are color profiles which are commonly used, it is better to
-capture them in the gem itself in the profile folder so they can be re-used
-and do not need to be extracted.
-1. If any errors occur during JP2 generation for any reason, a runtime exception will be thrown with a description of the error.
-2. If an image is passed in with a color profile that cannot be determined by examining the exif header data, an exception will be thrown.
-
-This can commonly occur in basic test TIFs that are black/white and have no profile, so beware during testing.
+This is to create the temporary tiffs used;  we need temporary tiffs to reliably compress the image using KDUcompress, which doesn’t support arbitrary image types
+2. If any errors occur during JP2 generation for any reason, a runtime exception will be thrown with a description of the error.
+3. If an image is passed in with a color profile that cannot be determined, an exception will be thrown. This can commonly occur in basic test TIFs that are black/white and have no profile, so beware during testing.
 
 ## Usage
 
@@ -31,34 +23,21 @@ To use the JP2 creation method, you first instantiate the image object with an i
 
 ```ruby
 require 'assembly-image'
-input = Assembly::Image.new('/full/path/to/file.tif')
-output = input.create_jp2(output: '/full/path/to/output.jp2') # generate a new JP2 in the specified location
+input_image = Assembly::Image.new('/full/path/to/file.tif')
+output = input_image.create_jp2(output: '/full/path/to/output.jp2') # generate a new JP2 in the specified location
 ```
 
 ## Running tests
 
 ```bash
-bundle exec rake
-```
-
-## Generate documentation
-To generate documentation into the "doc" folder:
-
-```bash
-yard
-```
-
-To keep a local server running with up to date code documentation that you can view in your browser:
-
-```bash
-yard server --reload
+bundle exec rspec
 ```
 
 ## Prerequisites
 
 1. Kakadu Proprietary Software Binaries - for JP2 generation
 1. Libvips
-1. Exiftool
+1. Exiftool - only needed for tests:  to check mimetype of produced jp2 and since there's not a libvips package available that speaks jp2
 
 ### Kakadu
 
