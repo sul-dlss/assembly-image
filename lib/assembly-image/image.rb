@@ -9,11 +9,13 @@ module Assembly
   class Image < Assembly::ObjectFile
     # @return [integer] image height in pixels
     def height
+      # use exif to avoid problems with libvips in circleci not speaking jp2
       exif.imageheight
     end
 
     # @return [integer] image width in pixels
     def width
+      # use exif to avoid problems with libvips in circleci not speaking jp2
       exif.imagewidth
     end
 

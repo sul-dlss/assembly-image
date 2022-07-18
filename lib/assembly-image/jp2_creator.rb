@@ -68,7 +68,9 @@ module Assembly
 
       def jp2_create_command(source_path:, output:)
         options = []
-        # TODO: Consider using ruby-vips to determine the colorspace instead of relying on exif (which is done below)
+        # CMYK becomes sRGB in make_tmp_tiff, so jp2_space option will be set for sRGB and CMYK
+        #   TODO: we're not sure at this time what happens for grayscale (or what Tony C. wants for grayscale)
+        #   see https://github.com/sul-dlss/assembly-image/issues/98
         options << '-jp2_space sRGB' if image.srgb?
         options += KDU_COMPRESS_DEFAULT_OPTIONS
         options << "Clayers=#{layers}"
