@@ -22,12 +22,15 @@ Naming/FileName:
   Exclude:
    - lib/assembly-image.rb
 
-Style/WordArray:
-  Enabled: false
-
 Naming/PredicateName:
   ForbiddenPrefixes:
     - is_
+
+RSpec/MultipleMemoizedHelpers:
+  Enabled: false
+
+Style/WordArray:
+  Enabled: false
 
 Gemspec/RequireMFA: # new in 1.23
   Enabled: true
