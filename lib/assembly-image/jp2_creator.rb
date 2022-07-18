@@ -15,26 +15,24 @@ module Assembly
       # @return [Assembly::Image] object containing the generated JP2 file
       #
       # @param [Assembly::Image] the image file
-      # @param [Hash] params Optional parameters specified as a hash, using symbols for options:
-      #   * :output => path to the output JP2 file (default: mirrors the source file name and path, but with a .jp2 extension)
-      #   * :overwrite => if set to false, an existing JP2 file with the same name won't be overwritten (default: false)
-      #   * :tmp_folder =>  the temporary folder to use when creating the jp2 (default: '/tmp'); also used by imagemagick
+      # @param [String] output path to the output JP2 file (default: mirrors the source file name and path, but with a .jp2 extension)
+      # @param [Boolean] overwrite if set to false, an existing JP2 file with the same name won't be overwritten (default: false)
+      # @param [Dir] tmp_folder the temporary folder to use when creating the jp2 (default: '/tmp'); also used by imagemagick
       #
       # Example:
       #   source_img = Assembly::Image.new('/input/path_to_file.tif')
-      #   derivative_img = source_img.create_jp2(:overwrite=>true)
+      #   derivative_img = source_img.create_jp2(overwrite: true)
       #   puts derivative_img.mimetype # 'image/jp2'
       #   puts derivative_image.path # '/input/path_to_file.jp2'
-      def self.create(image, params = {})
-        new(image, params).create
+      def self.create(image, **args)
+        new(image, **args).create
       end
 
-      def initialize(image, params)
+      def initialize(image, overwrite: false, output: image.jp2_filename, tmp_folder: Dir.tmpdir)
         @image = image
-        @output_path = params.fetch(:output, image.jp2_filename)
-        @tmp_folder = params[:tmp_folder]
-        @overwrite = params[:overwrite]
-        @params = params
+        @output_path = output
+        @tmp_folder = tmp_folder
+        @overwrite = overwrite
       end
 
       attr_reader :image, :output_path, :tmp_folder, :tmp_tiff_path
@@ -45,9 +43,8 @@ module Assembly
       def create
         create_jp2_checks
 
-        # Using instance variable so that can check in tests.
-        # We do this because we need to reliably compress the tiff and KDUcompress doesn’t support arbitrary image types
-        @tmp_tiff_path = make_tmp_tiff(tmp_folder: tmp_folder)
+        # KDUcompress doesn’t support arbitrary image types,  so we make a temporary tiff
+        @tmp_tiff_path = make_tmp_tiff
 
         jp2_command = jp2_create_command(source_path: tmp_tiff_path, output: output_path)
         result = `#{jp2_command}`
@@ -105,8 +102,7 @@ module Assembly
 
       # We do this because we need to reliably compress the tiff and KDUcompress doesn’t support arbitrary image types
       # rubocop:disable Metrics/MethodLength
-      def make_tmp_tiff(tmp_folder: nil)
-        tmp_folder ||= Dir.tmpdir
+      def make_tmp_tiff
         raise "tmp_folder #{tmp_folder} does not exists" unless File.exist?(tmp_folder)
 
         # make temp tiff filename
