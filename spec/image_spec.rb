@@ -47,7 +47,7 @@ RSpec.describe Assembly::Image do
         expect(assembly_image.tmp_tiff_path).not_to be_nil
         expect(result).to be_a_kind_of described_class
         expect(result.path).to eq jp2_output_file
-        expect(jp2_output_file).to be_a_jp2
+        expect(jp2_output_file).to have_jp2_mimetype
         expect(result.exif.colorspace).to eq 'sRGB'
         expect(result.height).to eq 37_838
         expect(result.width).to eq 37_838
@@ -72,7 +72,7 @@ RSpec.describe Assembly::Image do
         expect(assembly_image.tmp_tiff_path).not_to be_nil
         expect(result).to be_a_kind_of described_class
         expect(result.path).to eq jp2_output_file
-        expect(jp2_output_file).to be_a_jp2
+        expect(jp2_output_file).to have_jp2_mimetype
         expect(result.exif.colorspace).to eq 'sRGB'
         expect(result.height).to eq 37_838
         expect(result.width).to eq 37_838
@@ -95,7 +95,7 @@ RSpec.describe Assembly::Image do
         result = assembly_image.create_jp2(output: jp2_output_file)
         expect(result).to be_a_kind_of described_class
         expect(result.path).to eq jp2_output_file
-        expect(jp2_output_file).to be_a_jp2
+        expect(jp2_output_file).to have_jp2_mimetype
         expect(result.exif.colorspace).to eq 'Grayscale'
       end
     end
@@ -118,7 +118,7 @@ RSpec.describe Assembly::Image do
         result = assembly_image.create_jp2(output: jp2_output_file)
         expect(result).to be_a_kind_of described_class
         expect(result.path).to eq jp2_output_file
-        expect(jp2_output_file).to be_a_jp2
+        expect(jp2_output_file).to have_jp2_mimetype
         expect(result.exif.colorspace).to eq 'sRGB'
       end
     end
@@ -139,7 +139,7 @@ RSpec.describe Assembly::Image do
         expect(assembly_image).to be_a_valid_image
         expect(assembly_image).to be_jp2able
         result = assembly_image.create_jp2(output: jp2_output_file)
-        expect(jp2_output_file).to be_a_jp2
+        expect(jp2_output_file).to have_jp2_mimetype
         expect(result).to be_a_kind_of described_class
         expect(result.path).to eq jp2_output_file
         expect(result.exif.colorspace).to eq 'Grayscale'
@@ -164,7 +164,7 @@ RSpec.describe Assembly::Image do
         result = assembly_image.create_jp2(output: jp2_output_file)
         expect(result).to be_a_kind_of described_class
         expect(result.path).to eq jp2_output_file
-        expect(jp2_output_file).to be_a_jp2
+        expect(jp2_output_file).to have_jp2_mimetype
         expect(result.exif.colorspace).to eq 'sRGB'
       end
     end
@@ -187,7 +187,7 @@ RSpec.describe Assembly::Image do
         result = assembly_image.create_jp2(output: jp2_output_file)
         expect(result).to be_a_kind_of described_class
         expect(result.path).to eq jp2_output_file
-        expect(jp2_output_file).to be_a_jp2
+        expect(jp2_output_file).to have_jp2_mimetype
         # note, we verify the CMYK has been converted to an SRGB JP2 correctly by using ruby-vips instead of exif, since exif does not correctly
         #  identify the color space...note: this line current does not work in circleci, potentially due to libvips version differences
         expect(Vips::Image.new_from_file(jp2_output_file).get_value('interpretation')).to eq :srgb
@@ -210,7 +210,7 @@ RSpec.describe Assembly::Image do
         expect(assembly_image).to be_a_valid_image
         expect(assembly_image).to be_jp2able
         assembly_image.create_jp2(output: jp2_output_file)
-        expect(jp2_output_file).to be_a_jp2
+        expect(jp2_output_file).to have_jp2_mimetype
       end
     end
 
@@ -250,7 +250,7 @@ RSpec.describe Assembly::Image do
         expect(assembly_image).to be_a_valid_image
         expect(assembly_image).to be_jp2able
         assembly_image.create_jp2(output: jp2_output_file)
-        expect(jp2_output_file).to be_a_jp2
+        expect(jp2_output_file).to have_jp2_mimetype
         jp2_file = described_class.new(jp2_output_file)
         expect(jp2_file).to be_valid_image
         expect(jp2_file).not_to be_jp2able
@@ -274,17 +274,19 @@ RSpec.describe Assembly::Image do
     end
 
     context 'when no output file is specified' do
+      let(:jp2_input_file) { File.join(TEST_INPUT_DIR, 'test.jp2') }
+
       before do
         generate_test_image(input_path)
       end
 
       it 'creates a jp2 of the same filename and in the same location as the input and cleans up the tmp file' do
         expect(File).to exist input_path
-        expect(File.exist?(TEST_JP2_INPUT_FILE)).to be false
+        expect(File.exist?(jp2_input_file)).to be false
         result = assembly_image.create_jp2
         expect(result).to be_a_kind_of described_class
-        expect(result.path).to eq TEST_JP2_INPUT_FILE
-        expect(TEST_JP2_INPUT_FILE).to be_a_jp2
+        expect(result.path).to eq jp2_input_file
+        expect(jp2_input_file).to have_jp2_mimetype
         expect(result.exif.colorspace).to eq 'sRGB'
       end
     end
@@ -301,7 +303,7 @@ RSpec.describe Assembly::Image do
         result = assembly_image.create_jp2(output: jp2_output_file, overwrite: true)
         expect(result).to be_a_kind_of described_class
         expect(result.path).to eq jp2_output_file
-        expect(jp2_output_file).to be_a_jp2
+        expect(jp2_output_file).to have_jp2_mimetype
         expect(result.exif.colorspace).to eq 'sRGB'
       end
     end

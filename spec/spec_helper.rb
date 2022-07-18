@@ -7,18 +7,12 @@ end
 
 bootfile = File.expand_path(File.dirname(__FILE__) + '/../config/boot')
 require bootfile
-require 'ruby-vips'
 require 'pry-byebug'
 
 TEST_INPUT_DIR       = File.join(Assembly::PATH_TO_IMAGE_GEM, 'spec', 'test_data', 'input')
 TEST_OUTPUT_DIR      = File.join(Assembly::PATH_TO_IMAGE_GEM, 'spec', 'test_data', 'output')
 TEST_TIF_INPUT_FILE  = File.join(TEST_INPUT_DIR, 'test.tif')
 TEST_JPEG_INPUT_FILE = File.join(TEST_INPUT_DIR, 'test.jpg')
-TEST_JP2_INPUT_FILE  = File.join(TEST_INPUT_DIR, 'test.jp2')
-TEST_JP2_OUTPUT_FILE = File.join(TEST_OUTPUT_DIR, 'test.jp2')
-TEST_PROFILE_DIR     = File.join(Assembly::PATH_TO_IMAGE_GEM, 'profiles')
-TEST_DATA_DIR        = File.join(Assembly::PATH_TO_IMAGE_GEM, 'spec', 'test_data')
-TEST_DRUID           = 'nx288wh8889'
 
 RSpec.configure do |config|
   # rspec-expectations config goes here. You can use an alternate
@@ -204,7 +198,7 @@ def generate_test_image(file, params = {})
 
   options = {}
   unless profile.nil?
-    profile_file = File.join(TEST_PROFILE_DIR, profile + '.icc')
+    profile_file = File.join(Assembly::PATH_TO_IMAGE_GEM, 'profiles', profile + '.icc')
     options.merge!(profile: profile_file)
   end
 
@@ -236,7 +230,7 @@ def remove_files(dir)
   end
 end
 
-RSpec::Matchers.define :be_a_jp2 do
+RSpec::Matchers.define :have_jp2_mimetype do
   match do |actual|
     if File.exist?(actual)
       exif = MiniExiftool.new actual
