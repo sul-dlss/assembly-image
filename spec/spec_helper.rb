@@ -5,7 +5,7 @@ SimpleCov.start do
   add_filter 'spec'
 end
 
-bootfile = File.expand_path(File.dirname(__FILE__) + '/../config/boot')
+bootfile = File.expand_path("#{File.dirname(__FILE__)}/../config/boot")
 require bootfile
 require 'pry-byebug'
 
@@ -198,7 +198,7 @@ def generate_test_image(file, params = {})
 
   options = {}
   unless profile.nil?
-    profile_file = File.join(Assembly::PATH_TO_IMAGE_GEM, 'profiles', profile + '.icc')
+    profile_file = File.join(Assembly::PATH_TO_IMAGE_GEM, 'profiles', "#{profile}.icc")
     options.merge!(profile: profile_file)
   end
 

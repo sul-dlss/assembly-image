@@ -50,7 +50,7 @@ module Assembly
         result = `#{jp2_command}`
         unless $CHILD_STATUS.success?
           # Clean up any partial result
-          File.delete(output_path) if File.exist?(output_path)
+          FileUtils.rm_rf(output_path)
           raise "JP2 creation command failed: #{jp2_command} with result #{result}"
         end
 
