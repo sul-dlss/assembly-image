@@ -113,16 +113,17 @@ RSpec.describe Assembly::Image::Jp2Creator do
         generate_test_image(input_path)
       end
 
-      it 'gets the correct image height and width, creates and cleans up the temporary tiff' do
+      it 'gets the correct image, creates and cleans up the temporary tiff' do
         expect(File).to exist input_path # test image was generated
         expect(File).not_to exist jp2_output_file
 
         expect(result).to be_a_kind_of Assembly::Image
         expect(result.path).to eq jp2_output_file
         expect(result.mimetype).to eq 'image/jp2'
-        # check for jp2 contents without using libvips (due to CI libvips not speaking jp2)
-        expect(assembly_image.height).to eq 36
-        expect(assembly_image.width).to eq 43
+        # check height and width on temporary tiff (due to CI libvips not speaking jp2)
+        tmp_tiff_image = Assembly::Image.new(jp2creator.send(:make_tmp_tiff))
+        expect(tmp_tiff_image.height).to eq 36
+        expect(tmp_tiff_image.width).to eq 43
 
         expect(jp2creator.tmp_tiff_path).not_to be_nil # temporary tiff was created
         expect(File).not_to exist jp2creator.tmp_tiff_path # the temporary tiff path is cleaned up
@@ -142,9 +143,10 @@ RSpec.describe Assembly::Image::Jp2Creator do
 
         expect(result.path).to eq jp2_output_file
         expect(result.mimetype).to eq 'image/jp2'
-        # check for jp2 contents without using libvips (due to CI libvips not speaking jp2)
-        expect(result.height).to eq 36
-        expect(result.width).to eq 43
+        # check height and width on temporary tiff (due to CI libvips not speaking jp2)
+        tmp_tiff_image = Assembly::Image.new(jp2creator.send(:make_tmp_tiff))
+        expect(tmp_tiff_image.height).to eq 36
+        expect(tmp_tiff_image.width).to eq 43
       end
     end
 
@@ -186,9 +188,10 @@ RSpec.describe Assembly::Image::Jp2Creator do
 
         expect(result.path).to eq jp2_output_file
         expect(result.mimetype).to eq 'image/jp2'
-        # check for jp2 contents without using libvips (due to CI libvips not speaking jp2)
-        expect(result.height).to eq 36
-        expect(result.width).to eq 43
+        # check height and width on temporary tiff (due to CI libvips not speaking jp2)
+        tmp_tiff_image = Assembly::Image.new(jp2creator.send(:make_tmp_tiff))
+        expect(tmp_tiff_image.height).to eq 36
+        expect(tmp_tiff_image.width).to eq 43
       end
     end
 

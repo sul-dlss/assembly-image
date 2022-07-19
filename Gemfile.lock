@@ -4,7 +4,6 @@ PATH
     assembly-image (2.0.0)
       activesupport (> 6.1)
       assembly-objectfile (>= 1.6.4)
-      mini_exiftool (>= 1.6, < 3)
       ruby-vips (>= 2.0)
 
 GEM
