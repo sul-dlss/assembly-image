@@ -105,7 +105,7 @@ module Assembly
       # We do this because we need to reliably compress the tiff and KDUcompress doesn’t support arbitrary image types
       # rubocop:disable Metrics/MethodLength
       def make_tmp_tiff
-        raise "tmp_folder #{tmp_folder} does not exists" unless File.exist?(tmp_folder)
+        raise "tmp_folder #{tmp_folder} does not exist" unless File.exist?(tmp_folder)
 
         # make temp tiff filename
         tmp_tiff_file = Tempfile.new(['assembly-image', '.tif'], tmp_folder)

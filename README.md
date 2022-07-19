@@ -37,7 +37,7 @@ bundle exec rspec
 
 1. Kakadu Proprietary Software Binaries - for JP2 generation
 1. Libvips
-1. Exiftool - only needed for tests:  to check mimetype of produced jp2 and since there's not a libvips package available that speaks jp2
+1. Exiftool - upstream dependency of assembly-objectfile (used by specs to check mimetype of produced jp2, and because there is no libvips package available for circleci that speaks jp2)
 
 ### Kakadu
 

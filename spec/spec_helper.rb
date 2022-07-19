@@ -229,14 +229,3 @@ def remove_files(dir)
     File.delete(fn) if !File.directory?(fn) && File.basename(fn) != '.empty'
   end
 end
-
-RSpec::Matchers.define :have_jp2_mimetype do
-  match do |actual|
-    if File.exist?(actual)
-      exif = MiniExiftool.new actual
-      exif['mimetype'] == 'image/jp2'
-    else
-      false
-    end
-  end
-end
