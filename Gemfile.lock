@@ -95,9 +95,6 @@ GEM
     tzinfo (2.0.4)
       concurrent-ruby (~> 1.0)
     unicode-display_width (2.2.0)
-    webrick (1.7.0)
-    yard (0.9.28)
-      webrick (~> 1.7.0)
 
 PLATFORMS
   x86_64-darwin-19
@@ -112,7 +109,6 @@ DEPENDENCIES
   rubocop
   rubocop-rspec
   simplecov
-  yard
 
 BUNDLED WITH
    2.3.17
