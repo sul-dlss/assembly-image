@@ -2,7 +2,7 @@
 
 require 'vips'
 require 'assembly-objectfile'
-require_relative 'jp2_creator'
+require_relative 'image/jp2_creator'
 
 module Assembly
   # The Image class contains methods to operate on an image.

@@ -8,4 +8,4 @@ module Assembly
   CMYK_ICC = File.join(PATH_TO_PROFILES, 'cmyk.icc')
 end
 
-require 'assembly-image/image'
+require 'assembly/image'
