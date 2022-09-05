@@ -169,10 +169,10 @@ def generate_test_image(file, params = {})
 
   temp_array = color_gauge_values(cg_type)
   temp_image = Vips::Image.black(width, height, bands: temp_array.first.size)
-  (0..4).each do |i|
+  5.times do |i|
     b = (box_size * i) + (line_size * (i + 1))
     # d = b + box_size - line_size
-    (0...6).each do |j|
+    6.times do |j|
       a = (box_size * j) + (line_size * (j + 1))
       # c = a + box_size - line_size
       colors = temp_array.shift
