@@ -42,6 +42,8 @@ module Assembly
     end
 
     def vips_image
+      # Disable cache. Otherwise, Vips gets confused by files with the same filename.
+      Vips.cache_set_max_files(0)
       # autorot will only affect images that need rotation: https://www.libvips.org/API/current/libvips-conversion.html#vips-autorot
       @vips_image ||= Vips::Image.new_from_file(path).autorot
     end
