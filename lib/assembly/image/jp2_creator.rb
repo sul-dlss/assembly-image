@@ -35,7 +35,7 @@ module Assembly
         @overwrite = overwrite
       end
 
-      attr_reader :image, :output_path, :tmp_folder, :tmp_tiff_path
+      attr_reader :image, :output_path, :tmp_folder
 
       delegate :vips_image, to: :image
 
@@ -43,18 +43,13 @@ module Assembly
       def create
         create_jp2_checks
 
-        # KDUcompress doesn’t support arbitrary image types,  so we make a temporary tiff
-        @tmp_tiff_path = make_tmp_tiff
+        Dir.mktmpdir('assembly-image', tmp_folder) do |tmp_tiff_dir|
+          tmp_tiff_path = File.join(tmp_tiff_dir, 'temp.tif')
 
-        jp2_command = jp2_create_command(source_path: tmp_tiff_path, output: output_path)
-        result = `#{jp2_command}`
-        unless $CHILD_STATUS.success?
-          # Clean up any partial result
-          FileUtils.rm_rf(output_path)
-          raise "JP2 creation command failed: #{jp2_command} with result #{result}"
+          # KDUcompress doesn’t support arbitrary image types, so we make a temporary tiff
+          make_tmp_tiff(tmp_tiff_path)
+          make_jp2(tmp_tiff_path)
         end
-
-        File.delete(tmp_tiff_path) unless tmp_tiff_path.nil?
 
         # create output response object, which is an Assembly::Image type object
         Image.new(output_path)
@@ -94,22 +89,22 @@ module Assembly
         'Clevels=5' # Number of wavelet decomposition levels, or stages
       ].freeze
 
+      # rubocop:disable Metrics/AbcSize
+      # rubocop:disable Metrics/CyclomaticComplexity
       def create_jp2_checks
+        raise "tmp_folder #{tmp_folder} does not exist" unless File.exist?(tmp_folder)
+
         image.send(:check_for_file)
         raise 'input file is not a valid image, or is the wrong mimetype' unless image.jp2able?
 
         raise SecurityError, "output #{output_path} exists, cannot overwrite" if !overwrite? && File.exist?(output_path)
         raise SecurityError, 'cannot recreate jp2 over itself' if overwrite? && image.mimetype == 'image/jp2' && output_path == image.path
       end
+      # rubocop:enable Metrics/AbcSize
+      # rubocop:enable Metrics/CyclomaticComplexity
 
       # We do this because we need to reliably compress the tiff and KDUcompress doesn’t support arbitrary image types
-      # rubocop:disable Metrics/MethodLength
-      def make_tmp_tiff
-        raise "tmp_folder #{tmp_folder} does not exist" unless File.exist?(tmp_folder)
-
-        # make temp tiff filename
-        tmp_tiff_file = Tempfile.new(['assembly-image', '.tif'], tmp_folder)
-        result_path = tmp_tiff_file.path
+      def make_tmp_tiff(tmp_tiff_path)
         tmp_tiff_image = if vips_image.interpretation.eql?(:cmyk)
                            vips_image.icc_transform(SRGB_ICC, input_profile: CMYK_ICC)
                          elsif image.has_profile?
@@ -118,10 +113,21 @@ module Assembly
                            vips_image
                          end
 
-        tmp_tiff_image.tiffsave(result_path, bigtiff: true) # Use bigtiff so we can support images > 4GB
-        result_path
+        tmp_tiff_image.tiffsave(tmp_tiff_path, bigtiff: true) # Use bigtiff so we can support images > 4GB
+
+        # For troublshooting JP2 creation problems. See https://github.com/sul-dlss/common-accessioning/issues/1079
+        raise "Temp tiff files #{tmp_tiff_path} does not exist" unless File.exist?(tmp_tiff_path)
       end
-      # rubocop:enable Metrics/MethodLength
+
+      def make_jp2(tmp_tiff_path)
+        jp2_command = jp2_create_command(source_path: tmp_tiff_path, output: output_path)
+        result = `#{jp2_command}`
+        return if $CHILD_STATUS.success?
+
+        # Clean up any partial result
+        FileUtils.rm_rf(output_path)
+        raise "JP2 creation command failed: #{jp2_command} with result #{result}"
+      end
     end
   end
 end
