@@ -2,6 +2,7 @@
 
 require 'spec_helper'
 
+# rubocop:disable RSpec/ExampleLength
 RSpec.describe Assembly::Image::Jp2Creator do
   let(:jp2creator) { described_class.new(assembly_image, output: jp2_output_file) }
   let(:assembly_image) { Assembly::Image.new(input_path) }
@@ -52,9 +53,13 @@ RSpec.describe Assembly::Image::Jp2Creator do
         expect(result.path).to eq jp2_output_file
         expect(result.mimetype).to eq 'image/jp2'
         # check srgb on temporary tiff (due to CI libvips not speaking jp2)
-        tmp_tiff_image = Assembly::Image.new(jp2creator.send(:make_tmp_tiff))
-        expect(tmp_tiff_image.srgb?).to be true
-        expect(tmp_tiff_image.has_profile?).to be false
+        Dir.mktmpdir('assembly-image-test') do |tmp_tiff_dir|
+          tmp_tiff_path = File.join(tmp_tiff_dir, 'temp.tif')
+          jp2creator.send(:make_tmp_tiff, tmp_tiff_path)
+          tmp_tiff_image = Assembly::Image.new(tmp_tiff_path)
+          expect(tmp_tiff_image.srgb?).to be true
+          expect(tmp_tiff_image.has_profile?).to be false
+        end
       end
     end
 
@@ -87,9 +92,13 @@ RSpec.describe Assembly::Image::Jp2Creator do
         expect(result.path).to eq jp2_output_file
         expect(result.mimetype).to eq 'image/jp2'
         # check srgb on temporary tiff (due to CI libvips not speaking jp2)
-        tmp_tiff_image = Assembly::Image.new(jp2creator.send(:make_tmp_tiff))
-        expect(tmp_tiff_image.srgb?).to be true
-        expect(tmp_tiff_image.has_profile?).to be false
+        Dir.mktmpdir('assembly-image-test') do |tmp_tiff_dir|
+          tmp_tiff_path = File.join(tmp_tiff_dir, 'temp.tif')
+          jp2creator.send(:make_tmp_tiff, tmp_tiff_path)
+          tmp_tiff_image = Assembly::Image.new(tmp_tiff_path)
+          expect(tmp_tiff_image.srgb?).to be true
+          expect(tmp_tiff_image.has_profile?).to be false
+        end
       end
     end
 
@@ -113,7 +122,7 @@ RSpec.describe Assembly::Image::Jp2Creator do
         generate_test_image(input_path)
       end
 
-      it 'gets the correct image, creates and cleans up the temporary tiff' do
+      it 'gets the correct image, creates the temporary tiff' do
         expect(File).to exist input_path # test image was generated
         expect(File).not_to exist jp2_output_file
 
@@ -121,12 +130,13 @@ RSpec.describe Assembly::Image::Jp2Creator do
         expect(result.path).to eq jp2_output_file
         expect(result.mimetype).to eq 'image/jp2'
         # check height and width on temporary tiff (due to CI libvips not speaking jp2)
-        tmp_tiff_image = Assembly::Image.new(jp2creator.send(:make_tmp_tiff))
-        expect(tmp_tiff_image.height).to eq 36
-        expect(tmp_tiff_image.width).to eq 43
-
-        expect(jp2creator.tmp_tiff_path).not_to be_nil # temporary tiff was created
-        expect(File).not_to exist jp2creator.tmp_tiff_path # the temporary tiff path is cleaned up
+        Dir.mktmpdir('assembly-image-test') do |tmp_tiff_dir|
+          tmp_tiff_path = File.join(tmp_tiff_dir, 'temp.tif')
+          jp2creator.send(:make_tmp_tiff, tmp_tiff_path)
+          tmp_tiff_image = Assembly::Image.new(tmp_tiff_path)
+          expect(tmp_tiff_image.height).to eq 36
+          expect(tmp_tiff_image.width).to eq 43
+        end
       end
     end
 
@@ -144,9 +154,13 @@ RSpec.describe Assembly::Image::Jp2Creator do
         expect(result.path).to eq jp2_output_file
         expect(result.mimetype).to eq 'image/jp2'
         # check height and width on temporary tiff (due to CI libvips not speaking jp2)
-        tmp_tiff_image = Assembly::Image.new(jp2creator.send(:make_tmp_tiff))
-        expect(tmp_tiff_image.height).to eq 36
-        expect(tmp_tiff_image.width).to eq 43
+        Dir.mktmpdir('assembly-image-test') do |tmp_tiff_dir|
+          tmp_tiff_path = File.join(tmp_tiff_dir, 'temp.tif')
+          jp2creator.send(:make_tmp_tiff, tmp_tiff_path)
+          tmp_tiff_image = Assembly::Image.new(tmp_tiff_path)
+          expect(tmp_tiff_image.height).to eq 36
+          expect(tmp_tiff_image.width).to eq 43
+        end
       end
     end
 
@@ -169,9 +183,13 @@ RSpec.describe Assembly::Image::Jp2Creator do
 
         # NOTE: we verify the CMYK has been converted to an SRGB JP2 correctly by using ruby-vips;
         #   we have to verify this on the *temporary tiff because lipvips pkg available for circleci does not speak JP2
-        tmp_tiff_image = Assembly::Image.new(jp2creator.send(:make_tmp_tiff))
-        expect(tmp_tiff_image.srgb?).to be true
-        expect(tmp_tiff_image.has_profile?).to be true
+        Dir.mktmpdir('assembly-image-test') do |tmp_tiff_dir|
+          tmp_tiff_path = File.join(tmp_tiff_dir, 'temp.tif')
+          jp2creator.send(:make_tmp_tiff, tmp_tiff_path)
+          tmp_tiff_image = Assembly::Image.new(tmp_tiff_path)
+          expect(tmp_tiff_image.srgb?).to be true
+          expect(tmp_tiff_image.has_profile?).to be true
+        end
       end
     end
 
@@ -189,9 +207,13 @@ RSpec.describe Assembly::Image::Jp2Creator do
         expect(result.path).to eq jp2_output_file
         expect(result.mimetype).to eq 'image/jp2'
         # check height and width on temporary tiff (due to CI libvips not speaking jp2)
-        tmp_tiff_image = Assembly::Image.new(jp2creator.send(:make_tmp_tiff))
-        expect(tmp_tiff_image.height).to eq 36
-        expect(tmp_tiff_image.width).to eq 43
+        Dir.mktmpdir('assembly-image-test') do |tmp_tiff_dir|
+          tmp_tiff_path = File.join(tmp_tiff_dir, 'temp.tif')
+          jp2creator.send(:make_tmp_tiff, tmp_tiff_path)
+          tmp_tiff_image = Assembly::Image.new(tmp_tiff_path)
+          expect(tmp_tiff_image.height).to eq 36
+          expect(tmp_tiff_image.width).to eq 43
+        end
       end
     end
 
@@ -212,9 +234,13 @@ RSpec.describe Assembly::Image::Jp2Creator do
         expect(result.mimetype).to eq 'image/jp2'
 
         # check srgb on temporary tiff (due to CI libvips not speaking jp2)
-        tmp_tiff_image = Assembly::Image.new(jp2creator.send(:make_tmp_tiff))
-        expect(tmp_tiff_image.srgb?).to be true
-        expect(tmp_tiff_image.has_profile?).to be false
+        Dir.mktmpdir('assembly-image-test') do |tmp_tiff_dir|
+          tmp_tiff_path = File.join(tmp_tiff_dir, 'temp.tif')
+          jp2creator.send(:make_tmp_tiff, tmp_tiff_path)
+          tmp_tiff_image = Assembly::Image.new(tmp_tiff_path)
+          expect(tmp_tiff_image.srgb?).to be true
+          expect(tmp_tiff_image.has_profile?).to be false
+        end
       end
     end
 
@@ -237,12 +263,16 @@ RSpec.describe Assembly::Image::Jp2Creator do
         expect(result.mimetype).to eq 'image/jp2'
 
         # check srgb on temporary tiff (due to CI libvips not speaking jp2)
-        tmp_tiff_image = Assembly::Image.new(jp2creator.send(:make_tmp_tiff))
-        expect(tmp_tiff_image.srgb?).to be false
-        expect(tmp_tiff_image.has_profile?).to be false
-        vips_for_tmp_tiff = tmp_tiff_image.vips_image
-        expect(vips_for_tmp_tiff.bands).to eq 1
-        expect(vips_for_tmp_tiff.interpretation).to eq :'b-w'
+        Dir.mktmpdir('assembly-image-test') do |tmp_tiff_dir|
+          tmp_tiff_path = File.join(tmp_tiff_dir, 'temp.tif')
+          jp2creator.send(:make_tmp_tiff, tmp_tiff_path)
+          tmp_tiff_image = Assembly::Image.new(tmp_tiff_path)
+          expect(tmp_tiff_image.srgb?).to be false
+          expect(tmp_tiff_image.has_profile?).to be false
+          vips_for_tmp_tiff = tmp_tiff_image.vips_image
+          expect(vips_for_tmp_tiff.bands).to eq 1
+          expect(vips_for_tmp_tiff.interpretation).to eq :'b-w'
+        end
       end
     end
 
@@ -267,10 +297,14 @@ RSpec.describe Assembly::Image::Jp2Creator do
         expect(result.mimetype).to eq 'image/jp2'
 
         # check srgb on temporary tiff (due to CI libvips not speaking jp2)
-        tmp_tiff_image = Assembly::Image.new(jp2creator.send(:make_tmp_tiff))
-        expect(tmp_tiff_image.srgb?).to be true
-        expect(tmp_tiff_image.has_profile?).to be false
-        expect(tmp_tiff_image.vips_image.bands).to eq 3
+        Dir.mktmpdir('assembly-image-test') do |tmp_tiff_dir|
+          tmp_tiff_path = File.join(tmp_tiff_dir, 'temp.tif')
+          jp2creator.send(:make_tmp_tiff, tmp_tiff_path)
+          tmp_tiff_image = Assembly::Image.new(tmp_tiff_path)
+          expect(tmp_tiff_image.srgb?).to be true
+          expect(tmp_tiff_image.has_profile?).to be false
+          expect(tmp_tiff_image.vips_image.bands).to eq 3
+        end
       end
     end
 
@@ -294,12 +328,16 @@ RSpec.describe Assembly::Image::Jp2Creator do
         expect(result.mimetype).to eq 'image/jp2'
 
         # check srgb on temporary tiff (due to CI libvips not speaking jp2)
-        tmp_tiff_image = Assembly::Image.new(jp2creator.send(:make_tmp_tiff))
-        expect(tmp_tiff_image.srgb?).to be false
-        expect(tmp_tiff_image.has_profile?).to be false
-        vips_for_tmp_tiff = tmp_tiff_image.vips_image
-        expect(vips_for_tmp_tiff.bands).to eq 1
-        expect(vips_for_tmp_tiff.interpretation).to eq :'b-w'
+        Dir.mktmpdir('assembly-image-test') do |tmp_tiff_dir|
+          tmp_tiff_path = File.join(tmp_tiff_dir, 'temp.tif')
+          jp2creator.send(:make_tmp_tiff, tmp_tiff_path)
+          tmp_tiff_image = Assembly::Image.new(tmp_tiff_path)
+          expect(tmp_tiff_image.srgb?).to be false
+          expect(tmp_tiff_image.has_profile?).to be false
+          vips_for_tmp_tiff = tmp_tiff_image.vips_image
+          expect(vips_for_tmp_tiff.bands).to eq 1
+          expect(vips_for_tmp_tiff.interpretation).to eq :'b-w'
+        end
       end
     end
 
@@ -321,27 +359,33 @@ RSpec.describe Assembly::Image::Jp2Creator do
         expect(result.mimetype).to eq 'image/jp2'
 
         # check srgb on temporary tiff (due to CI libvips not speaking jp2)
-        tmp_tiff_image = Assembly::Image.new(jp2creator.send(:make_tmp_tiff))
-        expect(tmp_tiff_image.srgb?).to be true
-        expect(tmp_tiff_image.has_profile?).to be false
-        vips_for_tmp_tiff = tmp_tiff_image.vips_image
-        expect(vips_for_tmp_tiff.bands).to eq 3
+        Dir.mktmpdir('assembly-image-test') do |tmp_tiff_dir|
+          tmp_tiff_path = File.join(tmp_tiff_dir, 'temp.tif')
+          jp2creator.send(:make_tmp_tiff, tmp_tiff_path)
+          tmp_tiff_image = Assembly::Image.new(tmp_tiff_path)
+          expect(tmp_tiff_image.srgb?).to be true
+          expect(tmp_tiff_image.has_profile?).to be false
+          vips_for_tmp_tiff = tmp_tiff_image.vips_image
+          expect(vips_for_tmp_tiff.bands).to eq 3
+        end
       end
     end
   end
 
   describe '#make_tmp_tiff' do
-    subject(:tiff_file) { jp2creator.send(:make_tmp_tiff) }
-
     let(:input_path) { 'spec/test_data/color_rgb_srgb_rot90cw.tif' }
-    let(:vips_output) { Vips::Image.new_from_file(tiff_file) }
     let(:plum) { [94.0, 58.0, 101.0] }
 
     context 'when given a tiff with a rotation hint' do
       it 'rotates it' do
         expect(Vips::Image.new_from_file(input_path).getpoint(3, 3)).not_to eq plum
-        expect(vips_output.getpoint(3, 3)).to eq plum
+        Dir.mktmpdir('assembly-image-test') do |tmp_tiff_dir|
+          tmp_tiff_path = File.join(tmp_tiff_dir, 'temp.tif')
+          jp2creator.send(:make_tmp_tiff, tmp_tiff_path)
+          expect(Vips::Image.new_from_file(tmp_tiff_path).getpoint(3, 3)).to eq plum
+        end
       end
     end
   end
 end
+# rubocop:enable RSpec/ExampleLength
