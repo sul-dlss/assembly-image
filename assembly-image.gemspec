@@ -4,7 +4,7 @@ $LOAD_PATH.push File.expand_path('lib', __dir__)
 
 Gem::Specification.new do |s|
   s.name        = 'assembly-image'
-  s.version     = '2.1.1'
+  s.version     = '2.1.2'
   s.authors     = ['Peter Mangiafico', 'Renzo Sanchez-Silva', 'Monty Hindman', 'Tony Calavano']
   s.email       = ['pmangiafico@stanford.edu']
   s.homepage    = ''
