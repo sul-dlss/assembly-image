@@ -49,7 +49,7 @@ RSpec.describe Assembly::Image::Jp2Creator do
         expect(assembly_image.srgb?).to be true
         expect(assembly_image.has_profile?).to be false
 
-        expect(result).to be_a_kind_of Assembly::Image
+        expect(result).to be_a Assembly::Image
         expect(result.path).to eq jp2_output_file
         expect(result.mimetype).to eq 'image/jp2'
         # check srgb on temporary tiff (due to CI libvips not speaking jp2)
@@ -88,7 +88,7 @@ RSpec.describe Assembly::Image::Jp2Creator do
         expect(assembly_image.has_profile?).to be false
 
         result = assembly_image.create_jp2(output: jp2_output_file, overwrite: true)
-        expect(result).to be_a_kind_of Assembly::Image
+        expect(result).to be_a Assembly::Image
         expect(result.path).to eq jp2_output_file
         expect(result.mimetype).to eq 'image/jp2'
         # check srgb on temporary tiff (due to CI libvips not speaking jp2)
@@ -126,7 +126,7 @@ RSpec.describe Assembly::Image::Jp2Creator do
         expect(File).to exist input_path # test image was generated
         expect(File).not_to exist jp2_output_file
 
-        expect(result).to be_a_kind_of Assembly::Image
+        expect(result).to be_a Assembly::Image
         expect(result.path).to eq jp2_output_file
         expect(result.mimetype).to eq 'image/jp2'
         # check height and width on temporary tiff (due to CI libvips not speaking jp2)
