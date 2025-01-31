@@ -55,14 +55,9 @@ brew install libvips
 ### Exiftool
 
 #### Linux
-Download latest version from: http://www.sno.phy.queensu.ca/~phil/exiftool
 
 ```bash
-tar -xf Image-ExifTool-#.##.tar.gz
-cd Image-ExifTool-#.##
-perl Makefile.PL
-make test
-sudo make install
+sudo apt install libimage-exiftool-perl
 ```
 
 #### Mac
