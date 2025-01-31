@@ -1,6 +1,5 @@
 [![CircleCI](https://circleci.com/gh/sul-dlss/assembly-image/tree/main.svg?style=svg)](https://circleci.com/gh/sul-dlss/assembly-image/tree/main)
-[![Test Coverage](https://api.codeclimate.com/v1/badges/5bcd886bed28b1979ac0/test_coverage)](https://codeclimate.com/github/sul-dlss/assembly-image/test_coverage)
-[![Maintainability](https://api.codeclimate.com/v1/badges/5bcd886bed28b1979ac0/maintainability)](https://codeclimate.com/github/sul-dlss/assembly-image/maintainability)
+[![Test Coverage](https://codecov.io/github/sul-dlss/assembly-image/graph/badge.svg?token=3tCIFjd8Xn)](https://codecov.io/github/sul-dlss/assembly-image)
 [![Gem Version](https://badge.fury.io/rb/assembly-image.svg)](https://badge.fury.io/rb/assembly-image)
 
 # Assembly Image Gem
