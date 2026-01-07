@@ -4,6 +4,7 @@ require 'assembly-objectfile'
 require 'tempfile'
 require 'English' # see https://github.com/rubocop-hq/rubocop/issues/1747 (not #MAGA related)
 require 'active_support/core_ext/module/delegation'
+require 'shellwords'
 
 module Assembly
   class Image < Assembly::ObjectFile
@@ -69,7 +70,7 @@ module Assembly
         options << '-jp2_space sRGB' if image.srgb?
         options += KDU_COMPRESS_DEFAULT_OPTIONS
         options << "Clayers=#{layers}"
-        "kdu_compress #{options.join(' ')} -i '#{source_path}' -o '#{output}' 2>&1"
+        "kdu_compress #{options.join(' ')} -i #{Shellwords.escape(source_path)} -o #{Shellwords.escape(output)} 2>&1"
       end
 
       # Get the number of JP2 layers to generate

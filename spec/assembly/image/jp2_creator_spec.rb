@@ -63,6 +63,35 @@ RSpec.describe Assembly::Image::Jp2Creator do
       end
     end
 
+    context 'when input file has an apostraphe in it' do
+      let(:jp2creator) { described_class.new(assembly_image) }
+      let(:jp2_output_file) { File.join(TEST_INPUT_DIR, File.basename(input_path).gsub('.tif', '.jp2')) }
+      let(:input_path) { File.join(TEST_INPUT_DIR, "Pete's test file.tif") }
+
+      before do
+        generate_test_image(input_path)
+      end
+
+      it 'creates a jp2 of the same filename and in the same location as the input' do
+        expect(File).to exist input_path # test image was generated
+        expect(File).not_to exist jp2_output_file
+        expect(assembly_image.srgb?).to be true
+        expect(assembly_image.has_profile?).to be false
+
+        expect(result).to be_a Assembly::Image
+        expect(result.path).to eq jp2_output_file
+        expect(result.mimetype).to eq 'image/jp2'
+        # check srgb on temporary tiff (due to CI libvips not speaking jp2)
+        Dir.mktmpdir('assembly-image-test') do |tmp_tiff_dir|
+          tmp_tiff_path = File.join(tmp_tiff_dir, 'temp.tif')
+          jp2creator.send(:make_tmp_tiff, tmp_tiff_path)
+          tmp_tiff_image = Assembly::Image.new(tmp_tiff_path)
+          expect(tmp_tiff_image.srgb?).to be true
+          expect(tmp_tiff_image.has_profile?).to be false
+        end
+      end
+    end
+
     context 'when the output file exists and no overwriting' do
       before do
         generate_test_image(input_path)
