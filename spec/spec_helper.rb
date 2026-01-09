@@ -13,7 +13,7 @@ end
 
 bootfile = File.expand_path("#{File.dirname(__FILE__)}/../config/boot")
 require bootfile
-require 'pry-byebug'
+require 'debug'
 
 TEST_INPUT_DIR       = File.join(Assembly::PATH_TO_IMAGE_GEM, 'spec', 'test_data', 'input')
 TEST_OUTPUT_DIR      = File.join(Assembly::PATH_TO_IMAGE_GEM, 'spec', 'test_data', 'output')
