@@ -2,8 +2,8 @@
 # frozen_string_literal: true
 
 require 'rubygems'
-require 'irb'
+require 'pry'
 
 require File.expand_path("#{File.dirname(__FILE__)}/../config/boot")
 
-IRB.start
+Pry.start
