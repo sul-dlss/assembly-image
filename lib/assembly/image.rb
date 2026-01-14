@@ -29,7 +29,7 @@ module Assembly
     # Extract and save only the first page from a multi-image TIFF
     # @param [String] output_path path to save the extracted first page
     def extract_first_page(output_path)
-      return false unless mimetype == 'image/tiff'
+      raise "Cannot extract first page from mimetype #{mimetype}" unless mimetype == 'image/tiff'
 
       first_page = Vips::Image.new_from_file(path, page: 0).autorot
       first_page.write_to_file(output_path)

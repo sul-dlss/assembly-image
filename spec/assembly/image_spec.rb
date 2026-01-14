@@ -104,9 +104,8 @@ RSpec.describe Assembly::Image do
 
       let(:input_path) { TEST_JPEG_INPUT_FILE }
 
-      it 'does not do anything' do
-        result = assembly_image.extract_first_page(output_path)
-        expect(result).to be false # Will fail the mimetype check
+      it 'raises an error' do
+        expect { assembly_image.extract_first_page(output_path) }.to raise_error(RuntimeError, 'Cannot extract first page from mimetype image/jpeg')
       end
     end
   end
