@@ -19,6 +19,7 @@ TEST_INPUT_DIR       = File.join(Assembly::PATH_TO_IMAGE_GEM, 'spec', 'test_data
 TEST_OUTPUT_DIR      = File.join(Assembly::PATH_TO_IMAGE_GEM, 'spec', 'test_data', 'output')
 TEST_TIF_INPUT_FILE  = File.join(TEST_INPUT_DIR, 'test.tif')
 TEST_JPEG_INPUT_FILE = File.join(TEST_INPUT_DIR, 'test.jpg')
+TEST_MULTIPAGE_TIF_FILE = File.join(Assembly::PATH_TO_IMAGE_GEM, 'spec', 'test_data', 'shapes_multi_size.tif')
 
 RSpec.configure do |config|
   # rspec-expectations config goes here. You can use an alternate

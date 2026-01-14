@@ -26,7 +26,7 @@ Naming/FileName:
   Exclude:
    - lib/assembly-image.rb
 
-Naming/PredicateName:
+Naming/PredicatePrefix:
   ForbiddenPrefixes:
     - is_
 

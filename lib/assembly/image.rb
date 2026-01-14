@@ -17,6 +17,26 @@ module Assembly
       vips_image.width
     end
 
+    # @return [boolean] true if this image is a multi-page (e.g. a TIFF with multiple pages)
+    def multi_page?
+      return false unless mimetype == 'image/tiff'
+
+      vips_image.get('n-pages').to_i > 1
+    rescue Vips::Error
+      false
+    end
+
+    # Extract and save only the first page from a multi-image TIFF
+    # @param [String] output_path path to save the extracted first page
+    def extract_first_page(output_path)
+      return false unless mimetype == 'image/tiff'
+
+      first_page = Vips::Image.new_from_file(path, page: 0).autorot
+      first_page.write_to_file(output_path)
+
+      true
+    end
+
     # @return [string] full default jp2 path and filename that will be created from the given image
     # Example:  given original file of '/dir/path_to_file.tif', gives '/dir/path_to_file.jp2'
     def jp2_filename
