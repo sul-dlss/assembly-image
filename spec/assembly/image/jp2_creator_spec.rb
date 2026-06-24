@@ -401,6 +401,50 @@ RSpec.describe Assembly::Image::Jp2Creator do
     end
   end
 
+  describe '#clean_jp2_metadata' do
+    let(:input_path) { TEST_TIF_INPUT_FILE }
+
+    before do
+      generate_test_image(input_path)
+      FileUtils.touch(jp2_output_file)
+    end
+
+    after { cleanup }
+
+    context 'when the output jp2 has a Coded Character Set IPTC tag' do
+      # Fixture is a real JP2 (created with opj_compress) so exiftool accepts IPTC writes to it.
+      # It lives outside spec/test_data/input/ so cleanup doesn't delete it.
+      let(:coded_charset_jp2) { 'spec/test_data/coded_charset_source.jp2' }
+
+      before do
+        FileUtils.cp(coded_charset_jp2, jp2_output_file)
+        system("exiftool -IPTC:CodedCharacterSet=UTF8 -overwrite_original '#{jp2_output_file}'")
+      end
+
+      it 'removes the Coded Character Set tag from the output file' do
+        expect(`exiftool '#{jp2_output_file}'`).to include('Coded Character Set')
+        jp2creator.send(:clean_jp2_metadata)
+        expect(`exiftool '#{jp2_output_file}'`).not_to include('Coded Character Set')
+      end
+    end
+
+    context 'when the exiftool command fails' do
+      before do
+        allow(jp2creator).to receive(:`).and_invoke(lambda { |_cmd|
+          system('false')
+          'error output'
+        })
+      end
+
+      it 'raises an error and removes the output file' do
+        expect(File).to exist(jp2_output_file)
+        expect { jp2creator.send(:clean_jp2_metadata) }
+          .to raise_error(RuntimeError, /JP2 clean metadata command failed/)
+        expect(File).not_to exist(jp2_output_file)
+      end
+    end
+  end
+
   describe '#make_tmp_tiff' do
     let(:input_path) { 'spec/test_data/color_rgb_srgb_rot90cw.tif' }
     let(:plum) { [94.0, 58.0, 101.0] }

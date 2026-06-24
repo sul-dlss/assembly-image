@@ -50,6 +50,7 @@ module Assembly
           # KDUcompress doesn’t support arbitrary image types, so we make a temporary tiff
           make_tmp_tiff(tmp_tiff_path)
           make_jp2(tmp_tiff_path)
+          clean_jp2_metadata
         end
 
         # create output response object, which is an Assembly::Image type object
@@ -128,6 +129,18 @@ module Assembly
         # Clean up any partial result
         FileUtils.rm_rf(output_path)
         raise "JP2 creation command failed: #{jp2_command} with result #{result}"
+      end
+
+      # Rebuild all EXIF meta information from scratch
+      # See https://exiftool.sourceforge.net/exiftool_pod.html#exiftool--exif:all--tagsfromfile--all:all--unsafe-bad.jpg
+      def clean_jp2_metadata
+        exif_command = "exiftool -all= -tagsfromfile @ -all:all -unsafe #{Shellwords.escape(output_path)}"
+        result = `#{exif_command}`
+        return if $CHILD_STATUS.success?
+
+        # Clean up any partial result
+        FileUtils.rm_rf(output_path)
+        raise "JP2 clean metadata command failed: #{exif_command} with result #{result}"
       end
     end
   end
