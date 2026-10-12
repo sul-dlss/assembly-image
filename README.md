@@ -28,6 +28,8 @@ output = input_image.create_jp2(output: '/full/path/to/output.jp2') # generate a
 
 ## Running tests
 
+Use Ruby 4.0.7 for development and testing.
+
 ```bash
 bundle exec rspec
 ```
