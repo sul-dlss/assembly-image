@@ -87,6 +87,7 @@ module Assembly
         'Corder=RPCL', # R=resolution P=position C=component L=layer
         'Cblk=\\{64,64\\}', # code-block dimensions; 64x64 happens to also be the default
         'Cprecincts=\\{256,256\\},\\{256,256\\},\\{128,128\\}', # Precinct dimensions; 256x256 for the 2 highest resolution levels, defaults to 128x128 for the rest
+        'ORGgen_plt=yes', # Insert packet length information, so decoders can seek directly to the packets for a region
         '-rate -', # Ratio of compressed bits to the image size
         'Clevels=5' # Number of wavelet decomposition levels, or stages
       ].freeze
