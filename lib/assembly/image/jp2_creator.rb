@@ -84,10 +84,12 @@ module Assembly
         '-num_threads 2', # forces Kakadu to only use 2 threads
         '-quiet', # suppress informative messages.
         'Creversible=no', # Disable reversible compression
+        'Cmodes=BYPASS', # Selective arithmetic coding bypass; speeds up encoding and decoding
         'Corder=RPCL', # R=resolution P=position C=component L=layer
         'Cblk=\\{64,64\\}', # code-block dimensions; 64x64 happens to also be the default
         'Cprecincts=\\{256,256\\},\\{256,256\\},\\{128,128\\}', # Precinct dimensions; 256x256 for the 2 highest resolution levels, defaults to 128x128 for the rest
-        '-rate -', # Ratio of compressed bits to the image size
+        'ORGgen_plt=yes', # Insert packet length information, so decoders can seek directly to the packets for a region
+        '-rate 1.5', # Bits per pixel for the highest quality layer
         'Clevels=5' # Number of wavelet decomposition levels, or stages
       ].freeze
 
